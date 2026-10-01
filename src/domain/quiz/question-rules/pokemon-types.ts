@@ -26,12 +26,13 @@ const rendering = {
 
 export const pokemonTypes = {
   rendering,
+  lastLevel: 4,
   unleveled: {
     ...controls,
     response: responsePresets.single,
   },
   levels: {
-    2: {
+    1: {
       ...controls,
       singleType: true,
       response: responsePresets.single,

@@ -42,6 +42,16 @@ export const pokemonFromPixelCrop = {
     response: responsePresets.single,
   },
   levels: {
+    1: {
+      ...controls,
+      cropScale: 0.45,
+      response: responsePresets.single,
+    },
+    2: {
+      ...controls,
+      cropScale: 0.55,
+      response: responsePresets.single,
+    },
     3: {
       ...controls,
       cropScale: 0.65,

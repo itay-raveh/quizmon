@@ -35,11 +35,11 @@ export const pokedexEntryMatch = {
     response: responsePresets.single,
   },
   levels: {
-    2: {
+    4: {
       ...controls,
       response: responsePresets.single,
     },
-    4: {
+    5: {
       ...controls,
       response: {
         kind: 'search',

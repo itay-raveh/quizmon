@@ -40,14 +40,12 @@ it('adds hard types and penalizes easy types in the combined multiplier', () => 
 
 it('scores the drawn question mix without rewarding unused selected types', () => {
   const settings = {
-    difficulty: 5 as const,
+    difficulty: 4 as const,
     generations: ['I' as const],
     formGroups: ['standard' as const],
-    questionTypes: [
-      'pokemonTypes',
-      'statExtremes',
-      'legendaryMythicalSelection',
-    ] as ('pokemonTypes' | 'statExtremes' | 'legendaryMythicalSelection')[],
+    questionTypes: ['pokemonTypes', 'statExtremes', 'dualTypeMatch'] as (
+      'pokemonTypes' | 'statExtremes' | 'dualTypeMatch'
+    )[],
   };
   const drawn = [
     ...Array.from({ length: 9 }, () => ({
@@ -57,11 +55,11 @@ it('scores the drawn question mix without rewarding unused selected types', () =
   ];
   const actual = getTrainingScoreMultipliers(settings, drawn);
   expect(actual?.perQuestion).toBe(true);
-  expect(actual && getScoreMultiplier(actual)).toBe(6.25);
+  expect(actual && getScoreMultiplier(actual)).toBe(5);
   expect(
     getTrainingScoreMultipliers(settings, [
       ...drawn.slice(0, 9),
-      { questionType: 'legendaryMythicalSelection' },
+      { questionType: 'dualTypeMatch' },
     ])?.perQuestion,
   ).toBe(true);
   expect(

@@ -105,6 +105,7 @@ export const App = () => {
   const training = useTrainingGame({
     catalog,
     settings,
+    setSettings,
     startGame,
   });
 

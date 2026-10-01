@@ -16,12 +16,8 @@ const rendering = {} satisfies RenderingControlsFor<'moveCategory'>;
 
 export const moveCategory = {
   rendering,
+  lastLevel: 4,
   levels: {
-    2: {
-      ...controls,
-      statusMovesOnly: true,
-      response: responsePresets.single,
-    },
     3: {
       ...controls,
       statusMovesOnly: false,

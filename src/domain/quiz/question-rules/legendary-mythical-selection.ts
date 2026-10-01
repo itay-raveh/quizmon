@@ -15,6 +15,7 @@ const rendering =
 
 export const legendaryMythicalSelection = {
   rendering,
+  lastLevel: 3,
   unleveled: {
     ...controls,
     response: responsePresets.multi,

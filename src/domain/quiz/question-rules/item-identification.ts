@@ -21,12 +21,8 @@ const rendering = {
 
 export const itemIdentification = {
   rendering,
+  lastLevel: 4,
   levels: {
-    1: {
-      ...controls,
-      distinctItemCategories: true,
-      response: responsePresets.single,
-    },
     2: {
       ...controls,
       sameItemPocket: true,

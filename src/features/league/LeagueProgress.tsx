@@ -19,7 +19,7 @@ export const LeagueProgress = ({
         completed
           ? 'Quizmon League progress. All five trials complete.'
           : currentStage
-            ? `Quizmon League progress. ${currentStage.heading}, ${currentStage.title}.`
+            ? `Quizmon League progress. ${currentStage.heading}, Level ${currentStage.level}, ${currentStage.title}.`
             : 'Five League trials'
       }
       className="league-progress"
@@ -40,7 +40,7 @@ export const LeagueProgress = ({
         >
           <span aria-hidden="true">{stage.marker}</span>
           <span className="visually-hidden">
-            {stage.heading}: {stage.title}
+            {stage.heading}: Level {stage.level}, {stage.title}
           </span>
         </li>
       ))}

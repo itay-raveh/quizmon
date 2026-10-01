@@ -290,6 +290,31 @@ main {
   height: 1.2rem;
 }
 
+.back-button.game-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  gap: 0.4rem;
+}
+
+.back-button svg {
+  width: 1.2rem;
+  height: 1.2rem;
+  flex: none;
+}
+
+@media (max-width: 42rem) {
+  .back-button.game-button {
+    width: 2.75rem;
+    padding: 0;
+  }
+
+  .back-button__label {
+    display: none;
+  }
+}
+
 html:has(.app--questions) {
   scrollbar-gutter: stable;
 }

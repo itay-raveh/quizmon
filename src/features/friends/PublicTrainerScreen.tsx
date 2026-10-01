@@ -1,7 +1,7 @@
 import { useLayoutEffect, useSyncExternalStore } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { GameButton } from '../../components/GameButton';
-import { ArrowLeftIcon } from '../../components/icons';
+import { BackButton } from '../../components/BackButton';
 import type { PokemonCatalog } from '../../domain/pokemon/types';
 import { accountSnapshot, subscribeAccount } from '../account/account';
 import { PublicTrainerPassport } from '../trainer/PublicTrainerPassport';
@@ -59,15 +59,7 @@ export function PublicTrainerScreen({
       aria-labelledby="public-trainer-title"
     >
       <header className="game-panel__header trainer-passport__header trainer-passport__public-header">
-        <GameButton
-          aria-label={backLabel}
-          className="trainer-passport__back"
-          onClick={onBack}
-          tone="quiet"
-        >
-          <ArrowLeftIcon aria-hidden="true" weight="bold" />
-          <span className="trainer-passport__back-label">{backLabel}</span>
-        </GameButton>
+        <BackButton label={backLabel} onClick={onBack} />
         <h1 className="game-panel__title" id="public-trainer-title">
           Trainer profile
         </h1>

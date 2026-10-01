@@ -20,13 +20,6 @@ const rendering = {} satisfies RenderingControlsFor<'abilityEffects'>;
 export const abilityEffects = {
   rendering,
   levels: {
-    3: {
-      ...controls,
-      minimumEffectSimilarity: 0,
-      maximumEffectSimilarity: 0.35,
-      preferSimilarEffects: false,
-      response: responsePresets.single,
-    },
     4: {
       ...controls,
       minimumEffectSimilarity: 0,

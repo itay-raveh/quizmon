@@ -33,11 +33,11 @@ import type { Difficulty } from '@/domain/quiz/difficulty';
 const LevelAdvancementOffer = ({
   currentLevel,
   nextLevel,
-  onCustomize,
+  onTryLevel,
 }: {
   currentLevel: Difficulty;
   nextLevel: Difficulty;
-  onCustomize: () => void;
+  onTryLevel: (level: Difficulty) => void;
 }) => {
   const [visible, setVisible] = useState(
     () => !wasLevelAdvancementOffered(currentLevel),
@@ -54,7 +54,9 @@ const LevelAdvancementOffer = ({
         Ready to try <LevelLabel level={nextLevel} />?
       </strong>
       <div className="level-advancement-offer__actions">
-        <GameButton onClick={onCustomize}>Customize training</GameButton>
+        <GameButton onClick={() => onTryLevel(nextLevel)}>
+          Try <LevelLabel level={nextLevel} />
+        </GameButton>
         <GameButton tone="quiet" onClick={() => setVisible(false)}>
           Not now
         </GameButton>
@@ -77,9 +79,10 @@ interface ResultsScreenProps {
   settings: GameSettings;
   onNewGame: () => void;
   onTrainAgain: () => void;
+  onTryLevel: (level: Difficulty) => void;
   onStartTraining: () => void;
-  onCustomizeTraining: () => void;
   onRetryLeague: () => void;
+  trainingError?: string;
   result: GameResult;
   resultSaved: boolean;
   progressChanges: TrainerProgressChange[];
@@ -93,9 +96,10 @@ export const ResultsScreen = ({
   settings,
   onNewGame,
   onTrainAgain,
+  onTryLevel,
   onStartTraining,
-  onCustomizeTraining,
   onRetryLeague,
+  trainingError,
   result,
   resultSaved,
   progressChanges,
@@ -325,9 +329,10 @@ export const ResultsScreen = ({
         <LevelAdvancementOffer
           currentLevel={result.rules.difficulty}
           nextLevel={nextLevel}
-          onCustomize={onCustomizeTraining}
+          onTryLevel={onTryLevel}
         />
       ) : null}
+      {trainingError ? <p role="alert">{trainingError}</p> : null}
       {!isLeague ? (
         <div className="results__actions results__actions--paired">
           <GameButton onClick={isTraining ? onTrainAgain : onStartTraining}>

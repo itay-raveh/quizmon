@@ -9,13 +9,15 @@ import type { ExperienceSettings, GameSettings } from '../settings/types.ts';
 import { DAILY_QUESTION_COUNT } from './daily.ts';
 import {
   LEAGUE_QUESTION_COUNT,
-  getLeagueQuestionTypes,
   getLeagueSettings,
+  leagueStages,
 } from './league.ts';
 import { type QuestionHistory } from './history.ts';
 import type { QuestionContext } from './questions/context.ts';
+import { questionTypes } from './questions/definitions.ts';
 import { buildQuestionType } from './questions/registry.ts';
 import type { QuestionData, QuestionType } from './types.ts';
+import { getQuestionVariant } from './variants.ts';
 
 const getQuestionCount = (
   availableCount: number,
@@ -64,22 +66,13 @@ export const buildQuestions = (
       ? requestedCount
       : 0
     : getQuestionCount(context.pool.length, requestedCount);
-  const questionTypeDeck = shuffle(settings.questionTypes, random);
   const questions: QuestionData[] = [];
 
   for (let index = 0; index < count; index += 1) {
-    const selectedType = questionTypeDeck[index % questionTypeDeck.length];
-    if (!selectedType) break;
-    const candidates = [
-      selectedType,
-      ...shuffle(
-        questionTypeDeck.filter(
-          (questionType) => questionType !== selectedType,
-        ),
-        random,
-      ),
-    ];
-    const question = buildFirstAvailableQuestion(context, candidates);
+    const question = buildFirstAvailableQuestion(
+      context,
+      shuffle(settings.questionTypes, random),
+    );
     if (!question) continue;
     questions.push({ ...question, id: `${question.id}:${index}` });
   }
@@ -136,23 +129,47 @@ export const buildLeagueQuestions = (
   history?: QuestionHistory,
 ): QuestionData[] => {
   const settings = getLeagueSettings(experience);
-  const questions = buildQuestionSequence(
+  const context = createQuestionContext(
     catalog,
-    getLeagueQuestionTypes(seed),
     settings,
     createSeededRandom(`quizmon-league:${seed}`),
     history,
   );
+  const usedTypes = new Set<QuestionType>();
+  const questions: QuestionData[] = [];
 
-  if (
-    questions.length !== LEAGUE_QUESTION_COUNT ||
-    new Set(questions.map(({ questionType }) => questionType)).size !==
-      LEAGUE_QUESTION_COUNT
-  ) {
-    throw new Error(
-      `Quizmon League must contain ${LEAGUE_QUESTION_COUNT} unique question formats`,
+  for (const stage of leagueStages) {
+    context.difficulty = stage.level;
+    const candidates = shuffle(
+      questionTypes.filter(
+        (type) =>
+          !usedTypes.has(type) &&
+          getQuestionVariant(type, stage.level) &&
+          (stage.level !== 4 || !getQuestionVariant(type, 3)),
+      ),
+      createSeededRandom(`quizmon-league-types:${seed}:${stage.level}`),
     );
+    const slots = stage.level === 5 ? 2 : 3;
+    for (let slot = 0; slot < slots; slot += 1) {
+      const question = buildFirstAvailableQuestion(context, candidates);
+      if (!question || question.questionType === 'champion') {
+        throw new Error(`Unable to build Level ${stage.level} League question`);
+      }
+      usedTypes.add(question.questionType);
+      candidates.splice(candidates.indexOf(question.questionType), 1);
+      questions.push({ ...question, id: `${question.id}:${questions.length}` });
+    }
   }
+
+  context.difficulty = 5;
+  const finale = buildQuestionType(context, 'champion');
+  if (!finale) throw new Error('Unable to build Champion question');
+  questions.push({ ...finale, id: `${finale.id}:${questions.length}` });
+
+  if (questions.length !== LEAGUE_QUESTION_COUNT)
+    throw new Error(
+      `Quizmon League requires ${LEAGUE_QUESTION_COUNT} questions`,
+    );
 
   return questions;
 };

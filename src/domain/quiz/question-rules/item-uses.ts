@@ -23,13 +23,6 @@ const rendering = {
 export const itemUses = {
   rendering,
   levels: {
-    2: {
-      ...controls,
-      minimumEffectSimilarity: 0,
-      maximumEffectSimilarity: 0.35,
-      preferSimilarEffects: false,
-      response: responsePresets.single,
-    },
     3: {
       ...controls,
       sameItemCategory: true,

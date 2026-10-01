@@ -41,7 +41,7 @@ export const pokemonFromSilhouette = {
     response: responsePresets.single,
   },
   levels: {
-    2: {
+    1: {
       ...controls,
       distractorRankDirection: 'least-similar',
       response: responsePresets.single,

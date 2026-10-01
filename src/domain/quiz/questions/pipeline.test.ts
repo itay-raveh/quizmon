@@ -6,9 +6,15 @@ import type { TopicCatalog } from '../topic-catalog.ts';
 import { createSeededRandom } from '../../../lib/random.ts';
 import { savedQuestionSchema } from '../lineup.ts';
 import { getQuestionView } from '../presentation.ts';
+import {
+  buildLeagueQuestions,
+  buildQuestions,
+} from '../question-generation.ts';
+import { leagueStages } from '../league.ts';
 import { questionRenderingSchema } from '../rendering.ts';
 import { getQuestionVariant } from '../variants.ts';
 import type { QuestionData } from '../types.ts';
+import { defaultGameSettings } from '../../settings/game-settings.ts';
 import { questionRules } from '../question-rules/registry.ts';
 import { buildQuestionType } from './registry.ts';
 import {
@@ -47,6 +53,56 @@ const pool = Object.entries(catalog.pokemon).map(([name, pokemon]) => ({
   name,
   pokemon,
 }));
+it('samples Training families independently on each question', () => {
+  const settings = {
+    ...defaultGameSettings,
+    questionTypes: [
+      'pokemonFromHistoricalSprite',
+      'spriteForPokemon',
+    ] as QuestionType[],
+  };
+  const rounds = ['random-mix-a', 'random-mix-b', 'random-mix-c'].map((seed) =>
+    buildQuestions(catalog, settings, createSeededRandom(seed)),
+  );
+  expect(rounds.every((round) => round.length === 10)).toBe(true);
+  expect(
+    rounds.some(
+      (round) =>
+        round.filter(
+          ({ questionType }) => questionType === 'pokemonFromHistoricalSprite',
+        ).length !== 5,
+    ),
+  ).toBe(true);
+}, 30_000);
+
+it('builds five League levels with distinct formats and a Champion finale', () => {
+  const questions = buildLeagueQuestions(
+    catalog,
+    'league-levels',
+    defaultGameSettings,
+  );
+  expect(questions).toHaveLength(15);
+  expect(new Set(questions.map(({ questionType }) => questionType)).size).toBe(
+    15,
+  );
+  expect(questions.at(-1)?.questionType).toBe('champion');
+  expect(questions.at(-1)?.variantLevel).toBe(5);
+
+  for (const [stageIndex, stage] of leagueStages.entries()) {
+    for (const question of questions.slice(
+      stageIndex * 3,
+      stageIndex * 3 + 3,
+    )) {
+      if (question.questionType === 'champion') continue;
+      expect(question.variantLevel).toBe(
+        getQuestionVariant(question.questionType, stage.level)?.level,
+      );
+      if (stage.level === 4)
+        expect(getQuestionVariant(question.questionType, 3)).toBeUndefined();
+    }
+  }
+}, 30_000);
+
 it('builds every configured family with a renderable answer and saved view', () => {
   for (const type of Object.keys(questionRules) as (
     QuestionType | 'champion'
@@ -213,7 +269,7 @@ it('uses the configured source for choice sprites', () => {
   expect(result.optionVisuals?.[name]?.src).toBe(back);
   expect(result.optionVisuals?.[name]?.src).not.toBe(pokemon.sprite);
 
-  const searchRules = getQuestionVariant('pokedexEntryMatch', 4)!.variant;
+  const searchRules = getQuestionVariant('pokedexEntryMatch', 5)!.variant;
   const searchWithHistoricalSubject = {
     ...searchRules,
     rendering: {

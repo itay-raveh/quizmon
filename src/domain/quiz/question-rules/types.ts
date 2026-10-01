@@ -1,4 +1,4 @@
-import type { DifficultyRules } from '../difficulty.ts';
+import type { Difficulty, DifficultyRules } from '../difficulty.ts';
 import {
   type EntityRendering,
   type QuestionRendering,
@@ -223,6 +223,8 @@ export type QuestionRuleRow<
   rendering: RenderingControlsFor<Type>;
   /** Complete rules for questions without a difficulty level. */
   unleveled?: QuestionRuleEntry<Rules, Type>;
+  /** Highest level where this family is available. */
+  lastLevel?: Difficulty;
   /** Complete numeric level entries; the highest available level is selected. */
   levels: DifficultyRules<QuestionRuleEntry<Rules, Type>>;
 };

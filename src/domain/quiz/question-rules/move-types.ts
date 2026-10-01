@@ -17,13 +17,14 @@ const rendering = {} satisfies RenderingControlsFor<'moveTypes'>;
 
 export const moveTypes = {
   rendering,
+  lastLevel: 4,
   levels: {
-    2: {
+    3: {
       ...controls,
       showMoveDescription: true,
       response: responsePresets.single,
     },
-    3: {
+    4: {
       ...controls,
       allOptions: true,
       excludeTypeHintNames: true,

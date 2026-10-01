@@ -17,6 +17,7 @@ const rendering = {
 
 export const pokemonByType = {
   rendering,
+  lastLevel: 4,
   unleveled: {
     ...controls,
     response: responsePresets.multi,

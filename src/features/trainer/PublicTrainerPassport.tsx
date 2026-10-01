@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { GameButton } from '../../components/GameButton';
+import { BackButton } from '../../components/BackButton';
 import {
-  ArrowLeftIcon,
   BookOpenIcon,
   CardholderIcon,
   CertificateIcon,
@@ -70,15 +69,7 @@ export function PublicTrainerPassport({
       aria-labelledby="public-trainer-title"
     >
       <header className="game-panel__header trainer-passport__header trainer-passport__public-header">
-        <GameButton
-          aria-label={backLabel}
-          className="trainer-passport__back"
-          tone="quiet"
-          onClick={onBack}
-        >
-          <ArrowLeftIcon aria-hidden="true" weight="bold" />
-          <span className="trainer-passport__back-label">{backLabel}</span>
-        </GameButton>
+        <BackButton label={backLabel} onClick={onBack} />
         <div className="trainer-passport__public-heading">
           <h1
             className="game-panel__title"

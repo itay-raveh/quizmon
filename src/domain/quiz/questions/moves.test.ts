@@ -20,7 +20,7 @@ const move = (name: string, label: string, type: string) => ({
   ],
 });
 
-test('Move types excludes names that reveal their type from Level 3', () => {
+test('Move types excludes names that reveal their type from Level 4', () => {
   const catalog = {
     pokemon: {},
     typeRelations: { fire: {}, water: {}, normal: {}, grass: {} },
@@ -44,11 +44,10 @@ test('Move types excludes names that reveal their type from Level 3', () => {
     used: new Set(),
   });
 
-  expect(buildQuestionType(context(2), 'moveTypes')?.subject.name).toBe(
+  expect(buildQuestionType(context(3), 'moveTypes')?.subject.name).toBe(
     'fire-punch',
   );
-  for (const difficulty of [3, 4, 5] as const)
-    expect(
-      buildQuestionType(context(difficulty), 'moveTypes')?.subject.name,
-    ).toBe('pound');
+  expect(buildQuestionType(context(4), 'moveTypes')?.subject.name).toBe(
+    'pound',
+  );
 });

@@ -23,14 +23,6 @@ const rendering = {
 export const heldItemEffects = {
   rendering,
   levels: {
-    3: {
-      ...controls,
-      sameItemCategory: true,
-      minimumEffectSimilarity: 0,
-      maximumEffectSimilarity: 0.8,
-      preferSimilarEffects: false,
-      response: responsePresets.single,
-    },
     4: {
       ...controls,
       sameItemCategory: true,

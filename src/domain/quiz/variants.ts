@@ -38,8 +38,8 @@ export const getUnleveledQuestionRule = <Type extends keyof FamilyRules>(
 };
 
 /**
- * Resolve the highest family level at or below `difficulty` and merge its
- * rendering. The returned `level` is the selected rule's level.
+ * Resolve the highest available family level at or below `difficulty` and
+ * merge its rendering. The returned `level` is the selected rule's level.
  */
 export const getQuestionVariant = <Type extends keyof FamilyRules>(
   type: Type,
@@ -51,6 +51,8 @@ export const getQuestionVariant = <Type extends keyof FamilyRules>(
     }
   | undefined => {
   const row = questionRules[type] as QuestionRuleRow<FamilyRules[Type], Type>;
+  if (row.lastLevel !== undefined && difficulty > row.lastLevel)
+    return undefined;
   const resolved = resolveDifficultyVariant(row.levels, difficulty);
   return resolved
     ? { level: resolved.level, variant: withRendering(row, resolved.variant) }

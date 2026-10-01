@@ -15,11 +15,8 @@ const rendering = {} satisfies RenderingControlsFor<'locationRegion'>;
 
 export const locationRegion = {
   rendering,
+  lastLevel: 3,
   levels: {
-    2: {
-      ...controls,
-      response: responsePresets.single,
-    },
     3: {
       ...controls,
       allOptions: true,

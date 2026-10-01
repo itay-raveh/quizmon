@@ -31,7 +31,7 @@ test('item identification never asks for an item with shared sprite art', () => 
   const question = buildQuestionType(
     {
       catalog,
-      difficulty: 1,
+      difficulty: 2,
       generations: ['II'],
       pool: [],
       random: () => 0.999,

@@ -90,7 +90,7 @@ test('reveals a Field notes answer in its choice without a duplicate portrait', 
         question={{
           ...question,
           answer: { interaction: 'search', correctOptions: ['grotle'] },
-          rendering: resolveQuestionRendering('pokedexEntryMatch', 4),
+          rendering: resolveQuestionRendering('pokedexEntryMatch', 5),
           searchOptions: [{ name: 'grotle', sprite: '/grotle.png' }],
         }}
         answered

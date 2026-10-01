@@ -34,6 +34,11 @@ export const shinyPokemonIdentification = {
     response: responsePresets.single,
   },
   levels: {
+    1: {
+      ...controls,
+      distractorRankDirection: 'least-similar',
+      response: responsePresets.single,
+    },
     3: {
       ...controls,
       response: responsePresets.single,

@@ -1,4 +1,5 @@
 import { GameButton } from '@/components/GameButton';
+import { BackButton } from '@/components/BackButton';
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
@@ -104,9 +105,7 @@ export const LeagueDestination = ({
       aria-label="Quizmon League"
     >
       <header className="league-hall__header">
-        <GameButton aria-label="Back to home" onClick={onBack} tone="quiet">
-          <ArrowLeftIcon aria-hidden="true" weight="bold" />
-        </GameButton>
+        <BackButton label="Back to home" onClick={onBack} />
         {completed && (
           <nav className="league-hall__navigation" aria-label="League views">
             <GameButton

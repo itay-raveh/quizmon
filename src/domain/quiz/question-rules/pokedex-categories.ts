@@ -26,10 +26,6 @@ const rendering = {} satisfies RenderingControlsFor<'pokedexCategories'>;
 export const pokedexCategories = {
   rendering,
   levels: {
-    2: {
-      ...controls,
-      response: responsePresets.single,
-    },
     3: {
       ...controls,
       sameColorOrShape: true,

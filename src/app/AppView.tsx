@@ -324,8 +324,9 @@ const AppScreen = ({
         void league.start();
       }}
       onTrainAgain={training.trainAgain}
+      onTryLevel={training.tryLevel}
       onStartTraining={training.start}
-      onCustomizeTraining={settingsDialog.openTraining}
+      trainingError={training.error}
       result={session.result}
       resultSaved={session.resultSaved}
       progressChanges={session.progressChanges}

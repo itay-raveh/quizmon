@@ -1,5 +1,5 @@
-import { createSeededRandom, shuffle } from '../../lib/random.ts';
-import type { GameResult, QuestionType } from './types.ts';
+import type { GameResult } from './types.ts';
+import type { Difficulty } from './difficulty.ts';
 
 const LEAGUE_STAGE_SIZE = 3;
 
@@ -8,6 +8,7 @@ export type LeagueView = 'challenge' | 'hall';
 export interface LeagueStage {
   heading: string;
   id: 'elite-1' | 'elite-2' | 'elite-3' | 'elite-4' | 'champion';
+  level: Difficulty;
   marker: string;
   title: string;
 }
@@ -16,30 +17,35 @@ export const leagueStages: readonly LeagueStage[] = [
   {
     heading: 'Elite Trial I',
     id: 'elite-1',
+    level: 1,
     marker: 'I',
     title: 'Recognition',
   },
   {
     heading: 'Elite Trial II',
     id: 'elite-2',
+    level: 2,
     marker: 'II',
     title: 'Field Knowledge',
   },
   {
     heading: 'Elite Trial III',
     id: 'elite-3',
+    level: 3,
     marker: 'III',
     title: 'Pokémon Knowledge',
   },
   {
     heading: 'Elite Trial IV',
     id: 'elite-4',
+    level: 4,
     marker: 'IV',
     title: 'Battle Judgment',
   },
   {
     heading: 'Champion',
     id: 'champion',
+    level: 5,
     marker: 'C',
     title: 'Final Trial',
   },
@@ -47,31 +53,7 @@ export const leagueStages: readonly LeagueStage[] = [
 
 export const LEAGUE_QUESTION_COUNT = leagueStages.length * LEAGUE_STAGE_SIZE;
 
-const stageQuestionTypes: readonly (readonly QuestionType[])[] = [
-  [
-    'pokemonFromHistoricalSprite',
-    'silhouetteForPokemon',
-    'pokemonFromPixelCrop',
-  ],
-  ['shinyPokemonIdentification', 'pokedexEntryMatch', 'evolutionGainedType'],
-  ['pokemonTypes', 'pokemonByType', 'pokemonAbilities'],
-  ['levelUpMoves', 'statExtremes', 'typeMatchup'],
-];
-
 export { getChallengeSettings as getLeagueSettings } from '../settings/game-settings.ts';
-
-export const getLeagueQuestionTypes = (
-  seed: string,
-): (QuestionType | 'champion')[] => [
-  ...stageQuestionTypes.flatMap((types, index) =>
-    shuffle(types, createSeededRandom(`quizmon-league-types:${seed}:${index}`)),
-  ),
-  ...shuffle(
-    ['typeOddOneOut', 'superEffectiveAttacker'] as const,
-    createSeededRandom(`quizmon-league-types:${seed}:champion`),
-  ),
-  'champion',
-];
 
 export const getLeagueStage = (questionNumber: number): LeagueStage =>
   leagueStages[
@@ -83,7 +65,7 @@ export const getLeagueStage = (questionNumber: number): LeagueStage =>
 
 export const getLeagueStageLabel = (questionNumber: number): string => {
   const stage = getLeagueStage(questionNumber);
-  return `${stage.heading} · ${stage.title}`;
+  return `${stage.heading} · Level ${stage.level} · ${stage.title}`;
 };
 
 export const isLeagueVictory = (result: GameResult): boolean =>

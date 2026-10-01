@@ -26,9 +26,7 @@
 
 .league-hall__header > .game-button {
   flex: none;
-  width: 2.8rem;
   min-height: 2.8rem;
-  padding: 0.4rem;
 }
 
 .league-hall__navigation {

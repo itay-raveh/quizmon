@@ -17,9 +17,9 @@ const catalog = {
 
 it('builds ability, bag-item, and held-item effects from their own source pools', () => {
   const families = [
-    { type: 'abilityEffects', levels: [3, 4, 5], kind: undefined },
-    { type: 'itemUses', levels: [2, 3, 4, 5], kind: 'bag' },
-    { type: 'heldItemEffects', levels: [3, 4, 5], kind: 'held' },
+    { type: 'abilityEffects', levels: [4, 5], kind: undefined },
+    { type: 'itemUses', levels: [3, 4, 5], kind: 'bag' },
+    { type: 'heldItemEffects', levels: [4, 5], kind: 'held' },
   ] as const;
   for (const { type: questionType, levels, kind } of families)
     for (const difficulty of levels) {
@@ -125,7 +125,7 @@ it('builds bag-item uses in an older-generation round', () => {
   const question = buildQuestionType(
     {
       catalog,
-      difficulty: 2,
+      difficulty: 3,
       generations: ['I'],
       pool: [],
       random: createSeededRandom('bag-gen-one'),
@@ -152,7 +152,7 @@ it('excludes Data Cards and Mega accessories from Item uses', () => {
           ...catalog,
           topics: { ...catalog.topics!, items: excluded },
         },
-        difficulty: 2,
+        difficulty: 3,
         pool: [],
         random: createSeededRandom('excluded-item-uses'),
         used: new Set(),
@@ -167,7 +167,7 @@ it('narrows Item uses distractors at each level', () => {
     (item) => item.effectKind === 'bag',
   );
   const target = bagItems.find((item) => item.name === 'rare-candy')!;
-  const build = (item: typeof target, difficulty: 2 | 3 | 4 | 5) =>
+  const build = (item: typeof target, difficulty: 3 | 4 | 5) =>
     buildEffectDescription(
       {
         catalog,
@@ -183,7 +183,7 @@ it('narrows Item uses distractors at each level', () => {
       'item',
       bagItems,
     );
-  const choices = ([2, 3, 4, 5] as const).map((difficulty) => {
+  const choices = ([3, 4, 5] as const).map((difficulty) => {
     const question = build(target, difficulty)!;
     return question.options.filter(
       (option) => option !== question.answer.correctOptions[0],
@@ -195,10 +195,7 @@ it('narrows Item uses distractors at each level', () => {
         item.descriptions?.some((entry) => entry.text === option),
       )!,
     );
-  expect(sources(choices[0]!).some((item) => item.pocket !== 'medicine')).toBe(
-    true,
-  );
-  for (const level of [1, 2, 3] as const)
+  for (const level of [0, 1, 2] as const)
     expect(
       sources(choices[level]!).every((item) => item.category === 'vitamins'),
     ).toBe(true);
@@ -219,9 +216,9 @@ it('keeps held Berry distractors among Berries', () => {
     {
       catalog,
       questionType: 'heldItemEffects',
-      difficulty: 3,
+      difficulty: 4,
       generations: ['IX'],
-      variant: getQuestionVariant('heldItemEffects', 3)!.variant,
+      variant: getQuestionVariant('heldItemEffects', 4)!.variant,
       pool: [],
       random: createSeededRandom('held-berries'),
       used: new Set(),
@@ -247,7 +244,7 @@ it('respects a raw effect similarity limit', () => {
   );
   const target = bagItems.find((item) => item.name === 'rare-candy')!;
   const variant = {
-    ...getQuestionVariant('itemUses', 2)!.variant,
+    ...getQuestionVariant('itemUses', 3)!.variant,
     maximumEffectSimilarity: 0,
   };
   expect(
@@ -255,7 +252,7 @@ it('respects a raw effect similarity limit', () => {
       {
         catalog,
         questionType: 'itemUses',
-        difficulty: 2,
+        difficulty: 3,
         generations: ['IX'],
         variant,
         pool: [],

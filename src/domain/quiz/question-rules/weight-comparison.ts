@@ -44,6 +44,7 @@ export const weightComparison = {
     },
     5: {
       ...controls,
+      rendering: { choices: { name: 'always', sprite: null } },
       measurement: {
         minimumRatio: 1.3,
         maximumRatio: 1.5,

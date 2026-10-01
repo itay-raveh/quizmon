@@ -6,6 +6,7 @@ import {
 } from '@/domain/quiz/question-generation';
 import { TRAINING_QUESTION_COUNT } from '@/domain/settings/game-settings';
 import { type GameSettings } from '@/domain/settings/types';
+import type { Difficulty } from '@/domain/quiz/difficulty';
 import { createSeededRandom } from '@/lib/random';
 import { readPlayerData } from '@/lib/storage/player-storage';
 import { useCallback, useState } from 'react';
@@ -13,17 +14,19 @@ import { useCallback, useState } from 'react';
 interface TrainingGameOptions {
   catalog?: PokemonCatalog;
   settings: GameSettings;
+  setSettings: (settings: GameSettings) => Promise<boolean>;
   startGame: StartGame;
 }
 
 export const useTrainingGame = ({
   catalog,
   settings,
+  setSettings,
   startGame,
 }: TrainingGameOptions) => {
   const [error, setError] = useState('');
   const startRound = useCallback(
-    (nextSettings: GameSettings) => {
+    async (nextSettings: GameSettings, saveSettings = false) => {
       if (!catalog) return;
       const seed = crypto.randomUUID();
       const gameSettings = resolveTrainingSettings(catalog, nextSettings);
@@ -40,17 +43,30 @@ export const useTrainingGame = ({
         );
         return;
       }
+      if (saveSettings && !(await setSettings(nextSettings))) {
+        setError('Your new training level could not be saved. Try again.');
+        return;
+      }
       setError('');
-      void startGame(questions, gameSettings, { kind: 'training' }, seed);
+      await startGame(questions, gameSettings, { kind: 'training' }, seed);
     },
-    [catalog, startGame],
+    [catalog, setSettings, startGame],
   );
 
-  const start = useCallback(() => startRound(settings), [settings, startRound]);
+  const start = useCallback(
+    () => void startRound(settings),
+    [settings, startRound],
+  );
+  const tryLevel = useCallback(
+    (level: Difficulty) =>
+      void startRound({ ...settings, difficulty: level }, true),
+    [settings, startRound],
+  );
 
   return {
     error,
     start,
     trainAgain: start,
+    tryLevel,
   };
 };
