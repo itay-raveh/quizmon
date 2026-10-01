@@ -344,15 +344,7 @@ button.trainer-badge:focus-visible {
   line-height: 1.05;
 }
 
-.trainer-passport__controls {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 0.7rem;
-}
-
 .trainer-passport__status {
-  min-height: 1.2rem;
-  margin: -0.7rem 0 0;
   color: var(--muted);
   font-size: var(--text-small);
   font-weight: 700;

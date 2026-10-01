@@ -1,12 +1,10 @@
 import { PokemonIdentity } from '@/components/PokemonIdentity';
 import { PlayerName } from '@/components/PlayerName';
-import { site } from '@/app/site';
 import type { LeagueVictoryRecord } from '@/domain/player/hall-of-fame';
 import { formatPokemonName } from '@/domain/pokemon/format';
 import { formatScore } from '@/domain/quiz/format';
 import type { PokemonCatalog } from '@/domain/pokemon/types';
 import { LeagueTrophy } from '@/features/league/LeagueTrophy';
-import type { Ref } from 'react';
 import {
   arrangeGroup,
   fallbackSpriteMeasurements,
@@ -17,12 +15,10 @@ export const HallOfFameRecord = ({
   catalog,
   record,
   number,
-  artifactRef,
 }: {
   catalog: PokemonCatalog;
   record: LeagueVictoryRecord;
   number: number;
-  artifactRef: Ref<HTMLElement>;
 }) => {
   const sizes = new Map(
     record.pokemon.map((name) => {
@@ -37,11 +33,7 @@ export const HallOfFameRecord = ({
   );
 
   return (
-    <article
-      className="hall-record"
-      ref={artifactRef}
-      aria-label={`Victory ${number}`}
-    >
+    <article className="hall-record" aria-label={`Victory ${number}`}>
       <h1 tabIndex={-1}>Hall of Fame</h1>
       <div className="hall-record__portrait">
         <LeagueTrophy />
@@ -98,7 +90,6 @@ export const HallOfFameRecord = ({
             new Date(record.completedAt),
           )}
         </time>
-        <span>{new URL(site.url).host}</span>
       </footer>
     </article>
   );

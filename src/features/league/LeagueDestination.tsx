@@ -1,20 +1,10 @@
 import { GameButton } from '@/components/GameButton';
 import { BackButton } from '@/components/BackButton';
-import {
-  ArrowLeftIcon,
-  ArrowRightIcon,
-  DownloadSimpleIcon,
-  ShareNetworkIcon,
-} from '@/components/icons';
-import { Toast } from '@/components/Toast';
+import { ArrowLeftIcon, ArrowRightIcon } from '@/components/icons';
 import type { LeagueVictoryRecord } from '@/domain/player/hall-of-fame';
 import type { PokemonCatalog } from '@/domain/pokemon/types';
 import { LEAGUE_QUESTION_COUNT, type LeagueView } from '@/domain/quiz/league';
 import '@/features/league/league.css';
-import {
-  exportTrainerArtifact,
-  supportsTrainerArtifactSharing,
-} from '@/features/trainer/trainer-artifact-export';
 import {
   readPlayerData,
   subscribeToPlayerChanges,
@@ -51,7 +41,6 @@ export const LeagueDestination = ({
 }: LeagueDestinationProps) => {
   const view = completed ? requestedView : 'challenge';
   const heading = useRef<HTMLDivElement>(null);
-  const artifact = useRef<HTMLElement>(null);
   const [savedRecords, setSavedRecords] = useState(
     () => readPlayerData().hallOfFame,
   );
@@ -62,11 +51,7 @@ export const LeagueDestination = ({
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const selectedIndex = records.findIndex(({ id }) => id === selectedId);
   const index = selectedIndex < 0 ? records.length - 1 : selectedIndex;
-  const [busy, setBusy] = useState(false);
-  const [notice, setNotice] = useState('');
-  const [error, setError] = useState('');
   const record = records[index];
-  const canShare = supportsTrainerArtifactSharing();
 
   useEffect(() => {
     const refresh = () => setSavedRecords(readPlayerData().hallOfFame);
@@ -79,25 +64,6 @@ export const LeagueDestination = ({
       ?.focus({ preventScroll: true });
     window.scrollTo(0, 0);
   }, [view]);
-
-  const exportRecord = async () => {
-    if (!artifact.current || busy) return;
-    setBusy(true);
-    setError('');
-    setNotice('');
-    try {
-      const outcome = await exportTrainerArtifact(artifact.current, 'hall', {
-        attemptShare: canShare,
-        onShareError: 'throw',
-      });
-      if (outcome === 'shared') setNotice('Victory shared.');
-      else if (outcome !== 'cancelled') setNotice('Victory image downloaded.');
-    } catch {
-      setError('The victory image could not be shared. Try again.');
-    } finally {
-      setBusy(false);
-    }
-  };
 
   return (
     <section
@@ -146,7 +112,7 @@ export const LeagueDestination = ({
                 <GameButton
                   tone="quiet"
                   aria-label="Older victory"
-                  disabled={index === 0 || busy}
+                  disabled={index === 0}
                   onClick={() => setSelectedId(records[index - 1]!.id)}
                 >
                   <ArrowLeftIcon aria-hidden="true" />
@@ -157,7 +123,7 @@ export const LeagueDestination = ({
                 <GameButton
                   tone="quiet"
                   aria-label="Newer victory"
-                  disabled={index === records.length - 1 || busy}
+                  disabled={index === records.length - 1}
                   onClick={() => setSelectedId(records[index + 1]!.id)}
                 >
                   <ArrowRightIcon aria-hidden="true" />
@@ -169,38 +135,19 @@ export const LeagueDestination = ({
               catalog={catalog}
               record={record}
               number={index + 1}
-              artifactRef={artifact}
             />
             {!resultSaved && record.id === freshRecord?.id && (
               <p className="league-hall__notice" role="alert">
-                This victory could not be saved on this device. Download its
-                image now to keep it.
+                This victory could not be saved on this device.
               </p>
             )}
-            <footer className="league-hall__actions">
-              <GameButton
-                className="league-gold-button"
-                disabled={busy}
-                aria-busy={busy}
-                onClick={() => void exportRecord()}
-              >
-                {canShare ? (
-                  <ShareNetworkIcon aria-hidden="true" weight="bold" />
-                ) : (
-                  <DownloadSimpleIcon aria-hidden="true" weight="bold" />
-                )}
-                {busy
-                  ? 'Preparing image…'
-                  : canShare
-                    ? 'Share victory'
-                    : 'Download PNG'}
-              </GameButton>
-              {onViewResults && record.id === freshRecord?.id && (
+            {onViewResults && record.id === freshRecord?.id && (
+              <footer className="league-hall__actions">
                 <GameButton tone="quiet" onClick={onViewResults}>
                   View results
                 </GameButton>
-              )}
-            </footer>
+              </footer>
+            )}
           </>
         ) : (
           <div className="league-hall__empty">
@@ -209,7 +156,7 @@ export const LeagueDestination = ({
             <h2>Your Champion title is yours.</h2>
             <p>
               Your earlier victory’s lineup wasn’t recorded. Win a rematch to
-              add your first shareable record.
+              add your first record.
             </p>
             <GameButton
               className="league-gold-button"
@@ -221,12 +168,6 @@ export const LeagueDestination = ({
           </div>
         )}
       </div>
-      {error && (
-        <p className="league-hall__notice" role="alert">
-          {error}
-        </p>
-      )}
-      {notice && <Toast message={notice} onDismiss={() => setNotice('')} />}
     </section>
   );
 };

@@ -80,10 +80,6 @@
     font-size: var(--text-mini);
   }
 
-  .trainer-passport__controls {
-    grid-template-columns: repeat(auto-fit, minmax(min(8rem, 100%), 1fr));
-  }
-
   .trainer-badge-dialog,
   .trainer-title-dialog {
     margin: auto auto 0.5rem;

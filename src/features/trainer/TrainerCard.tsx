@@ -15,12 +15,10 @@ import {
 import type { TrainerStats } from '@/domain/player/progress';
 import { CatchCombo } from '@/features/daily/CatchCombo';
 import type { TrainerProfile } from '@/lib/storage/trainer-profile-storage';
-import type { Ref } from 'react';
 import { TrainerCardFinishEffects } from './TrainerCardFinishEffects';
 import { TrainerTitleMark } from './TrainerTitleMark';
 
 interface TrainerCardProps {
-  cardRef?: Ref<HTMLElement>;
   emptyPartnerLabel?: string;
   partnerDexNumber: number | null;
   partnerHeight?: number;
@@ -44,7 +42,6 @@ const rotomDisplayHeights: Record<string, number> = {
 };
 
 export const TrainerCard = ({
-  cardRef,
   emptyPartnerLabel = 'Choose partner',
   partnerDexNumber,
   partnerHeight,
@@ -79,7 +76,6 @@ export const TrainerCard = ({
 
   return (
     <article
-      ref={cardRef}
       className={`trainer-artifact-frame trainer-card trainer-card--${finish.toLowerCase()}${isChampion ? ' trainer-card--champion' : ''}`}
       aria-label={trainerViewLabels.front}
     >

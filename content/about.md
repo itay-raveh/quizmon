@@ -20,7 +20,7 @@ Training multiplies that score by your difficulty level, the number of selected 
 
 New Training rounds share one personal best across settings. Daily and League keep their own scoring. Current-format results and unfinished rounds retain their original scores and rules. If a guest save cannot be loaded, download its raw data from the recovery dialog before restoring a backup or starting fresh.
 
-Daily and Training rounds contribute to your progress. Open Trainer to see your badges, choose a partner Pokémon, and share your card as an image.
+Daily and Training rounds contribute to your progress. Open Trainer to see your badges, choose a partner Pokémon, and view your Trainer Card.
 
 Earn every League Badge to unlock the Quizmon League: fifteen questions, ending with a Champion question. One wrong answer ends the run. Clear it perfectly to become Champion.
 

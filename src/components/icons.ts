@@ -9,7 +9,6 @@ export { CaretDownIcon } from '@phosphor-icons/react/dist/icons/CaretDown';
 export { CertificateIcon } from '@phosphor-icons/react/dist/icons/Certificate';
 export { ChartBarIcon } from '@phosphor-icons/react/dist/icons/ChartBar';
 export { CheckIcon } from '@phosphor-icons/react/dist/icons/Check';
-export { DownloadSimpleIcon } from '@phosphor-icons/react/dist/icons/DownloadSimple';
 export { EyeIcon } from '@phosphor-icons/react/dist/icons/Eye';
 export { IdentificationCardIcon } from '@phosphor-icons/react/dist/icons/IdentificationCard';
 export { LightningIcon } from '@phosphor-icons/react/dist/icons/Lightning';
