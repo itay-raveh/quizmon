@@ -25,14 +25,6 @@
   text-align: center;
 }
 
-.game-mode {
-  margin: 0.25rem 0 0;
-  color: var(--muted);
-  font-size: var(--text-label);
-  font-weight: 700;
-  text-align: center;
-}
-
 .question__subject-number {
   color: var(--muted);
   font-family: var(--font-data);
