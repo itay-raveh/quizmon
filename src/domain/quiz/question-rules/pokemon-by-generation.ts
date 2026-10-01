@@ -16,10 +16,6 @@ const rendering = {
 
 export const pokemonByGeneration = {
   rendering,
-  unleveled: {
-    ...controls,
-    response: responsePresets.multi,
-  },
   levels: {
     3: {
       ...controls,

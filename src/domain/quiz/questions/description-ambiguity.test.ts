@@ -31,7 +31,7 @@ it('keeps duplicate catalog clues out of Field Notes and the League finale', () 
   for (const [questionType, difficulty] of [
     ['pokedexEntryMatch', 4],
     ['pokedexEntryMatch', 5],
-    ['champion', undefined],
+    ['champion', 5],
   ] as const) {
     const question = buildQuestionType(
       {
@@ -41,7 +41,7 @@ it('keeps duplicate catalog clues out of Field Notes and the League finale', () 
           `duplicate-description:${questionType}:${difficulty}`,
         ),
         used: new Set(),
-        ...(difficulty ? { difficulty } : {}),
+        difficulty,
       },
       questionType,
     );

@@ -41,14 +41,15 @@ export type QuestionView = z.infer<typeof questionViewSchema>;
 export const getQuestionView = (question: QuestionData): QuestionView => {
   if (question.view) return question.view;
   const row = questionRules[question.questionType] as {
-    unleveled?: { view: QuestionView };
-    levels: DifficultyVariants<{ view: QuestionView }>;
+    levels: DifficultyVariants<{ view: QuestionView } | null>;
   };
   const level = question.variantLevel;
   const resolved =
     level === undefined
-      ? row.unleveled
+      ? undefined
       : resolveDifficultyVariant(row.levels, level)?.variant;
-  const view = resolved?.view ?? Object.values(row.levels)[0]!.view;
+  const view =
+    resolved?.view ?? Object.values(row.levels).find((entry) => entry)?.view;
+  if (!view) throw new Error(`No view for ${question.questionType}`);
   return view;
 };

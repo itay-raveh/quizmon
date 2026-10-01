@@ -30,10 +30,6 @@ const rendering = {
 
 export const pokedexEntryMatch = {
   rendering,
-  unleveled: {
-    ...controls,
-    response: responsePresets.single,
-  },
   levels: {
     4: {
       ...controls,

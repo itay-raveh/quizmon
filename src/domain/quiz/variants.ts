@@ -27,17 +27,6 @@ const withRendering = <
   }) as unknown as Rules;
 
 /**
- * Resolve a family's separate no-difficulty entry, including rendering.
- * Returns `undefined` when the family has no unleveled entry.
- */
-export const getUnleveledQuestionRule = <Type extends keyof FamilyRules>(
-  type: Type,
-): FamilyRules[Type] | undefined => {
-  const row = questionRules[type] as QuestionRuleRow<FamilyRules[Type], Type>;
-  return row.unleveled ? withRendering(row, row.unleveled) : undefined;
-};
-
-/**
  * Resolve the highest available family level at or below `difficulty` and
  * merge its rendering. The returned `level` is the selected rule's level.
  */
@@ -58,16 +47,15 @@ export const getQuestionVariant = <Type extends keyof FamilyRules>(
 };
 
 /**
- * Resolve base, family, then selected-entry rendering. If no level matches,
- * use the unleveled entry when present, otherwise the base policy.
+ * Resolve base, family, then selected-entry rendering. Saved questions without
+ * a level retain their family visibility when no snapshot is available.
  */
 export const resolveQuestionRendering = (
   type: QuestionData['questionType'],
   level?: Difficulty,
 ): QuestionRendering =>
   (level ? getQuestionVariant(type, level)?.variant.rendering : undefined) ??
-  getUnleveledQuestionRule(type)?.rendering ??
-  baseQuestionRendering;
+  mergeRendering(baseQuestionRendering, questionRules[type].rendering);
 
 /** Use a question's saved rendering or resolve its current family policy. */
 export const getQuestionRendering = (

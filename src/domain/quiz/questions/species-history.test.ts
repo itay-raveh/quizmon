@@ -10,7 +10,7 @@ import type { QuestionData } from '../types.ts';
 import { targetRepetition } from './repetition.ts';
 import { getSpeciesHistory, speciesQuestion } from './species-history.ts';
 import { makeTopicQuestion } from './topic-support.ts';
-import { getUnleveledQuestionRule } from '../variants.ts';
+import { getQuestionVariant } from '../variants.ts';
 
 it('matches form repetitions across identity formats', () => {
   const catalog = {
@@ -25,7 +25,8 @@ it('matches form repetitions across identity formats', () => {
     random: () => 0,
     used: new Set<string>(),
     questionType: 'pokemonFromHistoricalSprite' as const,
-    variant: getUnleveledQuestionRule('pokemonFromHistoricalSprite')!,
+    difficulty: 1 as const,
+    variant: getQuestionVariant('pokemonFromHistoricalSprite', 1)!.variant,
   };
   const topic = makeTopicQuestion(
     context,

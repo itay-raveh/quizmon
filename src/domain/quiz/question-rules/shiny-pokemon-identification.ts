@@ -29,10 +29,6 @@ const rendering =
 
 export const shinyPokemonIdentification = {
   rendering,
-  unleveled: {
-    ...controls,
-    response: responsePresets.single,
-  },
   levels: {
     1: {
       ...controls,

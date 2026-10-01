@@ -1,4 +1,3 @@
-import { questionRules } from '../question-rules/registry.ts';
 import type { TrainerSpecialty } from '../../player/trainer-progression.ts';
 import type { QuestionCategory } from '../types.ts';
 import { subjectKinds } from '../types.ts';
@@ -376,15 +375,6 @@ export const questionDefinitions = {
 /** Current persisted family IDs, derived from the definitions without a second enum. */
 export type QuestionType = keyof typeof questionDefinitions;
 export const questionTypes = Object.keys(questionDefinitions) as QuestionType[];
-const unleveledQuestionTypes = questionTypes.filter(
-  (type) => 'unleveled' in questionRules[type],
-);
-export const leagueQuestionTypes = unleveledQuestionTypes.filter(
-  (type) => !('league' in questionDefinitions[type]),
-);
-export const supportsUnleveledQuestion = (type: QuestionType | 'champion') =>
-  type === 'champion' || unleveledQuestionTypes.includes(type);
-
 export const getQuestionTitle = (question: {
   questionType: QuestionType | 'champion';
 }): string =>

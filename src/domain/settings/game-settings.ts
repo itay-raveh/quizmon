@@ -1,7 +1,3 @@
-import {
-  supportsUnleveledQuestion,
-  leagueQuestionTypes,
-} from '../quiz/questions/definitions.ts';
 import { getQuestionVariant } from '../quiz/variants.ts';
 import { getFormGroup } from '../pokemon/forms.ts';
 import {
@@ -47,10 +43,6 @@ export const getChallengeSettings = (
 
 export const TRAINING_QUESTION_COUNT = 10;
 
-export const isLeagueTraining = (
-  settings: Pick<GameSettings, 'trainingMode'>,
-): boolean => settings.trainingMode === 'league';
-
 export const getTrainingSettings = (settings: GameSettings): GameSettings => ({
   ...settings,
   questionTypes: settings.difficulty
@@ -62,11 +54,7 @@ export const getTrainingSettings = (settings: GameSettings): GameSettings => ({
           getQuestionVariant(type, settings.difficulty!) &&
           (type !== 'pokemonByGeneration' || settings.generations.length > 1),
       )
-    : isLeagueTraining(settings)
-      ? [...leagueQuestionTypes]
-      : settings.questionTypes.filter((type) =>
-          supportsUnleveledQuestion(type),
-        ),
+    : [],
 });
 
 export const filterPokemon = (

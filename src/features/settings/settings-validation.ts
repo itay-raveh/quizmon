@@ -6,7 +6,6 @@ import { formGroups } from '@/domain/pokemon/types';
 import {
   defaultGameSettings,
   filterPokemon,
-  isLeagueTraining,
 } from '@/domain/settings/game-settings';
 import type { GameSettings } from '@/domain/settings/types';
 
@@ -39,14 +38,9 @@ export const getTrainingSettingsValidation = (
     resolved?.questionTypes ?? settings.questionTypes;
   const availableQuestionTypes =
     resolved?.automaticQuestionTypes ?? settings.questionTypes;
-  const questionTypesAreValid = settings.difficulty
-    ? eligibleQuestionTypes.length > 0
-    : isLeagueTraining(settings) ||
-      (settings.questionTypes.length > 0 &&
-        !(
-          settings.questionTypes.includes('pokemonByGeneration') &&
-          settings.generations.length < 2
-        ));
+  const questionTypesAreValid = Boolean(
+    settings.difficulty && eligibleQuestionTypes.length > 0,
+  );
   const matchingCount = filterPokemon(catalog, settings).length;
   return {
     scoreMultipliers:

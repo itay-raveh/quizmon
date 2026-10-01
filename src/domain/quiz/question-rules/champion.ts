@@ -45,10 +45,6 @@ const rendering = {
 
 export const champion = {
   rendering,
-  unleveled: {
-    ...controls,
-    response: responsePresets.single,
-  },
   levels: {
     1: {
       ...controls,

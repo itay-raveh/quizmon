@@ -19,14 +19,6 @@ import { buildQuestionType } from './questions/registry.ts';
 import type { QuestionData, QuestionType } from './types.ts';
 import { getQuestionVariant } from './variants.ts';
 
-const getQuestionCount = (
-  availableCount: number,
-  requestedCount: number,
-): number => {
-  if (availableCount < 1) return 0;
-  return Math.min(Math.max(1, requestedCount), availableCount);
-};
-
 const createQuestionContext = (
   catalog: PokemonCatalog,
   settings: GameSettings,
@@ -61,11 +53,7 @@ export const buildQuestions = (
   history?: QuestionHistory,
 ): QuestionData[] => {
   const context = createQuestionContext(catalog, settings, random, history);
-  const count = settings.difficulty
-    ? context.pool.length
-      ? requestedCount
-      : 0
-    : getQuestionCount(context.pool.length, requestedCount);
+  const count = settings.difficulty && context.pool.length ? requestedCount : 0;
   const questions: QuestionData[] = [];
 
   for (let index = 0; index < count; index += 1) {

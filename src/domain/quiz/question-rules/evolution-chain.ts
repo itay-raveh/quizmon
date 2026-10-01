@@ -37,10 +37,6 @@ const rendering = {
 
 export const evolutionChain = {
   rendering,
-  unleveled: {
-    ...controls,
-    response: responsePresets.single,
-  },
   levels: {
     2: {
       ...controls,

@@ -17,10 +17,6 @@ const rendering = {
 
 export const levelUpMoves = {
   rendering,
-  unleveled: {
-    ...controls,
-    response: responsePresets.single,
-  },
   levels: {
     4: {
       ...controls,

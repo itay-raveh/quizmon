@@ -37,10 +37,6 @@ const rendering = {
 
 export const pokemonFromPixelCrop = {
   rendering,
-  unleveled: {
-    ...controls,
-    response: responsePresets.single,
-  },
   levels: {
     1: {
       ...controls,

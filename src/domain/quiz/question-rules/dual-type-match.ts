@@ -31,10 +31,6 @@ const rendering = {
 
 export const dualTypeMatch = {
   rendering,
-  unleveled: {
-    ...controls,
-    response: responsePresets.single,
-  },
   levels: {
     3: {
       ...controls,

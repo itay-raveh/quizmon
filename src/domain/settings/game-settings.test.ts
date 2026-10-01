@@ -1,4 +1,3 @@
-import { leagueQuestionTypes } from '../quiz/questions/definitions';
 import { defaultGameSettings, getTrainingSettings } from './game-settings';
 import { questionRules } from '../quiz/question-rules/registry';
 import { questionTypes } from '../quiz/questions/definitions';
@@ -29,7 +28,7 @@ describe('getTrainingSettings', () => {
     expect(availableAt(5)).toContain('pokemonFromHistoricalSprite');
   });
 
-  it('preserves saved League and Custom generation rules', () => {
+  it('cannot select question families without a level', () => {
     expect(
       getTrainingSettings({
         ...defaultGameSettings,
@@ -37,8 +36,7 @@ describe('getTrainingSettings', () => {
         questionTypes: ['evolutionGainedType'],
       }),
     ).toMatchObject({
-      questionTypes: leagueQuestionTypes,
-      trainingMode: 'league',
+      questionTypes: [],
     });
     expect(
       getTrainingSettings({
@@ -48,8 +46,7 @@ describe('getTrainingSettings', () => {
         trainingMode: 'custom',
       }),
     ).toMatchObject({
-      questionTypes: ['pokemonAbilities', 'levelUpMoves', 'statExtremes'],
-      trainingMode: 'custom',
+      questionTypes: [],
     });
   });
 });

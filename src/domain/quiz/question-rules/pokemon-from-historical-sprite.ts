@@ -39,10 +39,6 @@ const rendering = {
 
 export const pokemonFromHistoricalSprite = {
   rendering,
-  unleveled: {
-    ...controls,
-    response: responsePresets.single,
-  },
   levels: {
     1: {
       ...controls,

@@ -12,7 +12,7 @@ import {
 } from '../question-generation.ts';
 import { leagueStages } from '../league.ts';
 import { questionRenderingSchema } from '../rendering.ts';
-import { getQuestionVariant } from '../variants.ts';
+import { getQuestionRendering, getQuestionVariant } from '../variants.ts';
 import type { QuestionData } from '../types.ts';
 import { defaultGameSettings } from '../../settings/game-settings.ts';
 import { questionRules } from '../question-rules/registry.ts';
@@ -107,14 +107,10 @@ it('builds every configured family with a renderable answer and saved view', () 
   for (const type of Object.keys(questionRules) as (
     QuestionType | 'champion'
   )[]) {
-    const row = questionRules[type];
     const levels = ([1, 2, 3, 4, 5] as const).filter((level) =>
       getQuestionVariant(type, level),
     );
-    for (const difficulty of [
-      ...levels,
-      ...('unleveled' in row ? [undefined] : []),
-    ]) {
+    for (const difficulty of levels) {
       const question = Array.from({ length: 5 }, (_, attempt) =>
         buildQuestionType(
           {
@@ -122,12 +118,15 @@ it('builds every configured family with a renderable answer and saved view', () 
             pool,
             random: createSeededRandom(`${type}:${difficulty}:${attempt}`),
             used: new Set(),
-            ...(difficulty === undefined ? {} : { difficulty }),
+            difficulty,
           },
           type,
         ),
       ).find(Boolean);
       expect(question, `${type}:${difficulty}`).toBeDefined();
+      expect(question!.variantLevel).toBe(
+        getQuestionVariant(type, difficulty)?.level,
+      );
       const saved = savedQuestionSchema.parse(question);
       expect(questionRenderingSchema.safeParse(saved.rendering).success).toBe(
         true,
@@ -154,6 +153,28 @@ it('builds every configured family with a renderable answer and saved view', () 
           ).toBeDefined();
     }
   }
+});
+
+it('does not generate a question without a level', () => {
+  expect(
+    buildQuestionType(
+      { catalog, pool, random: () => 0, used: new Set() },
+      'pokemonFromHistoricalSprite',
+    ),
+  ).toBeUndefined();
+});
+
+it('uses saved presentation for an older question without a level', () => {
+  const question = buildQuestionType(
+    { catalog, pool, difficulty: 1, random: () => 0, used: new Set() },
+    'pokemonFromHistoricalSprite',
+  )!;
+  const saved = savedQuestionSchema.parse({
+    ...question,
+    variantLevel: undefined,
+  });
+  expect(getQuestionView(saved)).toEqual(question.view);
+  expect(getQuestionRendering(saved)).toEqual(question.rendering);
 });
 
 it('rejects image-only choices when a catalog sprite is missing', () => {

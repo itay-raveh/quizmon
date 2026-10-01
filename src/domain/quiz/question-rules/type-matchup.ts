@@ -18,10 +18,6 @@ const rendering = {
 
 export const typeMatchup = {
   rendering,
-  unleveled: {
-    ...controls,
-    response: responsePresets.single,
-  },
   levels: {
     1: {
       ...controls,

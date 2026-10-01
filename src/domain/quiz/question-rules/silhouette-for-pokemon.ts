@@ -35,10 +35,6 @@ const rendering = {
 
 export const silhouetteForPokemon = {
   rendering,
-  unleveled: {
-    ...controls,
-    response: responsePresets.single,
-  },
   levels: {
     1: {
       ...controls,

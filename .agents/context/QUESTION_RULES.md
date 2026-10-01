@@ -17,9 +17,9 @@ Each question family has one rule file in [`src/domain/quiz/question-rules/`](..
 
 ## Rules and levels
 
-A family file exports a row with `rendering`, `levels`, and optionally `unleveled`. Its local `controls` supplies defaults copied into each entry. Every level entry is complete: it does not inherit controls from lower levels. The numeric level keys use [`Difficulty`](../../src/domain/quiz/difficulty.ts), currently 1 through 5.
+A family file exports a row with `rendering` and `levels`. Its local `controls` supplies defaults copied into each entry. Every level entry is complete: it does not inherit controls from lower levels. The numeric level keys use [`Difficulty`](../../src/domain/quiz/difficulty.ts), currently 1 through 5.
 
-[`getQuestionVariant(type, difficulty)`](../../src/domain/quiz/variants.ts) selects the highest defined level at or below the requested difficulty and returns its actual level with the resolved rule. It returns `undefined` if no level qualifies. [`getUnleveledQuestionRule(type)`](../../src/domain/quiz/variants.ts) reads the separate `unleveled` entry.
+[`getQuestionVariant(type, difficulty)`](../../src/domain/quiz/variants.ts) selects the highest defined level at or below the requested difficulty and returns its actual level with the resolved rule. A `null` level entry ends availability until another rule appears. It returns `undefined` if no level qualifies.
 
 [`FamilyRules`](../../src/domain/quiz/questions/family-rules.ts) defines each builder's control fields and allowed answer presentation. [`QuestionRuleRow`](../../src/domain/quiz/question-rules/types.ts) checks a family file's levels and rendering; the registry checks that every family has a file. The [`ResponseStrategy`](../../src/domain/quiz/questions/response-strategies.ts) specifies:
 
@@ -50,4 +50,4 @@ if (result) console.log(result.level, result.variant.response);
 
 ## Saved data
 
-Generated questions store their resolved `rendering`, `view`, and selected level. [`questionRenderingSchema`](../../src/domain/quiz/rendering.ts) validates complete saved rendering snapshots; [`savedQuestionSchema`](../../src/domain/quiz/lineup.ts) validates the whole saved question. TypeScript checks authored rules, while runtime validation handles records read from storage. A new visibility combination still needs a generation or UI check to establish that its clues and answers remain usable.
+Generated questions store their resolved `rendering`, `view`, and selected level. Older unfinished questions may lack a level; their saved presentation snapshots remain readable. [`questionRenderingSchema`](../../src/domain/quiz/rendering.ts) validates complete saved rendering snapshots; [`savedQuestionSchema`](../../src/domain/quiz/lineup.ts) validates the whole saved question. TypeScript checks authored rules, while runtime validation handles records read from storage. A new visibility combination still needs a generation or UI check to establish that its clues and answers remain usable.

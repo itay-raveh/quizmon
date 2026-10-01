@@ -39,10 +39,6 @@ const rendering = {
 
 export const superEffectiveAttacker = {
   rendering,
-  unleveled: {
-    ...controls,
-    response: responsePresets.single,
-  },
   levels: {
     2: {
       ...controls,

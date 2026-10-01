@@ -15,10 +15,6 @@ const rendering = {} satisfies RenderingControlsFor<'statExtremes'>;
 
 export const statExtremes = {
   rendering,
-  unleveled: {
-    ...controls,
-    response: responsePresets.single,
-  },
   levels: {
     3: {
       ...controls,

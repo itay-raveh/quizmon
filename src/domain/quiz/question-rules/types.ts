@@ -188,7 +188,7 @@ export type RenderingControlsFor<Type extends keyof FamilyRules> =
     : RenderingControls;
 
 /**
- * Complete controls for one level or the unleveled path. `rendering` overrides
+ * Complete controls for one level. `rendering` overrides
  * the family policy; controls do not inherit from lower levels.
  */
 export type QuestionRuleEntry<
@@ -221,8 +221,6 @@ export type QuestionRuleRow<
 > = {
   /** Family visibility changes applied after the base policy. */
   rendering: RenderingControlsFor<Type>;
-  /** Complete rules for questions without a difficulty level. */
-  unleveled?: QuestionRuleEntry<Rules, Type>;
   /** Sparse rules. A `null` entry ends availability until another rule. */
   levels: DifficultyRules<QuestionRuleEntry<Rules, Type>>;
 };

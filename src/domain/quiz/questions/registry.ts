@@ -1,4 +1,4 @@
-import { supportsUnleveledQuestion, type QuestionType } from './definitions.ts';
+import type { QuestionType } from './definitions.ts';
 import {
   getPokemonRecency,
   getQuestionRecency,
@@ -6,7 +6,7 @@ import {
   questionRepeatPolicy,
   rememberQuestion,
 } from '../history.ts';
-import { getQuestionVariant, getUnleveledQuestionRule } from '../variants.ts';
+import { getQuestionVariant } from '../variants.ts';
 import type { QuestionData } from '../types.ts';
 import { buildHidden } from './abilities.ts';
 import { buildCounterPickQuestion, buildMatchupQuestion } from './battle.ts';
@@ -96,16 +96,10 @@ export const buildQuestionType = (
   context: QuestionContext,
   questionType: QuestionType | 'champion',
 ): QuestionData | undefined => {
-  if (!context.difficulty && !supportsUnleveledQuestion(questionType))
-    return undefined;
-  const resolved = context.difficulty
-    ? getQuestionVariant(questionType, context.difficulty)
-    : undefined;
-  if (context.difficulty && !resolved) return undefined;
-  const activeRules =
-    resolved?.variant ??
-    (!context.difficulty ? getUnleveledQuestionRule(questionType) : undefined);
-  if (!activeRules) return undefined;
+  if (!context.difficulty) return undefined;
+  const resolved = getQuestionVariant(questionType, context.difficulty);
+  if (!resolved) return undefined;
+  const activeRules = resolved.variant;
   const build = questionBuilders[questionType] as QuestionBuilder<
     FamilyRules[typeof questionType]
   >;
@@ -192,7 +186,7 @@ export const buildQuestionType = (
       original,
       variantContext,
       rules,
-      resolved?.level,
+      resolved.level,
     );
     if (!hasVisibleChoices(draft) || !hasVisibleSubject(draft)) continue;
 

@@ -17,10 +17,6 @@ const rendering = {
 
 export const typeOddOneOut = {
   rendering,
-  unleveled: {
-    ...controls,
-    response: responsePresets.single,
-  },
   levels: {
     2: {
       ...controls,

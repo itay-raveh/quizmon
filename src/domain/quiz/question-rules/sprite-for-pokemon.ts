@@ -35,10 +35,6 @@ const rendering = {
 
 export const spriteForPokemon = {
   rendering,
-  unleveled: {
-    ...controls,
-    response: responsePresets.single,
-  },
   levels: {
     1: {
       ...controls,
