@@ -37,7 +37,6 @@ export const initSentry = () => {
         cookies: false,
         httpHeaders: false,
         httpBodies: [],
-        urlQueryParams: false,
         stackFrameVariables: false,
       },
       tracesSampleRate: 0.1,

@@ -14,7 +14,6 @@ const dataCollection = {
   cookies: false,
   httpHeaders: false,
   httpBodies: [],
-  urlQueryParams: false,
   genAI: { inputs: false, outputs: false },
   databaseQueryData: true,
   queues: false,
