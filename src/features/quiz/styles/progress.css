@@ -22,6 +22,17 @@
   min-height: 2.75rem;
   padding: 0;
   place-items: center;
+  color: var(--navy);
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.question__topline .game-button:hover:not(:disabled),
+.question__topline .game-button:active:not(:disabled) {
+  background: var(--sky);
+  box-shadow: none;
+  transform: none;
 }
 
 .results__close.game-button {
