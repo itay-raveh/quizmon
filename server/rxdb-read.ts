@@ -10,14 +10,11 @@ import { compactRoundSchema } from '../src/domain/sync/compact-rounds.ts';
 import pokemonGenerations from '../src/domain/pokemon/data/pokemon-generations.json' with { type: 'json' };
 
 export async function playerProfiles(db: PlayerDatabase, ids: string[]) {
-  return Promise.all(
-    ids.map(async (id) => ({
-      id,
-      profile:
-        (await db.players.findOne(id).exec())?.profile ??
-        createTrainerProfile(),
-    })),
-  );
+  const players = await db.players.findByIds(ids).exec();
+  return ids.map((id) => ({
+    id,
+    profile: players.get(id)?.profile ?? createTrainerProfile(),
+  }));
 }
 
 export async function trainerProfile(db: PlayerDatabase, id: string) {
