@@ -1,9 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import {
-  useInfiniteQuery,
-  useQuery,
-  useQueryClient,
-} from '@tanstack/react-query';
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { GameButton } from '../../components/GameButton';
 import { Toast } from '../../components/Toast';
 import { EyeIcon, ShareNetworkIcon, TrashIcon } from '../../components/icons';
@@ -21,7 +17,7 @@ import {
   type PlayerLookup,
 } from './friends-client';
 import { canShareFriendLink, shareFriendLink } from './friend-sharing';
-import { friendsPageQuery, identityQuery } from './social-queries';
+import { friendsPageQuery } from './social-queries';
 
 const views = ['friends', 'incoming', 'outgoing'] as const;
 type View = (typeof views)[number];
@@ -125,11 +121,9 @@ export function FriendsPanel({
   onToggleAdding: () => void;
 }) {
   const queryClient = useQueryClient();
-  const identity = useQuery(identityQuery(owner));
   const friends = useInfiniteQuery(friendsPageQuery(owner, 'friends'));
   const incoming = useInfiniteQuery(friendsPageQuery(owner, 'incoming'));
   const outgoing = useInfiniteQuery(friendsPageQuery(owner, 'outgoing'));
-  const me = identity.data;
   const pages = Object.fromEntries(
     views.map((view) => {
       const data = { friends, incoming, outgoing }[view].data?.pages;
@@ -151,7 +145,7 @@ export function FriendsPanel({
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState('');
   const [localError, setError] = useState('');
-  const queryError = [identity, friends, incoming, outgoing]
+  const queryError = [friends, incoming, outgoing]
     .map((query) => query.error)
     .find(Boolean);
   const error = localError || (queryError ? errorMessage(queryError) : '');
@@ -289,7 +283,7 @@ export function FriendsPanel({
     );
   }
 
-  const link = me ? `${location.origin}${friendInvitePath(me.id)}` : '';
+  const link = `${location.origin}${friendInvitePath(owner)}`;
   const initialLoading = !pages.friends && !error;
   return (
     <div className="friends-panel">

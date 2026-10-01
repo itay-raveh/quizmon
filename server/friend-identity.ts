@@ -5,10 +5,6 @@ import type { AccountEnv } from './api.ts';
 import { and, eq, inArray, or } from 'drizzle-orm';
 import { friend } from './schema.ts';
 
-export async function ownSocialPlayer(context: Context<AccountEnv>) {
-  return (await publicPlayers(context, [context.get('accountId')]))[0]!;
-}
-
 export async function lookupSocialPlayer(
   context: Context<AccountEnv>,
   actor: string,

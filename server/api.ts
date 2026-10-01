@@ -130,7 +130,7 @@ export interface AccountEnv {
     accountId: string;
     origin: string;
     sync: SyncConnection;
-    syncToken?: Promise<string>;
+    syncToken: string;
   };
 }
 
@@ -222,7 +222,9 @@ export function createAccountApi(services: AccountServices) {
       return context.json({ error: 'Sign in to continue syncing.' }, 401);
     context.set('accountId', session.user.id);
     const token = headers.get('set-auth-jwt');
-    if (token) context.set('syncToken', Promise.resolve(token));
+    if (!token)
+      throw new Error('Authenticated session did not return a sync token');
+    context.set('syncToken', token);
     try {
       Sentry.setUser({ id: session.user.id, email: session.user.email });
     } catch {

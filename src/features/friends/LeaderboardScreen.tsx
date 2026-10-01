@@ -35,33 +35,23 @@ import {
   readDailyLeaderboard,
   readTrainingLeaderboard,
 } from './leaderboards-client';
-import { friendsPageQuery, identityQuery } from './social-queries';
+import { friendsPageQuery } from './social-queries';
 import { canShareFriendLink, shareFriendLink } from './friend-sharing';
 import './friends.css';
 
 function InviteFriends({
   owner,
-  onError,
-  failed,
   onShareFailure,
 }: {
   owner: string;
-  onError: (failed: boolean) => void;
-  failed: boolean;
   onShareFailure: (link: string) => void;
 }) {
-  const identity = useQuery(identityQuery(owner));
-  const id = identity.data?.id ?? '';
   const [message, setMessage] = useState('');
-  useEffect(() => {
-    onError(identity.isError || (identity.isSuccess && !id));
-  }, [identity.isError, identity.isSuccess, id, onError]);
-  const link = `${location.origin}${friendInvitePath(id)}`;
+  const link = `${location.origin}${friendInvitePath(owner)}`;
   return (
     <div className="leaderboard-invite">
       <GameButton
         tone="quiet"
-        disabled={!id}
         onClick={() => {
           setMessage('');
           onShareFailure('');
@@ -81,13 +71,7 @@ function InviteFriends({
         }}
       >
         <ShareNetworkIcon aria-hidden="true" />
-        {!id
-          ? failed
-            ? 'Invite friends'
-            : 'Loading invite link…'
-          : canShareFriendLink()
-            ? 'Invite friends'
-            : 'Copy invite link'}
+        {canShareFriendLink() ? 'Invite friends' : 'Copy invite link'}
       </GameButton>
       {message && <p role="status">{message}</p>}
     </div>
@@ -148,13 +132,14 @@ function Standings({
       }
       return readTrainingLeaderboard(owner, scope, after, pageSize, signal);
     },
+    enabled: active,
     refetchInterval: 60_000,
   });
   const data = board.data;
   const busy = board.isFetching;
   const friends = useInfiniteQuery({
     ...friendsPageQuery(owner, 'friends'),
-    enabled: scope === 'friends' && data?.items.length === 0,
+    enabled: active && scope === 'friends' && data?.items.length === 0,
   });
   useEffect(() => {
     const cause = board.error ?? (scope === 'friends' ? friends.error : null);
@@ -437,7 +422,6 @@ export function LeaderboardScreen({
     media.addEventListener('change', update);
     return () => media.removeEventListener('change', update);
   }, []);
-  const [inviteError, setInviteError] = useState(false);
   const [standingsErrors, setStandingsErrors] = useState({
     friends: '',
     global: '',
@@ -503,8 +487,6 @@ export function LeaderboardScreen({
         {account.owner && !account.mergeRequired && (
           <InviteFriends
             owner={account.owner}
-            onError={setInviteError}
-            failed={inviteError}
             onShareFailure={setShareFallbackLink}
           />
         )}
@@ -582,16 +564,12 @@ export function LeaderboardScreen({
                 </div>
               )}
             </div>
-            {(inviteError || standingsError || shareFallbackLink) && (
+            {(standingsError || shareFallbackLink) && (
               <div className="social-error-banner" role="alert">
                 <strong>
                   {shareFallbackLink
                     ? 'Invite link could not be shared.'
-                    : standingsError && inviteError
-                      ? 'Rankings and invite links could not load.'
-                      : standingsError
-                        ? standingsError
-                        : 'Invite link could not load.'}
+                    : standingsError}
                 </strong>
                 {shareFallbackLink && (
                   <label className="friends-field">
@@ -603,11 +581,10 @@ export function LeaderboardScreen({
                     />
                   </label>
                 )}
-                {(inviteError || standingsError) && (
+                {standingsError && (
                   <GameButton
                     tone="quiet"
                     onClick={() => {
-                      setInviteError(false);
                       setStandingsErrors({ friends: '', global: '' });
                       setShareFallbackLink('');
                       void queryClient.invalidateQueries({

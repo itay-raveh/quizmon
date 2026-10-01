@@ -1,12 +1,5 @@
-import { infiniteQueryOptions, queryOptions } from '@tanstack/react-query';
-import { friendPage, ownPlayer } from './friends-client';
-
-export const identityQuery = (owner: string) =>
-  queryOptions({
-    queryKey: ['social', owner, 'identity'],
-    queryFn: () => ownPlayer(owner),
-    refetchInterval: 60_000,
-  });
+import { infiniteQueryOptions } from '@tanstack/react-query';
+import { friendPage } from './friends-client';
 
 export const friendsPageQuery = (
   owner: string,

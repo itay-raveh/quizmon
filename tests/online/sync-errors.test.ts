@@ -5,22 +5,13 @@ import { syncAdapter } from '../../server/rxdb-sync.ts';
 
 void test('sync reads retry temporary failures and preserve the final status', async () => {
   const originalFetch = globalThis.fetch;
-  let tokenCalls = 0;
   const values = new Map<string, unknown>();
+  values.set('syncToken', 'signed');
   const context = {
     get(name: string) {
-      return name === 'auth'
-        ? {
-            api: {
-              getToken: () => {
-                tokenCalls++;
-                return Promise.resolve({ token: 'signed' });
-              },
-            },
-          }
-        : name === 'sync'
-          ? { endpoint: 'https://sync.test' }
-          : values.get(name);
+      return name === 'sync'
+        ? { endpoint: 'https://sync.test' }
+        : values.get(name);
     },
     set(name: string, value: unknown) {
       values.set(name, value);
@@ -56,7 +47,6 @@ void test('sync reads retry temporary failures and preserve the final status', a
       return true;
     });
     assert.equal(calls, 3);
-    assert.equal(tokenCalls, 1);
   } finally {
     globalThis.fetch = originalFetch;
   }

@@ -100,10 +100,6 @@ function relation(value: unknown): FriendRelation {
   };
 }
 
-export async function ownPlayer(owner: string, signal?: AbortSignal) {
-  return player((await request(owner, '/identity', {}, signal)).player);
-}
-
 export async function friendPage(
   owner: string,
   view: 'friends' | 'incoming' | 'outgoing',

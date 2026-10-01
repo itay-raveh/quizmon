@@ -1,6 +1,6 @@
 import type { AccountEnv } from './api.ts';
 import { Hono, type Context } from 'hono';
-import { lookupSocialPlayer, ownSocialPlayer } from './friend-identity.ts';
+import { lookupSocialPlayer } from './friend-identity.ts';
 import { publicPlayers } from './read.ts';
 import { isRecord } from '../src/lib/validation.ts';
 import { isUuid as uuid } from '../src/lib/validation.ts';
@@ -71,13 +71,6 @@ async function list(
     ),
   });
 }
-friendshipApi.post('/identity', async (context) => {
-  await body(context);
-  return context.json({
-    accountId: context.get('accountId'),
-    player: await ownSocialPlayer(context),
-  });
-});
 friendshipApi.get('/player/:id', async (context) => {
   const id = context.req.param('id');
   if (!isAccountId(id)) throw new FriendshipError('invalid_player_id', 400);

@@ -227,12 +227,6 @@ try {
   const request = accountRequest(worker.base, origin);
   assert.equal((await request('/api/account', a)).status, 200);
   assert.equal((await request('/api/account', b)).status, 200);
-  const social = await json(
-    await request('/api/friends/identity', a, {
-      expectedAccountId: a.id,
-    }),
-  );
-  assert.equal((social.player as { id: string }).id, a.id);
   const lookup = await json(await request(`/api/friends/player/${a.id}`, b));
   assert.equal((lookup.player as { id: string }).id, a.id);
   const requestId = crypto.randomUUID();
