@@ -333,18 +333,14 @@ html:has(.app--questions) {
 }
 
 .level-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.18em;
-  vertical-align: -0.12em;
   white-space: nowrap;
 }
 
 .level-label__number {
-  display: inline-grid;
+  display: inline-block;
   min-width: 1.55em;
   padding: 0.1em 0.2em;
-  place-items: center;
+  text-align: center;
   color: var(--navy);
   background: var(--yellow);
   border: 2px solid var(--navy);
