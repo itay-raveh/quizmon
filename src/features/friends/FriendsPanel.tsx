@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 import { GameButton } from '../../components/GameButton';
 import { PlayerName } from '../../components/PlayerName';
 import { Toast } from '../../components/Toast';
@@ -19,6 +21,7 @@ import {
 } from './friends-client';
 import { canShareFriendLink, shareFriendLink } from './friend-sharing';
 import { friendsPageQuery } from './social-queries';
+import './friends.css';
 
 const views = ['friends', 'incoming', 'outgoing'] as const;
 type View = (typeof views)[number];
@@ -43,26 +46,34 @@ function Player({
   player,
   onView,
 }: {
-  player: SocialPlayer;
+  player?: SocialPlayer;
   onView?: (id: string) => void;
 }) {
   return (
     <div className="friends-player">
       <div className="friends-player__name">
         <strong>
-          <PlayerName trainer={player} />
+          {player ? <PlayerName trainer={player} /> : <Skeleton width="8ch" />}
         </strong>
-        {onView && (
-          <GameButton
-            aria-label={`View ${player.name}'s profile`}
-            className="friends-icon-button"
-            onClick={() => onView(player.id)}
-            title={`View ${player.name}'s profile`}
-            tone="quiet"
-          >
-            <EyeIcon aria-hidden="true" weight="regular" />
-          </GameButton>
-        )}
+        {onView &&
+          (player ? (
+            <GameButton
+              aria-label={`View ${player.name}'s profile`}
+              className="friends-icon-button"
+              onClick={() => onView(player.id)}
+              title={`View ${player.name}'s profile`}
+              tone="quiet"
+            >
+              <EyeIcon aria-hidden="true" weight="regular" />
+            </GameButton>
+          ) : (
+            <span
+              className="friends-icon-button game-button game-button--quiet"
+              aria-hidden="true"
+            >
+              <Skeleton circle width="1.3rem" height="1.3rem" />
+            </span>
+          ))}
       </div>
     </div>
   );
@@ -373,10 +384,10 @@ export function FriendsPanel({
             choose to send one.
           </p>
           {initialInput && !found && !error && (
-            <div className="friends-link-loading" aria-hidden="true">
-              <span className="social-skeleton" />
-              <span className="social-skeleton" />
-            </div>
+            <section className="friends-found" aria-hidden="true">
+              <Player onView={onViewPlayer} />
+              <Skeleton width="9rem" height="2.8rem" />
+            </section>
           )}
           {found && (
             <section
@@ -443,12 +454,11 @@ export function FriendsPanel({
           <ul className="friends-list" aria-hidden="true">
             {[0, 1, 2].map((row) => (
               <li key={row}>
-                <div className="friends-player">
-                  <span className="social-skeleton" />
-                  <small className="social-skeleton" />
-                </div>
+                <Player onView={onViewPlayer} />
                 <div className="friends-actions">
-                  <span className="social-skeleton" />
+                  <span className="friends-icon-button game-button game-button--quiet">
+                    <Skeleton circle width="1.3rem" height="1.3rem" />
+                  </span>
                 </div>
               </li>
             ))}

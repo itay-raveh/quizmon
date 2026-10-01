@@ -11,6 +11,8 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { Link } from 'react-router';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 import { GameButton } from '../../components/GameButton';
 import { PlayerName } from '../../components/PlayerName';
 import { SoundButton } from '../../components/SoundButton';
@@ -165,7 +167,7 @@ function Standings({
     scope === 'friends' && data?.items.length === 0 && friends.isPending;
   const showSkeleton = (busy && !data) || checkingFriends;
   const visibleRows = showSkeleton
-    ? Array.from({ length: pageSize }, () => null)
+    ? Array.from({ length: scope === 'friends' ? 3 : pageSize }, () => null)
     : (data?.items ?? []);
   const pastDaily = mode === 'daily' && date < getUtcDate();
   const offset = Number(after ?? 0);
@@ -184,6 +186,16 @@ function Standings({
               Loading standings
             </p>
           )}
+          {showSkeleton && (
+            <div className="leaderboard-viewer" aria-hidden="true">
+              <span>
+                <Skeleton width="9ch" />
+              </span>
+              <strong>
+                <Skeleton width="3ch" />
+              </strong>
+            </div>
+          )}
           {!showSkeleton && data?.viewer && (
             <div className="leaderboard-viewer">
               <PlayerName trainer={data.viewer.player} />
@@ -193,7 +205,7 @@ function Standings({
           {showSkeleton || data?.items.length ? (
             <>
               <table
-                className={`leaderboard-table${showSkeleton ? ' leaderboard-loading' : ''}`}
+                className="leaderboard-table"
                 aria-hidden={showSkeleton || undefined}
               >
                 <caption className="visually-hidden">
@@ -221,7 +233,7 @@ function Standings({
                     >
                       <td>
                         {!row ? (
-                          <span className="social-skeleton" />
+                          <Skeleton width="2ch" />
                         ) : row.comparable ? (
                           row.rank
                         ) : (
@@ -243,15 +255,14 @@ function Standings({
                               {row.player.id === owner ? ' (you)' : ''}
                             </span>
                           ) : (
-                            <span className="social-skeleton" />
+                            <span>
+                              <Skeleton width="8ch" />
+                            </span>
                           )}
                           {!row ? (
-                            <GameButton
-                              aria-label="Loading profile"
-                              className="friends-icon-button"
-                              disabled
-                              tone="quiet"
-                            />
+                            <span className="friends-icon-button game-button game-button--quiet">
+                              <Skeleton circle width="1.3rem" height="1.3rem" />
+                            </span>
                           ) : row.player.id !== owner ? (
                             <GameButton
                               aria-label={`View ${row.player.name}'s profile`}
@@ -270,14 +281,14 @@ function Standings({
                           {row ? (
                             row.score.toLocaleString()
                           ) : (
-                            <span className="social-skeleton" />
+                            <Skeleton width="6ch" />
                           )}
                         </strong>
                         <small>
                           {row ? (
                             `${(row.elapsedMilliseconds / 1000).toFixed(3)}s`
                           ) : (
-                            <span className="social-skeleton" />
+                            <Skeleton width="5ch" />
                           )}
                         </small>
                       </td>

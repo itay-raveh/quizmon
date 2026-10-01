@@ -43,12 +43,16 @@
   box-shadow: none;
 }
 
-.friends-icon-button.game-button:hover:not(:disabled) {
+.friends-icon-button.game-button:not(button) {
+  cursor: default;
+}
+
+button.friends-icon-button.game-button:hover:not(:disabled) {
   background: var(--cream);
   transform: none;
 }
 
-.friends-icon-button.game-button:active:not(:disabled) {
+button.friends-icon-button.game-button:active:not(:disabled) {
   background: var(--sky);
   box-shadow: none;
   transform: none;
@@ -195,19 +199,9 @@
   font-size: var(--text-label);
 }
 
-.friends-link-loading {
-  display: grid;
-  gap: 0.75rem;
-  width: 100%;
-}
-
-.friends-link-loading .social-skeleton:first-child {
-  width: 55%;
-}
-
-.friends-link-loading .social-skeleton:last-child {
-  width: 45%;
-  height: 2.8rem;
+.friends-panel .react-loading-skeleton {
+  --base-color: var(--disabled-surface);
+  --highlight-color: var(--paper);
 }
 
 .friends-section {
@@ -488,37 +482,6 @@
   background: var(--cream);
   border-radius: 0.25rem;
   animation: leaderboard-pulse 1.2s ease-in-out infinite alternate;
-}
-
-.leaderboard-loading td:first-child .social-skeleton {
-  width: 1.7rem;
-}
-
-.leaderboard-loading th .social-skeleton {
-  width: min(11rem, 100%);
-}
-
-.leaderboard-loading td:last-child .social-skeleton {
-  width: 4.2rem;
-  margin-left: auto;
-}
-
-.leaderboard-loading td:last-child small .social-skeleton {
-  width: 3rem;
-  margin-top: 0.35rem;
-}
-
-.friends-loading .friends-player > .social-skeleton {
-  width: min(12rem, 70%);
-}
-
-.friends-loading .friends-player > small.social-skeleton {
-  width: 9rem;
-}
-
-.friends-loading .friends-actions > .social-skeleton {
-  width: 7rem;
-  height: 2.75rem;
 }
 
 @keyframes leaderboard-pulse {
