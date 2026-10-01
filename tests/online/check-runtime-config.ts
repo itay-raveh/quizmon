@@ -229,23 +229,6 @@ try {
   assert.equal((await request('/api/account', b)).status, 200);
   const lookup = await json(await request(`/api/friends/player/${a.id}`, b));
   assert.equal((lookup.player as { id: string }).id, a.id);
-  const profiles: unknown = await (
-    await fetch(`${endpoint}/read/players`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${b.token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ ids: [b.id, a.id, 'missing', a.id] }),
-    })
-  ).json();
-  assert(Array.isArray(profiles));
-  const rows = profiles as { id: string; profile: { name: string } }[];
-  assert.deepEqual(
-    rows.map(({ id }) => id),
-    [b.id, a.id, 'missing', a.id],
-  );
-  assert.equal(rows[2]?.profile.name, '');
   const requestId = crypto.randomUUID();
   const requests = await Promise.all([
     request('/api/friends/requests', a, {

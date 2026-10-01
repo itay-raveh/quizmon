@@ -50,12 +50,11 @@ export const renderTrainerArtifactImage = async (
     const { snapdom } = await import('@zumer/snapdom');
 
     return await snapdom.toBlob(clone, {
-      compress: true,
       dpr: 2,
       embedFonts: true,
       outerShadows: true,
       reconcile: true,
-      type: 'png',
+      format: 'png',
     });
   } finally {
     host.remove();

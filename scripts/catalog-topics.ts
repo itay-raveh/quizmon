@@ -211,11 +211,11 @@ export const buildTopicCatalog = async (
                 Number(reference.url.split('/').filter(Boolean).at(-1)),
               )
             : undefined;
-        const before = detail.base_form
-          ? resolveForm(detail.base_form)
+        const before = detail.required_pokemon_form
+          ? resolveForm(detail.required_pokemon_form)
           : defaultBefore;
-        const after = detail.evolved_form
-          ? resolveForm(detail.evolved_form)
+        const after = detail.evolved_pokemon_form
+          ? resolveForm(detail.evolved_pokemon_form)
           : defaultAfter;
         if (!before || !after) continue;
         const group = groupsByName.get(detail.version_group?.name);
@@ -223,7 +223,7 @@ export const buildTopicCatalog = async (
         if (!group || !gen) continue;
         const requirements = requirementsOf(detail).filter(
           (requirement) =>
-            !['base-form', 'evolved-form', 'trigger'].includes(
+            !['required-form', 'evolved-form', 'trigger'].includes(
               requirement.kind,
             ),
         );

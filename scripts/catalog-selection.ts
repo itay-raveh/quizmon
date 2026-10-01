@@ -100,11 +100,11 @@ export const formEvolutionLinks = (
   for (const chain of chains) {
     for (const step of flattenChain(chain)) {
       for (const detail of step.details) {
-        const from = detail.base_form
-          ? formKeys.get(detail.base_form.name)
+        const from = detail.required_pokemon_form
+          ? formKeys.get(detail.required_pokemon_form.name)
           : defaults.get(step.from.name);
-        const to = detail.evolved_form
-          ? formKeys.get(detail.evolved_form.name)
+        const to = detail.evolved_pokemon_form
+          ? formKeys.get(detail.evolved_pokemon_form.name)
           : defaults.get(step.to.name);
         if (!from || !to)
           throw new Error(
