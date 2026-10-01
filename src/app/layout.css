@@ -112,10 +112,11 @@
 
 @media (max-width: 50rem) {
   .app--with-navigation {
-    --app-safe-bottom: env(safe-area-inset-bottom, 0px);
-    --app-safe-bottom-max: env(
-      safe-area-max-inset-bottom,
-      var(--app-safe-bottom)
+    --app-safe-bottom-max: env(safe-area-max-inset-bottom, 0px);
+    /* Firefox 150+ reports a false bottom inset: https://bugzilla.mozilla.org/show_bug.cgi?id=2057232 */
+    --app-safe-bottom: min(
+      env(safe-area-inset-bottom, 0px),
+      var(--app-safe-bottom-max)
     );
     --app-navigation-clearance: calc(6.25rem + var(--app-safe-bottom));
     padding-bottom: calc(6.25rem + var(--app-safe-bottom-max));
@@ -155,6 +156,18 @@
         29.25rem
       )
     );
+  }
+}
+
+@supports (-webkit-touch-callout: none) {
+  @media (max-width: 50rem) {
+    .app--with-navigation {
+      /* Keep iOS safe-area support when the max inset is unavailable. */
+      --app-safe-bottom-max: env(
+        safe-area-max-inset-bottom,
+        env(safe-area-inset-bottom, 0px)
+      );
+    }
   }
 }
 

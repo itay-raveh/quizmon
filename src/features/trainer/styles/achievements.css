@@ -197,12 +197,16 @@ button.trainer-badge:focus-visible {
 }
 
 .trainer-badge-case--compact .trainer-badge-case__badges .trainer-badge-mark {
-  width: 90%;
+  width: 75%;
 }
 
 .trainer-badge-case--compact .trainer-badge-case__rivet {
-  width: 0.3rem;
-  border-width: 1px;
+  display: none;
+}
+
+.trainer-badge-case--compact .trainer-badge-mark img {
+  filter: var(--trainer-badge-tone);
+  transform: none;
 }
 
 .trainer-titles {
