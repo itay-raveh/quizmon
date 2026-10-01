@@ -21,6 +21,7 @@ vi.mock('../../domain/sync/connection', () => ({
 }));
 const sentry = vi.hoisted(() => ({ captureUnexpectedError: vi.fn() }));
 vi.mock('../../lib/sentry', () => ({
+  Sentry: { startSpan: (_options: unknown, run: () => unknown) => run() },
   captureUnexpectedError: sentry.captureUnexpectedError,
   clearSentryUser: () => 0,
   setVerifiedSentryUser: () => Promise.resolve(),
@@ -205,4 +206,54 @@ it('does not display a server error body', async () => {
     'Account service unavailable. Try again.',
   );
   vi.unstubAllGlobals();
+});
+
+it('waits for Retry-After before retrying a rate-limited sync bootstrap', async () => {
+  vi.resetModules();
+  vi.useFakeTimers();
+  mocks.invalidConfig = false;
+  vi.stubGlobal('localStorage', {
+    getItem: (key: string) =>
+      key === 'quizmon.baseline.account' ? 'owner' : null,
+  });
+  vi.stubGlobal('navigator', { onLine: true });
+  vi.stubGlobal('window', new EventTarget());
+  vi.stubGlobal(
+    'document',
+    Object.assign(new EventTarget(), { visibilityState: 'visible' }),
+  );
+  let accountCalls = 0;
+  vi.stubGlobal(
+    'fetch',
+    vi.fn((input: string) => {
+      if (input === '/api/account') {
+        accountCalls++;
+        return Promise.resolve(
+          accountCalls === 1
+            ? new Response('Too many requests', {
+                status: 429,
+                headers: { 'Retry-After': '60' },
+              })
+            : Response.json({ id: 'owner', sync: {} }),
+        );
+      }
+      if (input === '/api/auth/token')
+        return Promise.resolve(Response.json({ token: 'test-token' }));
+      throw new Error(`Unexpected request: ${input}`);
+    }),
+  );
+  mocks.replications.push(replication().state, replication().state);
+  try {
+    const { accountSnapshot, startAccountSync } = await import('./account');
+    await startAccountSync();
+    expect(accountSnapshot().offline).toBe(true);
+    await vi.advanceTimersByTimeAsync(59_000);
+    expect(accountCalls).toBe(1);
+    await vi.advanceTimersByTimeAsync(1_000);
+    expect(accountCalls).toBe(2);
+    expect(accountSnapshot().status).toBe('Synced');
+  } finally {
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+  }
 });

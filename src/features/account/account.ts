@@ -7,6 +7,7 @@ import {
 } from 'rxdb-server/plugins/replication-server';
 import { readSyncConnection } from '../../domain/sync/connection';
 import {
+  Sentry,
   captureUnexpectedError,
   clearSentryUser,
   setVerifiedSentryUser,
@@ -74,6 +75,7 @@ class AccountServiceError extends AccountNotice {
   constructor(
     message: string,
     readonly status: number,
+    readonly retryAfterMilliseconds = 0,
   ) {
     super(message);
   }
@@ -86,18 +88,23 @@ class AccountNetworkError extends AccountNotice {
 }
 
 export async function accountRequest(path: string, body?: unknown) {
-  const response = await fetch(path, {
-    method: body === undefined ? 'GET' : 'POST',
-    credentials: 'same-origin',
-    headers: { 'Content-Type': 'application/json' },
-    ...(body === undefined ? {} : { body: JSON.stringify(body) }),
-    signal: AbortSignal.timeout(15_000),
-  }).catch((error: unknown) => {
-    throw new AccountNetworkError(error);
-  });
+  const response = await Sentry.startSpan(
+    { name: 'account.api.request', op: 'app.request' },
+    () =>
+      fetch(path, {
+        method: body === undefined ? 'GET' : 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+        signal: AbortSignal.timeout(15_000),
+      }).catch((error: unknown) => {
+        throw new AccountNetworkError(error);
+      }),
+  );
   const value: unknown = await response.json().catch(() => null);
   if (!response.ok) {
     if (response.status === 401) clearSentryUser();
+    const retryAfterSeconds = Number(response.headers.get('Retry-After'));
     throw new AccountServiceError(
       response.status === 401
         ? 'Sign in to resume syncing.'
@@ -105,6 +112,11 @@ export async function accountRequest(path: string, body?: unknown) {
           ? 'Too many requests. Try again shortly.'
           : 'Account service unavailable. Try again.',
       response.status,
+      response.status === 429 &&
+        Number.isFinite(retryAfterSeconds) &&
+        retryAfterSeconds > 0
+        ? Math.min(retryAfterSeconds * 1_000, 2_147_483_647)
+        : 0,
     );
   }
   return value;
@@ -284,15 +296,20 @@ const rxErrorCode = (value: unknown) =>
     ? value.code
     : 'unknown';
 
-const scheduleConnectionRetry = () => {
+const scheduleConnectionRetry = (delay = 5_000) => {
   if (retryTimer || document.visibilityState !== 'visible') return;
   retryTimer = setTimeout(() => {
     retryTimer = undefined;
     if (document.visibilityState !== 'visible') return;
     if (replications.length) void refreshReplicationToken();
     else void retryAccountSync();
-  }, 5_000);
+  }, delay);
 };
+
+const connectionRetryDelay = (error: unknown) =>
+  error instanceof AccountServiceError && error.status === 429
+    ? error.retryAfterMilliseconds || 60_000
+    : 5_000;
 
 const syncToken = async (expected: string) => {
   const value = await accountRequest('/api/auth/token');
@@ -312,7 +329,7 @@ const reportTokenError = (error: unknown) => {
       offline: true,
       status: 'Saved on this device. Will sync when connected.',
     });
-    scheduleConnectionRetry();
+    scheduleConnectionRetry(connectionRetryDelay(error));
     return;
   }
   if (!(error instanceof AccountServiceError && error.status === 401))
@@ -405,6 +422,13 @@ export function retryAccountSync(): Promise<void> {
 }
 
 async function connectAccountSync() {
+  return Sentry.startSpan(
+    { name: 'account.sync.bootstrap', op: 'ui.load' },
+    connectAccountSyncWork,
+  );
+}
+
+async function connectAccountSyncWork() {
   const owner = selectedAccount();
   if (!owner) return;
   await stopReplication();
@@ -569,7 +593,7 @@ async function connectAccountSync() {
         ? 'Saved on this device. Will sync when connected.'
         : 'Saved on this device. Sync is paused.',
     });
-    if (retryable) scheduleConnectionRetry();
+    if (retryable) scheduleConnectionRetry(connectionRetryDelay(error));
   }
 }
 

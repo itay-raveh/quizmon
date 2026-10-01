@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { Sentry } from '../../lib/sentry';
 import type {
   DailyLeaderboard,
   Leaderboard,
@@ -79,12 +80,20 @@ async function readLeaderboard(
   const query = new URLSearchParams(date ? { date, scope } : { scope });
   if (after) query.set('after', after);
   query.set('limit', String(limit));
-  const response = await fetch(`/api/leaderboards/${mode}?${query}`, {
-    credentials: 'same-origin',
-    signal: signal
-      ? AbortSignal.any([signal, AbortSignal.timeout(30_000)])
-      : AbortSignal.timeout(30_000),
-  });
+  const response = await Sentry.startSpan(
+    {
+      name: 'rankings.load',
+      op: 'ui.load',
+      attributes: { 'rankings.mode': mode, 'rankings.scope': scope },
+    },
+    () =>
+      fetch(`/api/leaderboards/${mode}?${query}`, {
+        credentials: 'same-origin',
+        signal: signal
+          ? AbortSignal.any([signal, AbortSignal.timeout(30_000)])
+          : AbortSignal.timeout(30_000),
+      }),
+  );
   if (response.status === 401)
     throw new Error('Sign in again to view leaderboards.');
   if (response.status === 429)

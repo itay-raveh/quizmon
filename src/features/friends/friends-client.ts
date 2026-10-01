@@ -1,4 +1,5 @@
 import { isRecord } from '../../lib/validation';
+import { Sentry } from '../../lib/sentry';
 import {
   socialPlayerSchema,
   type FriendRelation,
@@ -35,17 +36,21 @@ async function request(
 ) {
   if (accountSnapshot().owner !== owner)
     throw new Error(messages.account_changed);
-  const response = await fetch(`/api/friends${path}`, {
-    method: body ? 'POST' : 'GET',
-    credentials: 'same-origin',
-    headers: { 'Content-Type': 'application/json' },
-    ...(body
-      ? { body: JSON.stringify({ ...body, expectedAccountId: owner }) }
-      : {}),
-    signal: signal
-      ? AbortSignal.any([signal, AbortSignal.timeout(30_000)])
-      : AbortSignal.timeout(30_000),
-  });
+  const response = await Sentry.startSpan(
+    { name: 'friends.request', op: 'app.request' },
+    () =>
+      fetch(`/api/friends${path}`, {
+        method: body ? 'POST' : 'GET',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        ...(body
+          ? { body: JSON.stringify({ ...body, expectedAccountId: owner }) }
+          : {}),
+        signal: signal
+          ? AbortSignal.any([signal, AbortSignal.timeout(30_000)])
+          : AbortSignal.timeout(30_000),
+      }),
+  );
   if (response.status === 401) throw new Error('Sign in again to use Friends.');
   if (response.status === 429)
     throw new Error('Too many requests. Wait a minute, then try again.');

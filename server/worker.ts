@@ -33,18 +33,25 @@ export default {
         headers: { 'Cache-Control': 'no-store' },
       });
     const path = new URL(request.url).pathname;
-    const limiter = path.startsWith('/api/auth/')
-      ? env.AUTH_RATE_LIMIT
-      : env.API_RATE_LIMIT;
+    const authRequest = path.startsWith('/api/auth/');
+    const limiter = authRequest ? env.AUTH_RATE_LIMIT : env.API_RATE_LIMIT;
     try {
       const result = await limiter.limit({
         key: request.headers.get('CF-Connecting-IP') ?? 'local',
       });
-      if (!result.success)
+      if (!result.success) {
+        try {
+          Sentry.metrics.count('quizmon.rate_limited', 1, {
+            attributes: { 'rate_limit.bucket': authRequest ? 'auth' : 'api' },
+          });
+        } catch {
+          // Monitoring must not change account responses.
+        }
         return new Response('Too many requests. Try again shortly.', {
           status: 429,
           headers: { 'Retry-After': '60', 'Cache-Control': 'no-store' },
         });
+      }
     } catch (error) {
       reportFailure(error);
       return new Response('Service temporarily unavailable.', { status: 503 });
