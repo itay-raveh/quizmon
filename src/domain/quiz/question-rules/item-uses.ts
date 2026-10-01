@@ -40,6 +40,7 @@ export const itemUses = {
     },
     4: {
       ...controls,
+      rendering: { subject: { name: 'after-answer' } },
       sameItemCategory: true,
       minimumEffectSimilarity: 0.3,
       maximumEffectSimilarity: 0.8,

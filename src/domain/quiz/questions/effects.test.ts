@@ -176,7 +176,7 @@ it('uses self-describing medicine only when its name is hidden', () => {
     ...catalog,
     topics: { ...catalog.topics!, items: medicine },
   };
-  const build = (difficulty: 2 | 3 | 5, items = medicine) =>
+  const build = (difficulty: 2 | 3 | 4 | 5, items = medicine) =>
     buildQuestionType(
       {
         catalog: {
@@ -195,18 +195,20 @@ it('uses self-describing medicine only when its name is hidden', () => {
   expect(medicine).toHaveLength(5);
   expect(build(2)).toBeUndefined();
   expect(build(3)).toBeUndefined();
-  const question = build(5);
-  expect(question).toBeDefined();
-  expect(medicine.some((item) => item.name === question!.subject.name)).toBe(
-    true,
-  );
-  expect(question!.rendering!.subject.name).toBe('after-answer');
-  expect(
-    build(
-      5,
-      medicine.map((item) => ({ ...item, sprite: null })),
-    ),
-  ).toBeUndefined();
+  for (const difficulty of [4, 5] as const) {
+    const question = build(difficulty);
+    expect(question).toBeDefined();
+    expect(medicine.some((item) => item.name === question!.subject.name)).toBe(
+      true,
+    );
+    expect(question!.rendering!.subject.name).toBe('after-answer');
+    expect(
+      build(
+        difficulty,
+        medicine.map((item) => ({ ...item, sprite: null })),
+      ),
+    ).toBeUndefined();
+  }
 });
 
 it('narrows Item uses distractors at each level', () => {
