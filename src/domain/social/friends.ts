@@ -4,6 +4,7 @@ export const socialPlayerSchema = z.object({
   id: z.string(),
   name: z.string(),
   partnerPokemon: z.string().nullable(),
+  leagueCompleted: z.boolean(),
 });
 
 export type SocialPlayer = z.infer<typeof socialPlayerSchema>;

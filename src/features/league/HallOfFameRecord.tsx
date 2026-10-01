@@ -1,4 +1,5 @@
 import { PokemonIdentity } from '@/components/PokemonIdentity';
+import { PlayerName } from '@/components/PlayerName';
 import { site } from '@/app/site';
 import type { LeagueVictoryRecord } from '@/domain/player/hall-of-fame';
 import { formatPokemonName } from '@/domain/pokemon/format';
@@ -80,7 +81,9 @@ export const HallOfFameRecord = ({
         </ul>
       </div>
       <div className="hall-record__honors">
-        <h2>{record.trainerName || 'League Champion'}</h2>
+        <h2>
+          <PlayerName name={record.trainerName || 'League Champion'} champion />
+        </h2>
         <p className="hall-record__score">
           <strong>{formatScore(record.result.score)}</strong> points
         </p>

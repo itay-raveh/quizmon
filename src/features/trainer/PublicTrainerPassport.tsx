@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { BackButton } from '../../components/BackButton';
+import { PlayerName } from '../../components/PlayerName';
 import {
   BookOpenIcon,
   CardholderIcon,
@@ -76,7 +77,7 @@ export function PublicTrainerPassport({
             id="public-trainer-title"
             tabIndex={-1}
           >
-            {name}
+            <PlayerName name={name} champion={stats.leagueCompleted} />
           </h1>
           <p>Trainer profile · View only</p>
         </div>

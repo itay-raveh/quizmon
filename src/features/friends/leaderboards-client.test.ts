@@ -18,6 +18,7 @@ test('rejects a malformed leaderboard count from the server', async () => {
           code: null,
           name: 'Trainer',
           partnerPokemon: null,
+          leagueCompleted: false,
         },
         rank: 1,
         score: 10,
@@ -43,6 +44,11 @@ test('rejects a malformed leaderboard count from the server', async () => {
     ).resolves.toMatchObject({ total: 1, items: [{ comparable: true }] });
     expect(vi.mocked(fetch).mock.calls[0]?.[0]).toContain('limit=5');
     response.items[0]!.rank = -1;
+    await expect(
+      readTrainingLeaderboard('trainer', 'global', null, 5, signal),
+    ).rejects.toThrow('unreadable response');
+    response.items[0]!.rank = 1;
+    Reflect.deleteProperty(response.items[0]!.player, 'leagueCompleted');
     await expect(
       readTrainingLeaderboard('trainer', 'global', null, 5, signal),
     ).rejects.toThrow('unreadable response');

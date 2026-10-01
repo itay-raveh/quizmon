@@ -351,6 +351,18 @@ html:has(.app--questions) {
   line-height: 1;
 }
 
+.player-name__honor {
+  white-space: nowrap;
+}
+
+.player-name__honor .trophy {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  margin-inline-start: 0.2em;
+  vertical-align: -0.15em;
+}
+
 .generation-label--stacked {
   display: inline-grid;
   justify-items: center;

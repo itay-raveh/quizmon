@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { GameButton } from '../../components/GameButton';
+import { PlayerName } from '../../components/PlayerName';
 import { Toast } from '../../components/Toast';
 import { EyeIcon, ShareNetworkIcon, TrashIcon } from '../../components/icons';
 import { useModalDialog } from '../../hooks/useModalDialog';
@@ -48,7 +49,9 @@ function Player({
   return (
     <div className="friends-player">
       <div className="friends-player__name">
-        <strong>{player.name}</strong>
+        <strong>
+          <PlayerName name={player.name} champion={player.leagueCompleted} />
+        </strong>
         {onView && (
           <GameButton
             aria-label={`View ${player.name}'s profile`}

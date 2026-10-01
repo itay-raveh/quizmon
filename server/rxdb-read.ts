@@ -6,14 +6,32 @@ import {
   getTrainerStats,
 } from '../src/domain/player/progress.ts';
 import { getUtcDate } from '../src/domain/quiz/daily.ts';
-import { compactRoundSchema } from '../src/domain/sync/compact-rounds.ts';
+import {
+  compactRoundSchema,
+  scoreCompactRound,
+} from '../src/domain/sync/compact-rounds.ts';
+import { isLeagueVictory } from '../src/domain/quiz/league.ts';
 import pokemonGenerations from '../src/domain/pokemon/data/pokemon-generations.json' with { type: 'json' };
 
 export async function playerProfiles(db: PlayerDatabase, ids: string[]) {
   const players = await db.players.findByIds(ids).exec();
+  const leagueRounds = ids.length
+    ? await db.rounds
+        .find({ selector: { ownerId: { $in: ids }, mode: 'league' } })
+        .exec()
+    : [];
+  const champions = new Set(
+    leagueRounds.flatMap((round) => {
+      const parsed = compactRoundSchema.safeParse(round.toMutableJSON());
+      return parsed.success && isLeagueVictory(scoreCompactRound(parsed.data))
+        ? [round.ownerId]
+        : [];
+    }),
+  );
   return ids.map((id) => ({
     id,
     profile: players.get(id)?.profile ?? createTrainerProfile(),
+    leagueCompleted: champions.has(id),
   }));
 }
 

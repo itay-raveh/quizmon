@@ -56,15 +56,14 @@ export async function publicPlayers(
   ids: string[],
 ): Promise<SocialPlayer[]> {
   if (!ids.length) return [];
-  const profiles = await read<{ id: string; profile: TrainerProfile }[]>(
-    context,
-    'players',
-    { ids },
-  );
-  return profiles.map(({ id, profile }) => ({
+  const profiles = await read<
+    { id: string; profile: TrainerProfile; leagueCompleted: boolean }[]
+  >(context, 'players', { ids });
+  return profiles.map(({ id, profile, leagueCompleted }) => ({
     id,
     name: profile.name.trim() || 'Trainer',
     partnerPokemon: profile.partnerPokemon,
+    leagueCompleted,
   }));
 }
 

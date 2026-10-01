@@ -12,6 +12,7 @@ import {
 } from '@tanstack/react-query';
 import { Link } from 'react-router';
 import { GameButton } from '../../components/GameButton';
+import { PlayerName } from '../../components/PlayerName';
 import { SoundButton } from '../../components/SoundButton';
 import {
   ArrowLeftIcon,
@@ -185,7 +186,10 @@ function Standings({
           )}
           {!showSkeleton && data?.viewer && (
             <div className="leaderboard-viewer">
-              <span>{data.viewer.player.name}</span>
+              <PlayerName
+                name={data.viewer.player.name}
+                champion={data.viewer.player.leagueCompleted}
+              />
               <strong>#{data.viewer.rank}</strong>
             </div>
           )}
@@ -238,7 +242,10 @@ function Standings({
                         <span className="leaderboard-player">
                           {row ? (
                             <span>
-                              {row.player.name}
+                              <PlayerName
+                                name={row.player.name}
+                                champion={row.player.leagueCompleted}
+                              />
                               {row.player.id === owner ? ' (you)' : ''}
                             </span>
                           ) : (

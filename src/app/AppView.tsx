@@ -120,6 +120,7 @@ const AppScreen = ({
         >
           <AccountScreen
             trainerName={trainer.profile.name}
+            leagueCompleted={trainer.stats.leagueCompleted}
             onRename={(name) =>
               trainer.updateProfile({ ...trainer.profile, name })
             }

@@ -7,6 +7,7 @@ import {
 } from 'react';
 import { useNavigate } from 'react-router';
 import { GameButton } from '../../components/GameButton';
+import { PlayerName } from '../../components/PlayerName';
 import { PencilSimpleIcon } from '../../components/icons';
 import { friendInvitePath } from '../../domain/social/friends';
 import { TRAINER_NAME_MAX_LENGTH } from '../../domain/player/trainer-profile';
@@ -66,12 +67,14 @@ const WelcomeTrainerDialog = ({
 
 export function AccountScreen({
   trainerName,
+  leagueCompleted,
   onRename,
   onEditCard,
   onViewPlayer,
   friendId = '',
 }: {
   trainerName: string;
+  leagueCompleted: boolean;
   onRename: (name: string) => Promise<boolean>;
   onEditCard: () => void;
   onViewPlayer: (id: string) => void;
@@ -140,7 +143,14 @@ export function AccountScreen({
               tabIndex={-1}
               ref={heading}
             >
-              {signingIn ? 'Sign in' : trainerName.trim() || 'Account'}
+              {signingIn ? (
+                'Sign in'
+              ) : (
+                <PlayerName
+                  name={trainerName.trim() || 'Account'}
+                  champion={leagueCompleted}
+                />
+              )}
             </h1>
             {!signingIn && !account.mergeRequired && (
               <GameButton

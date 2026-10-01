@@ -2,6 +2,7 @@ import { site } from '@/app/site';
 import { trainerAvatarOptions } from '@/domain/player/trainer-avatars';
 import type { PackedSpriteMeasurements } from '@/domain/pokemon/types';
 import { PokemonIdentity } from '@/components/PokemonIdentity';
+import { PlayerName } from '@/components/PlayerName';
 import { Trophy } from '@/components/Trophy';
 import {
   getCardFinish,
@@ -91,7 +92,12 @@ export const TrainerCard = ({
           {isChampion ? <Trophy /> : null}
         </header>
         <div className="trainer-card__identity">
-          <h2>{profile.name || `${site.name} Trainer`}</h2>
+          <h2>
+            <PlayerName
+              name={profile.name || `${site.name} Trainer`}
+              champion={isChampion}
+            />
+          </h2>
           {profile.specialty ? (
             <p
               className="trainer-card__title"
