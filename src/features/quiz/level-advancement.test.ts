@@ -1,10 +1,6 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import type { GameResult } from '@/domain/quiz/types';
-import {
-  markLevelAdvancementOffered,
-  suggestedLevel,
-  wasLevelAdvancementOffered,
-} from './level-advancement';
+import { suggestedLevel } from './level-advancement';
 
 const result = (level: 1 | 2 | 3 | 4 | 5, correctCount = 10) =>
   ({
@@ -24,23 +20,5 @@ describe('level advancement suggestion', () => {
     expect(suggestedLevel(result(5), 5, true)).toBeNull();
     expect(suggestedLevel(result(2), 3, true)).toBeNull();
     expect(suggestedLevel(result(2), 2, false)).toBeNull();
-  });
-
-  it('remembers an offer separately for each level', () => {
-    const values = new Map<string, string>();
-    vi.stubGlobal('window', {
-      localStorage: {
-        getItem: (key: string) => values.get(key) ?? null,
-        setItem: (key: string, value: string) => values.set(key, value),
-      },
-    });
-    try {
-      expect(wasLevelAdvancementOffered(1)).toBe(false);
-      markLevelAdvancementOffered(1);
-      expect(wasLevelAdvancementOffered(1)).toBe(true);
-      expect(wasLevelAdvancementOffered(2)).toBe(false);
-    } finally {
-      vi.unstubAllGlobals();
-    }
   });
 });

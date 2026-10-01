@@ -19,35 +19,24 @@ import { DailyReminderPrompt } from '@/features/reminders/DailyReminderPrompt';
 import { ShareResultButton } from '@/features/sharing/ShareResultButton';
 import { TrainerProgressSummary } from '@/features/trainer/TrainerProgressSummary';
 import { useGameSounds } from '@/lib/audio/sound-context';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { AnimatedScore } from './AnimatedScore';
 import { CatchCombo } from '@/features/daily/CatchCombo';
-import {
-  markLevelAdvancementOffered,
-  suggestedLevel,
-  wasLevelAdvancementOffered,
-} from './level-advancement';
+import { suggestedLevel } from './level-advancement';
 import { MultipliedScore } from './MultipliedScore';
 import type { Difficulty } from '@/domain/quiz/difficulty';
 
 const LevelAdvancementOffer = ({
   currentLevel,
   nextLevel,
+  onTrainAgain,
   onTryLevel,
 }: {
   currentLevel: Difficulty;
   nextLevel: Difficulty;
+  onTrainAgain: () => void;
   onTryLevel: (level: Difficulty) => void;
 }) => {
-  const [visible, setVisible] = useState(
-    () => !wasLevelAdvancementOffered(currentLevel),
-  );
-
-  useEffect(() => {
-    if (visible) markLevelAdvancementOffered(currentLevel);
-  }, [currentLevel, visible]);
-
-  if (!visible) return null;
   return (
     <aside className="level-advancement-offer" aria-label="Training suggestion">
       <strong>
@@ -57,8 +46,8 @@ const LevelAdvancementOffer = ({
         <GameButton onClick={() => onTryLevel(nextLevel)}>
           Try <LevelLabel level={nextLevel} />
         </GameButton>
-        <GameButton tone="quiet" onClick={() => setVisible(false)}>
-          Not now
+        <GameButton tone="quiet" onClick={onTrainAgain}>
+          Train <LevelLabel level={currentLevel} /> again
         </GameButton>
       </div>
     </aside>
@@ -329,15 +318,20 @@ export const ResultsScreen = ({
         <LevelAdvancementOffer
           currentLevel={result.rules.difficulty}
           nextLevel={nextLevel}
+          onTrainAgain={onTrainAgain}
           onTryLevel={onTryLevel}
         />
       ) : null}
       {trainingError ? <p role="alert">{trainingError}</p> : null}
       {!isLeague ? (
-        <div className="results__actions results__actions--paired">
-          <GameButton onClick={isTraining ? onTrainAgain : onStartTraining}>
-            {isTraining ? 'Train again' : 'Start training'}
-          </GameButton>
+        <div
+          className={`results__actions ${nextLevel ? '' : 'results__actions--paired'}`.trim()}
+        >
+          {!nextLevel ? (
+            <GameButton onClick={isTraining ? onTrainAgain : onStartTraining}>
+              {isTraining ? 'Train again' : 'Start training'}
+            </GameButton>
+          ) : null}
           <ShareResultButton
             aria-label="Share result"
             mode={mode}
