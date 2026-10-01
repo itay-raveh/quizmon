@@ -1,3 +1,4 @@
+import * as styles from './styles/classes.css.ts';
 import {
   ArrowsClockwiseIcon,
   BackpackIcon,
@@ -49,14 +50,14 @@ export const TrainerTitleMark = ({
   return (
     <span
       aria-hidden="true"
-      className="trainer-title-mark"
+      className={styles.trainerTitleMark}
       data-earned={earned}
       data-specialty={specialty}
       data-tier={tier}
     >
       <Mark weight="bold" />
       {earned ? (
-        <small className="trainer-title-mark__tier">
+        <small className={styles.trainerTitleMarkTier}>
           {['', 'I', 'II', 'III'][tier]}
         </small>
       ) : null}

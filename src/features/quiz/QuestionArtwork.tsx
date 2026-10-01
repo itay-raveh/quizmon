@@ -1,3 +1,4 @@
+import * as styles from './styles/classes.css.ts';
 import { StatDirection } from './StatDirection';
 import { NatureEffect } from './NatureEffect';
 import { getQuestionRendering } from '@/domain/quiz/variants';
@@ -36,9 +37,9 @@ const MysteryType = ({
   answered: boolean;
   types: readonly string[];
 }) => (
-  <span className="question-visual__mystery-type">
+  <span className={styles.questionVisualMysteryType}>
     <TypeBadges
-      className={`question-visual__type-answer ${answered ? '' : 'question-visual__type-answer--concealed'}`}
+      className={`${styles.questionVisualTypeAnswer} ${answered ? '' : styles.questionVisualTypeAnswerConcealed}`}
       types={types}
     />
     {answered ? null : <MysteryTypeBadge />}
@@ -95,7 +96,7 @@ export const QuestionArtwork = ({
     (visual?.kind === 'pokemonTypes' || visual?.kind === 'dualTypeMatch')
   ) {
     return (
-      <div className="question-visual" aria-hidden="true">
+      <div className={styles.questionVisual} aria-hidden="true">
         <QuestionSubject
           {...subject}
           types={
@@ -114,7 +115,9 @@ export const QuestionArtwork = ({
   }
   if (visual?.kind === 'evolution-endpoints') {
     return (
-      <div className="question-visual question-evolution-endpoints">
+      <div
+        className={`${styles.questionVisual} ${styles.questionEvolutionEndpoints}`}
+      >
         {[visual.before, visual.after].map((name, index) => (
           <Fragment key={name}>
             {index ? <RelationArrow /> : null}
@@ -135,7 +138,7 @@ export const QuestionArtwork = ({
   if (visual?.kind === 'evolutionChain') {
     return (
       <div
-        className="question-visual question-evolution-chain"
+        className={`${styles.questionVisual} ${styles.questionEvolutionChain}`}
         aria-hidden="true"
       >
         {[visual.before, question.subject.name, visual.after].map(
@@ -159,7 +162,7 @@ export const QuestionArtwork = ({
   }
   if (visual?.kind === 'pokemonByGeneration') {
     return (
-      <div className="question-visual" aria-hidden="true">
+      <div className={styles.questionVisual} aria-hidden="true">
         <strong>
           <GenerationLabel generation={visual.generation} variant="stacked" />
         </strong>
@@ -168,9 +171,9 @@ export const QuestionArtwork = ({
   }
   if (visual?.kind === 'pokemonByType') {
     return (
-      <div className="question-visual" aria-hidden="true">
+      <div className={styles.questionVisual} aria-hidden="true">
         <TypeBadges
-          className="question-visual__roundup-type"
+          className={styles.questionVisualRoundupType}
           types={[visual.type]}
         />
       </div>
@@ -180,7 +183,7 @@ export const QuestionArtwork = ({
     const effect = question.optionReveals?.[question.answer.correctOptions[0]!];
     if (effect)
       return (
-        <div className="question-visual">
+        <div className={styles.questionVisual}>
           <NatureEffect description={effect} />
         </div>
       );
@@ -190,7 +193,7 @@ export const QuestionArtwork = ({
     visual?.kind === 'measurement-comparison'
   ) {
     return (
-      <div className="question-visual" aria-hidden="true">
+      <div className={styles.questionVisual} aria-hidden="true">
         <StatDirection
           label={formatPokemonName(
             visual.kind === 'statExtremes' ? visual.stat : visual.measurement,
@@ -205,7 +208,7 @@ export const QuestionArtwork = ({
     const retainedTypes = evolution.types.filter((type) => type !== gainedType);
     return (
       <div
-        className="question-visual question-relation question-relation--evolution"
+        className={`${styles.questionVisual} ${styles.questionRelation} ${styles.questionRelationEvolution}`}
         aria-hidden="true"
       >
         <QuestionSubject {...subject} types={undefined} framed>
@@ -219,9 +222,9 @@ export const QuestionArtwork = ({
             <TypeBadges types={question.subject.types ?? []} />
           </span>
         </QuestionSubject>
-        <div className="question-relation__effect">
+        <div className={styles.questionRelationEffect}>
           <RelationArrow />
-          <span className="question-relation__caption">evolves into</span>
+          <span className={styles.questionRelationCaption}>evolves into</span>
         </div>
         <QuestionSubject
           {...evolution}
@@ -234,7 +237,7 @@ export const QuestionArtwork = ({
           framed
         >
           <span
-            className="question-visual__evolution-types"
+            className={styles.questionVisualEvolutionTypes}
             style={{
               visibility: isVisible(rendering.related.types ?? 'always', state)
                 ? undefined
@@ -244,7 +247,7 @@ export const QuestionArtwork = ({
             {retainedTypes.length > 0 ? (
               <>
                 <TypeBadges types={retainedTypes} />
-                <span className="question-visual__type-plus">+</span>
+                <span className={styles.questionVisualTypePlus}>+</span>
               </>
             ) : null}
             <MysteryType answered={answered} types={[gainedType]} />
@@ -262,7 +265,7 @@ export const QuestionArtwork = ({
     const answerVisual = answer ? question.optionVisuals?.[answer] : undefined;
     return (
       <div
-        className="question-visual question-relation question-relation--matchup"
+        className={`${styles.questionVisual} ${styles.questionRelation} ${styles.questionRelationMatchup}`}
         role="img"
         aria-hidden={!subjectTypesVisible || undefined}
         aria-label={formatPokemonTypeAnnouncement(
@@ -283,17 +286,17 @@ export const QuestionArtwork = ({
             framed
           />
         ) : (
-          <span className="question-visual__pokemon-slot">
+          <span className={styles.questionVisualPokemonSlot}>
             {spriteState(rendering.related.sprite, state).visible &&
             answerVisual?.src ? (
               <QuestionSprite
                 rule={rendering.related.sprite}
                 state={state}
-                className="question-visual__pokemon"
+                className={styles.questionVisualPokemon}
                 src={answerVisual.src}
               />
             ) : (
-              <span className="question-visual__question-mark">?</span>
+              <span className={styles.questionVisualQuestionMark}>?</span>
             )}
           </span>
         )}
@@ -314,7 +317,7 @@ export const QuestionArtwork = ({
       state,
     );
     return (
-      <div className="question__artwork">
+      <div className={styles.questionArtwork}>
         <div
           aria-hidden={!visible || undefined}
           style={{ visibility: visible ? undefined : 'hidden' }}
@@ -329,9 +332,9 @@ export const QuestionArtwork = ({
           name={question.subject.name}
           dexNumber={subjectDexNumber}
           types={question.subject.types}
-          identityClassName="question-visual__subject-name"
-          numberClassName="question-visual__subject-number"
-          typesClassName="question-visual__subject-types"
+          identityClassName={styles.questionVisualSubjectName}
+          numberClassName={styles.questionVisualSubjectNumber}
+          typesClassName={styles.questionVisualSubjectTypes}
         />
       </div>
     );
@@ -340,7 +343,7 @@ export const QuestionArtwork = ({
     return (
       <>
         <div
-          className={`pixel-peek ${answered ? 'pixel-peek--revealed' : ''}`}
+          className={`${styles.pixelPeek} ${answered ? styles.pixelPeekRevealed : ''}`}
           style={{
             visibility: spriteState(rendering.subject.sprite, state).visible
               ? undefined
@@ -350,7 +353,7 @@ export const QuestionArtwork = ({
           <QuestionSprite
             rule={rendering.subject.sprite}
             state={state}
-            className="pixel-peek__image"
+            className={styles.pixelPeekImage}
             src={media.src}
             alt={
               answered
@@ -368,16 +371,16 @@ export const QuestionArtwork = ({
             }
           />
         </div>
-        <div className="question-visual__subject">
+        <div className={styles.questionVisualSubject}>
           <PokemonRenderable
             policy={{ ...subjectPolicy, sprite: null }}
             state={state}
             name={question.subject.name}
             dexNumber={subjectDexNumber}
             types={question.subject.types}
-            identityClassName="question-visual__subject-name"
-            numberClassName="question-visual__subject-number"
-            typesClassName="question-visual__subject-types"
+            identityClassName={styles.questionVisualSubjectName}
+            numberClassName={styles.questionVisualSubjectNumber}
+            typesClassName={styles.questionVisualSubjectTypes}
           />
         </div>
       </>
@@ -385,10 +388,10 @@ export const QuestionArtwork = ({
   }
   if (pixelSprite && question.subject.kind !== 'pokemon')
     return (
-      <div className="question-visual">
+      <div className={styles.questionVisual}>
         {question.subject.kind === 'item' ? (
           <ItemRenderable
-            className="question-visual__subject"
+            className={styles.questionVisualSubject}
             name={
               question.optionLabels?.[question.subject.name] ??
               formatPokemonName(question.subject.name)
@@ -396,14 +399,14 @@ export const QuestionArtwork = ({
             src={pixelSprite}
             policy={rendering.subject}
             state={state}
-            spriteClassName="question-visual__pokemon"
-            nameClassName="question-visual__subject-name"
+            spriteClassName={styles.questionVisualPokemon}
+            nameClassName={styles.questionVisualSubjectName}
           />
         ) : (
           <QuestionSprite
             rule={rendering.subject.sprite}
             state={state}
-            className="question-visual__pokemon"
+            className={styles.questionVisualPokemon}
             src={pixelSprite}
           />
         )}
@@ -415,7 +418,7 @@ export const QuestionArtwork = ({
         (question.subject.types?.length &&
           subjectPolicy.types !== 'never'))) ? (
     <div
-      className="question-visual"
+      className={styles.questionVisual}
       aria-hidden={!answerOnlyPortrait || undefined}
     >
       <QuestionSubject {...subject} />

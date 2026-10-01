@@ -1,3 +1,4 @@
+import * as styles from '../../styles/classes.css.ts';
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import { OTPInput, REGEXP_ONLY_DIGITS } from 'input-otp';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -28,7 +29,6 @@ import {
 } from './account';
 import { downloadAccountExport } from './account-export';
 import { BackupSettings } from '../settings/BackupSettings';
-import './account.css';
 
 const emailSchema = z.object({
   email: z
@@ -58,20 +58,20 @@ const DeleteAccountDialog = ({
       {...dialogProps}
       aria-describedby="delete-account-description"
       aria-labelledby="delete-account-title"
-      className="confirm-dialog"
+      className={styles.confirmDialog}
     >
-      <div className="confirm-dialog__body">
+      <div className={styles.confirmDialogBody}>
         <h2 id="delete-account-title">Delete your account?</h2>
         <p id="delete-account-description">
           Your account and synced progress will be deleted. This cannot be
           undone. Other devices may retain local copies.
         </p>
-        <div className="confirm-dialog__actions">
+        <div className={styles.confirmDialogActions}>
           <GameButton autoFocus tone="quiet" onClick={closeDialog}>
             Keep account
           </GameButton>
           <GameButton
-            className="confirm-dialog__confirm"
+            className={styles.confirmDialogConfirm}
             onClick={() => {
               dialog.current?.close();
               onConfirm();
@@ -147,10 +147,10 @@ export const AccountSettings = ({
   const syncOffline = account.offline;
 
   return (
-    <div className="account-settings">
+    <div className={styles.accountSettings}>
       {account.mergeRequired ? (
         <section
-          className="account-settings__section"
+          className={styles.accountSettingsSection}
           aria-labelledby="account-progress-title"
         >
           <h2 id="account-progress-title">Bring your progress with you</h2>
@@ -159,7 +159,7 @@ export const AccountSettings = ({
             completed progress, or keep the guest save separate and use your
             account progress.
           </p>
-          <div className="account-settings__actions">
+          <div className={styles.accountSettingsActions}>
             <GameButton
               disabled={busy}
               onClick={() => run(() => finishSignIn(true), true)}
@@ -180,7 +180,7 @@ export const AccountSettings = ({
           {recoverySignIn || account.owner ? (
             <p>Sign in to the same account to resume syncing.</p>
           ) : !sent ? (
-            <ul className="account-settings__benefits">
+            <ul className={styles.accountSettingsBenefits}>
               <li>
                 <ArrowsClockwiseIcon aria-hidden="true" /> Sync between devices
               </li>
@@ -193,7 +193,7 @@ export const AccountSettings = ({
             </ul>
           ) : null}
           <form
-            className={`account-settings__section${sent ? ' account-settings__verification' : ''}`}
+            className={`${styles.accountSettingsSection}${sent ? ` ${styles.accountSettingsVerification}` : ''}`}
             aria-label="Sign in"
             noValidate
             onSubmit={(event) => {
@@ -219,13 +219,13 @@ export const AccountSettings = ({
           >
             {sent ? (
               <>
-                <div className="account-settings__verify-intro">
+                <div className={styles.accountSettingsVerifyIntro}>
                   <h2>Check your inbox</h2>
                   <p>We sent a six-digit code to</p>
-                  <div className="account-settings__destination">
+                  <div className={styles.accountSettingsDestination}>
                     <strong>{emailForm.getValues('email').trim()}</strong>
                     <button
-                      className="account-settings__text-action"
+                      className={styles.accountSettingsTextAction}
                       type="button"
                       disabled={busy}
                       onClick={() => {
@@ -239,7 +239,7 @@ export const AccountSettings = ({
                     </button>
                   </div>
                 </div>
-                <div className="account-settings__code-field">
+                <div className={styles.accountSettingsCodeField}>
                   <label htmlFor="sign-in-code">Six-digit code</label>
                   <Controller
                     name="code"
@@ -256,25 +256,27 @@ export const AccountSettings = ({
                         aria-describedby={
                           codeError ? 'sign-in-code-error' : 'sign-in-code-hint'
                         }
-                        containerClassName="account-settings__otp"
-                        className="account-settings__otp-input"
+                        containerClassName={styles.accountSettingsOtp}
+                        className={styles.accountSettingsOtpInput}
                         onChange={(value) => {
                           field.onChange(value);
                           if (error) setError('');
                         }}
                         render={({ slots }) => (
                           <div
-                            className="account-settings__code-slots"
+                            className={styles.accountSettingsCodeSlots}
                             aria-hidden="true"
                           >
                             {slots.map((slot, index) => (
                               <span
-                                className={`account-settings__code-slot${slot.isActive ? ' account-settings__code-slot--active' : ''}`}
+                                className={`${styles.accountSettingsCodeSlot}${slot.isActive ? ` ${styles.accountSettingsCodeSlotActive}` : ''}`}
                                 key={index}
                               >
                                 {slot.char}
                                 {slot.hasFakeCaret && (
-                                  <span className="account-settings__code-caret" />
+                                  <span
+                                    className={styles.accountSettingsCodeCaret}
+                                  />
                                 )}
                               </span>
                             ))}
@@ -286,7 +288,7 @@ export const AccountSettings = ({
                   {codeError ? (
                     <span
                       id="sign-in-code-error"
-                      className="account-settings__error"
+                      className={styles.accountSettingsError}
                       role="alert"
                     >
                       {codeError}
@@ -294,7 +296,7 @@ export const AccountSettings = ({
                   ) : (
                     <span
                       id="sign-in-code-hint"
-                      className="account-settings__code-hint"
+                      className={styles.accountSettingsCodeHint}
                     >
                       Code expires in five minutes.
                     </span>
@@ -302,7 +304,7 @@ export const AccountSettings = ({
                 </div>
               </>
             ) : (
-              <div className="account-settings__field">
+              <div className={styles.accountSettingsField}>
                 <label htmlFor="sign-in-email">Email</label>
                 <input
                   id="sign-in-email"
@@ -321,7 +323,7 @@ export const AccountSettings = ({
                 {emailForm.formState.errors.email && (
                   <span
                     id="sign-in-email-error"
-                    className="account-settings__error"
+                    className={styles.accountSettingsError}
                     role="alert"
                   >
                     {emailForm.formState.errors.email.message}
@@ -337,10 +339,10 @@ export const AccountSettings = ({
                 handle your data.
               </p>
             )}
-            <div className="account-settings__actions">
+            <div className={styles.accountSettingsActions}>
               <GameButton
                 type="submit"
-                className={sent ? 'account-settings__verify-button' : ''}
+                className={sent ? styles.accountSettingsVerifyButton : ''}
                 disabled={
                   busy ||
                   !(sent
@@ -372,10 +374,10 @@ export const AccountSettings = ({
               )}
             </div>
             {sent && (
-              <div className="account-settings__resend">
+              <div className={styles.accountSettingsResend}>
                 <span>Didn’t get the code?</span>
                 <button
-                  className="account-settings__text-action"
+                  className={styles.accountSettingsTextAction}
                   type="button"
                   disabled={busy}
                   onClick={() =>
@@ -390,7 +392,7 @@ export const AccountSettings = ({
           </form>
           {account.emailDelivery === 'test-mailbox' && (
             <aside
-              className="account-settings__testing"
+              className={styles.accountSettingsTesting}
               aria-label="Local testing"
             >
               <p>Local testing: use an @example.test address.</p>
@@ -429,7 +431,7 @@ export const AccountSettings = ({
         </>
       ) : (
         <>
-          <div className="account-settings__primary-action">
+          <div className={styles.accountSettingsPrimaryAction}>
             <GameButton
               tone="quiet"
               disabled={busy}
@@ -446,7 +448,7 @@ export const AccountSettings = ({
             </GameButton>
           </div>
           <section
-            className="account-settings__section"
+            className={styles.accountSettingsSection}
             aria-label="Delete account"
           >
             <p>
@@ -481,7 +483,7 @@ export const AccountSettings = ({
           </section>
           {(syncPaused || syncOffline) && (
             <section
-              className="account-settings__sync"
+              className={styles.accountSettingsSync}
               aria-label="Sync status"
               role="status"
             >
@@ -496,7 +498,7 @@ export const AccountSettings = ({
                     : 'Your changes are saved on this device.'}
               </p>
               {syncPaused && (
-                <div className="account-settings__actions">
+                <div className={styles.accountSettingsActions}>
                   <GameButton
                     tone="quiet"
                     disabled={busy}
@@ -518,7 +520,7 @@ export const AccountSettings = ({
             </section>
           )}
           {(syncPaused || syncOffline) && (
-            <details className="account-settings__details">
+            <details className={styles.accountSettingsDetails}>
               <summary>Recover device changes</summary>
               <BackupSettings accountRecovery />
             </details>
@@ -533,11 +535,7 @@ export const AccountSettings = ({
         </p>
       )}
       {message && !sent && <p role="status">{message}</p>}
-      {error && !sent && (
-        <p className="settings-error" role="alert">
-          {error}
-        </p>
-      )}
+      {error && !sent && <p role="alert">{error}</p>}
     </div>
   );
 };

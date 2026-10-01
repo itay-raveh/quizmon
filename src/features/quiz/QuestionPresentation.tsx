@@ -1,3 +1,4 @@
+import * as styles from './styles/classes.css.ts';
 import { TypeBadges } from '@/components/TypeBadge';
 import {
   formatPokemonName,
@@ -47,28 +48,28 @@ const QuestionPrompt = ({
         <>
           {itemName ? (
             <ItemRenderable
-              className="question__item-subject"
+              className={styles.questionItemSubject}
               name={itemName}
               src={itemSprite}
               policy={policy}
               state={state}
-              spriteClassName="question__item-portrait"
+              spriteClassName={styles.questionItemPortrait}
             />
           ) : null}
           {itemName ? prompt.text.replace(itemName, 'it') : prompt.text}
           {prompt.description ? (
-            <span className="question__move-description">
+            <span className={styles.questionMoveDescription}>
               {prompt.description}
             </span>
           ) : null}
           {prompt.supportingText || itemSprite ? (
-            <span className="question__supporting-text">
+            <span className={styles.questionSupportingText}>
               {itemSprite && !itemName ? (
                 <QuestionSprite
                   rule={policy.sprite}
                   state={state}
                   src={itemSprite}
-                  className="question__inline-item"
+                  className={styles.questionInlineItem}
                 />
               ) : null}
               {prompt.supportingText}
@@ -81,15 +82,14 @@ const QuestionPrompt = ({
           <QuestionIdentity
             policy={policy}
             state={state}
-            className="question__subject"
             inline
             name={prompt.name}
             dexNumber={prompt.dexNumber}
-            numberClassName="question__subject-number"
+            numberClassName={styles.questionSubjectNumber}
           />
           {prompt.after}
           {prompt.supportingText ? (
-            <span className="question__supporting-text">
+            <span className={styles.questionSupportingText}>
               {prompt.supportingText}
             </span>
           ) : null}
@@ -101,16 +101,16 @@ const QuestionPrompt = ({
             <span className="visually-hidden">this item</span>
           ) : null}
           <ItemRenderable
-            className="question__item-subject"
+            className={styles.questionItemSubject}
             name={prompt.name}
             src={prompt.sprite}
             policy={policy}
             state={state}
-            spriteClassName="question__item-portrait"
+            spriteClassName={styles.questionItemPortrait}
           />
           {prompt.after}
           {prompt.supportingText ? (
-            <span className="question__supporting-text">
+            <span className={styles.questionSupportingText}>
               {prompt.supportingText}
             </span>
           ) : null}
@@ -151,9 +151,9 @@ const QuestionPresentationInner = ({
           prompt={question.prompt}
         />
       ) : null}
-      <div className="question__context">
+      <div className={styles.questionContext}>
         <div
-          className="question__instruction"
+          className={styles.questionInstruction}
           aria-hidden={visualInstruction || undefined}
         >
           {visualInstruction ? (
@@ -162,7 +162,7 @@ const QuestionPresentationInner = ({
             <QuestionPrompt
               policy={rendering.subject}
               state={revealState}
-              className="question__prompt"
+              className={styles.questionPrompt}
               prompt={question.prompt}
               itemSprite={inlineItem}
               itemName={
@@ -174,7 +174,7 @@ const QuestionPresentationInner = ({
           )}
         </div>
         {question.suppliedClues?.length ? (
-          <div className="clue-board">
+          <div className={styles.clueBoard}>
             <ol>
               {question.suppliedClues.map((clue) => (
                 <li key={clue}>{clue}</li>
@@ -183,7 +183,7 @@ const QuestionPresentationInner = ({
           </div>
         ) : null}
         {!inlineItem && question.prompt.kind !== 'item' ? (
-          <div className="question__stimulus">
+          <div className={styles.questionStimulus}>
             {isChampion && !isLeague && cluesShown > 1 ? (
               <QuestionClues cluesShown={cluesShown} question={question} />
             ) : null}

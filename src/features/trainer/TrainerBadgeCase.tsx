@@ -1,3 +1,4 @@
+import * as styles from './styles/classes.css.ts';
 import { SoundButton } from '@/components/SoundButton';
 import {
   trainerTierLabels,
@@ -30,7 +31,7 @@ export const TrainerBadgeCase = ({
     <article
       aria-label={compact ? undefined : trainerViewLabels.badges}
       aria-hidden={compact || undefined}
-      className={`trainer-artifact-frame trainer-badge-case${compact ? ' trainer-badge-case--compact' : ''}`}
+      className={`${styles.trainerArtifactFrame} ${styles.trainerBadgeCase}${compact ? ` ${styles.trainerBadgeCaseCompact}` : ''}`}
     >
       <section
         aria-label={
@@ -38,13 +39,13 @@ export const TrainerBadgeCase = ({
             ? undefined
             : `${earnedCount} of ${badges.length} League Badges earned`
         }
-        className="trainer-badge-case__badges"
+        className={styles.trainerBadgeCaseBadges}
       >
-        <CollectionCorners className="trainer-badge-case__rivet" />
+        <CollectionCorners kind="badge" />
         {badges.map((badge) =>
           compact ? (
             <span
-              className="trainer-badge"
+              className={styles.trainerBadge}
               data-earned={badge.earned}
               data-tier={badge.tier}
               key={badge.id}
@@ -54,7 +55,7 @@ export const TrainerBadgeCase = ({
           ) : (
             <SoundButton
               aria-label={`${badge.label}. ${badge.earned ? `Earned, ${trainerTierLabels[badge.tier]} tier ${badge.tier}` : `Locked, ${Math.min(badge.current, badge.goal)} of ${badge.goal}`}. Open badge details.`}
-              className="trainer-badge"
+              className={styles.trainerBadge}
               data-earned={badge.earned}
               data-tier={badge.tier}
               title={`${badge.label} · ${trainerTierLabels[badge.tier]}`}

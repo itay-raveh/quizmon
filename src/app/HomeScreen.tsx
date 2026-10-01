@@ -1,3 +1,4 @@
+import * as styles from './classes.css.ts';
 import { site } from '@/app/site';
 import { GameButton } from '@/components/GameButton';
 import { LevelLabel } from '@/components/LevelLabel';
@@ -15,7 +16,7 @@ import { CatchCombo } from '@/features/daily/CatchCombo';
 import { ShareResultButton } from '@/features/sharing/ShareResultButton';
 import { TrainerBadgeCase } from '@/features/trainer/TrainerBadgeCase';
 import { Logo } from './Logo';
-import { Link } from 'react-router';
+import { Link } from '@tanstack/react-router';
 import { useInteractionSound } from '@/lib/audio/sound-context';
 
 interface HomeScreenProps {
@@ -68,7 +69,7 @@ export const HomeScreen = ({
       ) : (
         <TrainerBadgeCase badges={badges} compact />
       )}
-      <span className="landing__league-copy">
+      <span className={styles.landingLeagueCopy}>
         <strong>Quizmon League</strong>
         <span>
           {leagueUnlocked
@@ -89,14 +90,17 @@ export const HomeScreen = ({
   );
 
   return (
-    <section className="landing" aria-labelledby="landing-title">
+    <section className={styles.landing} aria-labelledby="landing-title">
       <h1 id="landing-title" className="visually-hidden">
         {site.title}
       </h1>
       <Logo />
-      <div className="landing__primary">
+      <div className={styles.landingPrimary}>
         {catalogStatus === 'error' ? (
-          <div className="landing__status landing__status--error" role="alert">
+          <div
+            className={`${styles.landingStatus} ${styles.landingStatusError}`}
+            role="alert"
+          >
             <span>The Daily Challenge could not be loaded.</span>
             <GameButton tone="quiet" onClick={onRetryCatalog}>
               Try again
@@ -104,28 +108,33 @@ export const HomeScreen = ({
           </div>
         ) : null}
         {dailyError ? (
-          <p className="landing__status landing__status--error" role="alert">
+          <p
+            className={`${styles.landingStatus} ${styles.landingStatusError}`}
+            role="alert"
+          >
             {dailyError}
           </p>
         ) : null}
         {dailyResult ? (
           <ShareResultButton
             aria-label="Share result"
-            className={`daily-action daily-action--complete ${dailyStreak > 0 ? 'daily-action--with-combo' : ''}`.trim()}
+            className={`${styles.dailyAction} ${styles.dailyActionComplete}`}
             mode={{
               kind: 'daily',
               date: dailyDate,
             }}
             result={dailyResult}
           >
-            <span className="daily-action__copy">
-              <strong className="daily-action__title">Daily Challenge</strong>
-              <span className="daily-action__detail">
+            <span className={styles.dailyActionCopy}>
+              <strong className={styles.dailyActionTitle}>
+                Daily Challenge
+              </strong>
+              <span className={styles.dailyActionDetail}>
                 {dailyResult.score.toLocaleString()} points
                 {dailyResultSaved ? '' : ' · Not saved'}
               </span>
             </span>
-            <CatchCombo count={dailyStreak} />
+            <CatchCombo count={dailyStreak} placement="dailyAction" />
           </ShareResultButton>
         ) : (
           <GameButton
@@ -134,33 +143,37 @@ export const HomeScreen = ({
                 ? `Daily Challenge for ${formatDailyDate(dailyDate)} forfeited`
                 : `Play Daily Challenge for ${formatDailyDate(dailyDate)}${dailyStreak > 0 ? `. ${dailyStreak}-day Daily Combo.` : ''}`
             }
-            className={`daily-action ${dailyStreak > 0 ? 'daily-action--with-combo' : ''}`.trim()}
+            className={styles.dailyAction}
             disabled={dailyForfeited || !catalogReady || !storageAvailable}
             onClick={onStartDaily}
           >
-            <span className="daily-action__copy">
-              <strong className="daily-action__title">Daily Challenge</strong>
+            <span className={styles.dailyActionCopy}>
+              <strong className={styles.dailyActionTitle}>
+                Daily Challenge
+              </strong>
               {dailyForfeited ? (
-                <span className="daily-action__detail">Attempt forfeited</span>
+                <span className={styles.dailyActionDetail}>
+                  Attempt forfeited
+                </span>
               ) : catalogStatus === 'loading' ? (
-                <span className="daily-action__detail" role="status">
-                  <span className="landing__spinner" aria-hidden="true" />
+                <span className={styles.dailyActionDetail} role="status">
+                  <span className={styles.landingSpinner} aria-hidden="true" />
                   Preparing Daily Challenge…
                 </span>
               ) : (
-                <span className="daily-action__detail">{dailyDetail}</span>
+                <span className={styles.dailyActionDetail}>{dailyDetail}</span>
               )}
             </span>
-            <CatchCombo count={dailyStreak} />
+            <CatchCombo count={dailyStreak} placement="dailyAction" />
           </GameButton>
         )}
       </div>
-      <div className="landing__control-stack">
-        <div className="landing__actions" aria-label="Training">
+      <div className={styles.landingControlStack}>
+        <div className={styles.landingActions} aria-label="Training">
           <GameButton
             aria-label="Customize training"
             title="Customize training"
-            className="landing__customize"
+            className={styles.landingCustomize}
             disabled={!catalogReady}
             tone="quiet"
             onClick={onCustomizeTraining}
@@ -179,7 +192,7 @@ export const HomeScreen = ({
         </div>
         {leagueUnlocked ? (
           <GameButton
-            className="landing__league-button"
+            className={styles.landingLeagueButton}
             aria-label="Quizmon League"
             disabled={!catalogReady}
             tone="quiet"
@@ -195,7 +208,7 @@ export const HomeScreen = ({
                 ? `Quizmon League locked. Earn all ${badgeCount} League Badges. ${earnedBadgeCount} of ${badgeCount} earned. View Badge Case.`
                 : 'Quizmon League locked. Preparing badges. View Badge Case.'
             }
-            className="game-button game-button--quiet landing__league-button landing__league-button--locked"
+            className={`game-button game-button--quiet ${styles.landingLeagueButton} ${styles.landingLeagueButtonLocked}`}
             onClick={() => playSound('tap')}
           >
             {leagueContent}

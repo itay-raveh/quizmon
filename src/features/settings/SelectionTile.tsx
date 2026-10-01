@@ -1,3 +1,4 @@
+import * as styles from './classes.css.ts';
 import { useToggleSound } from '@/lib/audio/sound-context';
 import { useId, type InputHTMLAttributes, type ReactNode } from 'react';
 import { CheckIcon } from '@/components/icons';
@@ -33,19 +34,19 @@ export const SelectionTile = ({
         onChange={handleChange}
         type={inputType}
       />
-      <span className="selection-tile__surface">
-        <span className="selection-tile__label" id={`${id}-label`}>
+      <span className={styles.selectionTileSurface}>
+        <span className={styles.selectionTileLabel} id={`${id}-label`}>
           {label}
         </span>
         {description ? (
           <span
-            className="selection-tile__description"
+            className={styles.selectionTileDescription}
             id={`${id}-description`}
           >
             {description}
           </span>
         ) : null}
-        <span className="selection-tile__check" aria-hidden="true">
+        <span className={styles.selectionTileCheck} aria-hidden="true">
           <CheckIcon weight="bold" />
         </span>
       </span>

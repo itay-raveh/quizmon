@@ -1,3 +1,4 @@
+import * as styles from './classes.css.ts';
 import {
   useEffect,
   useLayoutEffect,
@@ -10,7 +11,7 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
-import { Link } from 'react-router';
+import { Link } from '@tanstack/react-router';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import { GameButton } from '../../components/GameButton';
@@ -40,7 +41,6 @@ import {
 } from './leaderboards-client';
 import { friendsPageQuery } from './social-queries';
 import { canShareFriendLink, shareFriendLink } from './friend-sharing';
-import './friends.css';
 
 function InviteFriends({
   owner,
@@ -52,7 +52,7 @@ function InviteFriends({
   const [message, setMessage] = useState('');
   const link = `${location.origin}${friendInvitePath(owner)}`;
   return (
-    <div className="leaderboard-invite">
+    <div className={styles.leaderboardInvite}>
       <GameButton
         tone="quiet"
         onClick={() => {
@@ -174,7 +174,7 @@ function Standings({
   const versionHelpId = `leaderboard-version-help-${scope}`;
   return (
     <section
-      className="leaderboard-standings"
+      className={styles.leaderboardStandings}
       aria-label={`${scope === 'global' ? 'Global' : 'Friends'} ${mode === 'daily' ? 'Daily' : 'Training'} standings`}
       aria-busy={busy || checkingFriends}
       inert={!active}
@@ -187,7 +187,7 @@ function Standings({
             </p>
           )}
           {showSkeleton && (
-            <div className="leaderboard-viewer" aria-hidden="true">
+            <div className={styles.leaderboardViewer} aria-hidden="true">
               <span>
                 <Skeleton width="9ch" />
               </span>
@@ -197,7 +197,7 @@ function Standings({
             </div>
           )}
           {!showSkeleton && data?.viewer && (
-            <div className="leaderboard-viewer">
+            <div className={styles.leaderboardViewer}>
               <PlayerName trainer={data.viewer.player} />
               <strong>#{data.viewer.rank}</strong>
             </div>
@@ -205,7 +205,7 @@ function Standings({
           {showSkeleton || data?.items.length ? (
             <>
               <table
-                className="leaderboard-table"
+                className={styles.leaderboardTable}
                 aria-hidden={showSkeleton || undefined}
               >
                 <caption className="visually-hidden">
@@ -239,7 +239,7 @@ function Standings({
                         ) : (
                           <SoundButton
                             aria-label={`Why is ${row.player.name}'s score unranked?`}
-                            className="leaderboard-version-button"
+                            className={styles.leaderboardVersionButton}
                             popoverTarget={versionHelpId}
                             popoverTargetAction="show"
                           >
@@ -248,7 +248,7 @@ function Standings({
                         )}
                       </td>
                       <th scope="row">
-                        <span className="leaderboard-player">
+                        <span className={styles.leaderboardPlayer}>
                           {row ? (
                             <span>
                               <PlayerName trainer={row.player} />
@@ -260,13 +260,15 @@ function Standings({
                             </span>
                           )}
                           {!row ? (
-                            <span className="friends-icon-button game-button game-button--quiet">
+                            <span
+                              className={`${styles.friendsIconButton} game-button game-button--quiet`}
+                            >
                               <Skeleton circle width="1.3rem" height="1.3rem" />
                             </span>
                           ) : row.player.id !== owner ? (
                             <GameButton
                               aria-label={`View ${row.player.name}'s profile`}
-                              className="friends-icon-button"
+                              className={styles.friendsIconButton}
                               onClick={() => onViewPlayer(row.player.id)}
                               title={`View ${row.player.name}'s profile`}
                               tone="quiet"
@@ -298,14 +300,14 @@ function Standings({
               </table>
               {!showSkeleton && mode === 'daily' && (
                 <div
-                  className="leaderboard-version-help"
+                  className={styles.leaderboardVersionHelp}
                   id={versionHelpId}
                   popover="auto"
                   role="note"
                 >
                   <SoundButton
                     aria-label="Close puzzle version explanation"
-                    className="leaderboard-version-help__close"
+                    className={styles.leaderboardVersionHelpClose}
                     popoverTarget={versionHelpId}
                     popoverTargetAction="hide"
                   >
@@ -320,7 +322,7 @@ function Standings({
               )}
             </>
           ) : (
-            <div className="leaderboard-empty">
+            <div className={styles.leaderboardEmpty}>
               <strong>
                 {noFriends
                   ? 'Invite friends to compare scores'
@@ -333,8 +335,9 @@ function Standings({
               )}
               {!noFriends && (
                 <Link
-                  className="game-button leaderboard-empty__action"
-                  to={pastDaily ? `/daily/${date}` : '/'}
+                  className={`game-button ${styles.leaderboardEmptyAction}`}
+                  to={pastDaily ? '/daily/$date' : '/'}
+                  params={pastDaily ? { date } : {}}
                   onClick={(event) => {
                     if (
                       event.metaKey ||
@@ -355,12 +358,12 @@ function Standings({
             </div>
           )}
           {data && !showSkeleton && data.items.length > 0 && (
-            <p className="social-screen__note">
+            <p className={styles.socialScreenNote}>
               {data.total} {data.total === 1 ? 'trainer' : 'trainers'}
             </p>
           )}
           {data && !showSkeleton && (after || data.nextCursor) && (
-            <div className="leaderboard-pagination">
+            <div className={styles.leaderboardPagination}>
               {after && (
                 <GameButton
                   tone="quiet"
@@ -488,10 +491,10 @@ export function LeaderboardScreen({
   };
   return (
     <section
-      className="game-panel social-screen"
+      className={`game-panel ${styles.socialScreen}`}
       aria-labelledby="social-title"
     >
-      <header className="game-panel__header leaderboard-header">
+      <header className={`game-panel__header ${styles.leaderboardHeader}`}>
         <h1 className="game-panel__title" id="social-title">
           Rankings
         </h1>
@@ -502,12 +505,12 @@ export function LeaderboardScreen({
           />
         )}
       </header>
-      <div className="friends-panel">
+      <div className={styles.friendsPanel}>
         {account.owner && !account.mergeRequired ? (
           <>
-            <div className="leaderboard-toolbar">
+            <div className={styles.leaderboardToolbar}>
               <div
-                className="leaderboard-modes"
+                className={styles.leaderboardModes}
                 role="group"
                 aria-label="Game mode"
               >
@@ -526,9 +529,9 @@ export function LeaderboardScreen({
                   Training
                 </button>
               </div>
-              <div className="leaderboard-filter">
+              <div className={styles.leaderboardFilter}>
                 <div
-                  className="leaderboard-scopes"
+                  className={styles.leaderboardScopes}
                   role="group"
                   aria-label="Leaderboard players"
                 >
@@ -549,7 +552,9 @@ export function LeaderboardScreen({
                 </div>
               </div>
               {mode === 'daily' && (
-                <div className="leaderboard-filter leaderboard-date">
+                <div
+                  className={`${styles.leaderboardFilter} ${styles.leaderboardDate}`}
+                >
                   <GameButton
                     tone="quiet"
                     aria-label="Previous day"
@@ -576,14 +581,14 @@ export function LeaderboardScreen({
               )}
             </div>
             {(standingsError || shareFallbackLink) && (
-              <div className="social-error-banner" role="alert">
+              <div className={styles.socialErrorBanner} role="alert">
                 <strong>
                   {shareFallbackLink
                     ? 'Invite link could not be shared.'
                     : standingsError}
                 </strong>
                 {shareFallbackLink && (
-                  <label className="friends-field">
+                  <label className={styles.friendsField}>
                     Invite link
                     <input
                       readOnly
@@ -609,7 +614,7 @@ export function LeaderboardScreen({
               </div>
             )}
             <div
-              className="leaderboard-swipe"
+              className={styles.leaderboardSwipe}
               ref={swipe}
               onScroll={(event) => {
                 chooseScope(
@@ -645,7 +650,7 @@ export function LeaderboardScreen({
             </div>
           </>
         ) : (
-          <div className="social-screen__intro">
+          <div className={styles.socialScreenIntro}>
             <h2>
               {account.mergeRequired
                 ? 'Choose your progress'

@@ -1,3 +1,4 @@
+import * as styles from './classes.css.ts';
 import { PokemonIdentity } from '@/components/PokemonIdentity';
 import { PlayerName } from '@/components/PlayerName';
 import type { LeagueVictoryRecord } from '@/domain/player/hall-of-fame';
@@ -33,11 +34,11 @@ export const HallOfFameRecord = ({
   );
 
   return (
-    <article className="hall-record" aria-label={`Victory ${number}`}>
+    <article className={styles.hallRecord} aria-label={`Victory ${number}`}>
       <h1 tabIndex={-1}>Hall of Fame</h1>
-      <div className="hall-record__portrait">
+      <div className={styles.hallRecordPortrait}>
         <LeagueTrophy />
-        <ul className="hall-record__group" aria-label="Challenge Pokémon">
+        <ul className={styles.hallRecordGroup} aria-label="Challenge Pokémon">
           {arrangeGroup(record.pokemon, sizes).map(
             ({ name, left, top, width, layer, mirrored }) => (
               <li
@@ -53,7 +54,7 @@ export const HallOfFameRecord = ({
                 {catalog.pokemon[name]?.sprite ? (
                   <img
                     className={
-                      mirrored ? 'hall-record__sprite--flipped' : undefined
+                      mirrored ? styles.hallRecordSpriteFlipped : undefined
                     }
                     src={catalog.pokemon[name].sprite}
                     alt=""
@@ -62,7 +63,7 @@ export const HallOfFameRecord = ({
                     decoding="async"
                   />
                 ) : (
-                  <span className="hall-record__missing" aria-hidden="true">
+                  <span className={styles.hallRecordMissing} aria-hidden="true">
                     ?
                   </span>
                 )}
@@ -72,18 +73,18 @@ export const HallOfFameRecord = ({
           )}
         </ul>
       </div>
-      <div className="hall-record__honors">
+      <div className={styles.hallRecordHonors}>
         <h2>
           <PlayerName
             trainer={{ name: record.trainerName, leagueCompleted: true }}
             fallback="League Champion"
           />
         </h2>
-        <p className="hall-record__score">
+        <p className={styles.hallRecordScore}>
           <strong>{formatScore(record.result.score)}</strong> points
         </p>
       </div>
-      <footer className="hall-record__signature">
+      <footer className={styles.hallRecordSignature}>
         <span>Victory {String(number).padStart(3, '0')}</span>
         <time dateTime={record.completedAt}>
           {new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(

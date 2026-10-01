@@ -20,7 +20,7 @@ export const LocalGame = () => {
   return (
     <>
       {error && (
-        <section className="settings-error" role="alert">
+        <section role="alert">
           <h2>Your progress has not been saved</h2>
           <p>{error}</p>
           <p>

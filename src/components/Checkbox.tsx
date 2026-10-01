@@ -1,3 +1,4 @@
+import * as styles from './classes.css.ts';
 import { useToggleSound } from '@/lib/audio/sound-context';
 import type { InputHTMLAttributes, ReactNode } from 'react';
 import { CheckIcon } from './icons';
@@ -21,13 +22,13 @@ export const Checkbox = ({
   return (
     <label className="checkbox">
       <input {...props} onChange={handleChange} type="checkbox" />
-      <span className="checkbox__control" aria-hidden="true">
+      <span className={styles.checkboxControl} aria-hidden="true">
         <CheckIcon weight="bold" />
       </span>
-      <span className="checkbox__copy">
-        <span className="checkbox__label">{label}</span>
+      <span className={styles.checkboxCopy}>
+        <span className={styles.checkboxLabel}>{label}</span>
         {description ? (
-          <span className="checkbox__description">{description}</span>
+          <span className={styles.checkboxDescription}>{description}</span>
         ) : null}
       </span>
     </label>

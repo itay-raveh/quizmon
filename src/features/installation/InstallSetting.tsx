@@ -1,3 +1,4 @@
+import * as styles from '../settings/classes.css.ts';
 import { useInstall } from '@/features/installation/install-context';
 import { InstallAction } from './InstallAction';
 
@@ -6,9 +7,11 @@ export const InstallSetting = () => {
   if (status === 'installed' || (status === 'unavailable' && !error))
     return null;
   return (
-    <fieldset className="experience-setting experience-setting--install">
+    <fieldset
+      className={`${styles.experienceSetting} ${styles.experienceSettingInstall}`}
+    >
       <legend>Install Quizmon</legend>
-      <p className="experience-status">
+      <p className={styles.experienceStatus}>
         Keep Quizmon within easy reach for your next Daily.
       </p>
       <InstallAction />

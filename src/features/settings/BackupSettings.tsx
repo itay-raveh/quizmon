@@ -1,3 +1,4 @@
+import * as styles from './classes.css.ts';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { GameButton } from '../../components/GameButton';
 import { Toast } from '../../components/Toast';
@@ -117,7 +118,9 @@ export const BackupSettings = ({
   };
 
   return (
-    <fieldset className="experience-setting backup-settings">
+    <fieldset
+      className={`${styles.experienceSetting} ${styles.backupSettings}`}
+    >
       <legend>
         {accountRecovery ? 'Device recovery' : 'Backup & restore'}
       </legend>
@@ -126,7 +129,7 @@ export const BackupSettings = ({
           ? 'Save a copy of changes waiting on this device, or recover them from a backup for this account.'
           : 'Your saved progress, Trainer profile, and settings.'}
       </p>
-      <div className="backup-settings__actions">
+      <div className={styles.backupSettingsActions}>
         <GameButton
           tone="quiet"
           disabled={busy}
@@ -168,11 +171,7 @@ export const BackupSettings = ({
           if (file) void readFile(file);
         }}
       />
-      {error && (
-        <p className="settings-error" role="alert">
-          {error}
-        </p>
-      )}
+      {error && <p role="alert">{error}</p>}
       <div role="status">
         {restored && (
           <p>
@@ -184,7 +183,7 @@ export const BackupSettings = ({
       </div>
       {preview && (
         <div
-          className="backup-settings__preview"
+          className={styles.backupSettingsPreview}
           role="region"
           aria-label="Restore preview"
           aria-live="polite"
@@ -226,7 +225,7 @@ export const BackupSettings = ({
               ? 'Merges missing rounds and device data into this account. Sync then carries completed rounds to your other devices.'
               : 'Merges completed rounds and device data. The backup profile and settings are applied.'}
           </p>
-          <div className="backup-settings__actions">
+          <div className={styles.backupSettingsActions}>
             <GameButton
               tone="quiet"
               onClick={() => {

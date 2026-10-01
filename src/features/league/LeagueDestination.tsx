@@ -1,10 +1,10 @@
+import * as styles from './classes.css.ts';
 import { GameButton } from '@/components/GameButton';
 import { BackButton } from '@/components/BackButton';
 import { ArrowLeftIcon, ArrowRightIcon } from '@/components/icons';
 import type { LeagueVictoryRecord } from '@/domain/player/hall-of-fame';
 import type { PokemonCatalog } from '@/domain/pokemon/types';
 import { LEAGUE_QUESTION_COUNT, type LeagueView } from '@/domain/quiz/league';
-import '@/features/league/league.css';
 import {
   readPlayerData,
   subscribeToPlayerChanges,
@@ -67,13 +67,16 @@ export const LeagueDestination = ({
 
   return (
     <section
-      className={`league-hall${celebrate ? ' league-hall--induction' : ''}`}
+      className={`${styles.leagueHall}${celebrate ? ` ${styles.leagueHallInduction}` : ''}`}
       aria-label="Quizmon League"
     >
-      <header className="league-hall__header">
+      <header className={styles.leagueHallHeader}>
         <BackButton label="Back to home" onClick={onBack} />
         {completed && (
-          <nav className="league-hall__navigation" aria-label="League views">
+          <nav
+            className={styles.leagueHallNavigation}
+            aria-label="League views"
+          >
             <GameButton
               tone="quiet"
               aria-pressed={view === 'challenge'}
@@ -93,11 +96,11 @@ export const LeagueDestination = ({
       </header>
       <div ref={heading}>
         {view === 'challenge' ? (
-          <div className="league-challenge">
+          <div className={styles.leagueChallenge}>
             <h1 tabIndex={-1}>League challenge</h1>
             <p>{`Answer all ${LEAGUE_QUESTION_COUNT} questions correctly to enter the Hall of Fame.`}</p>
             <LeagueProgress />
-            <GameButton className="league-gold-button" onClick={onStart}>
+            <GameButton className={styles.leagueGoldButton} onClick={onStart}>
               {completed ? 'League rematch' : 'Start League challenge'}
               <ArrowRightIcon aria-hidden="true" weight="bold" />
             </GameButton>
@@ -106,7 +109,7 @@ export const LeagueDestination = ({
           <>
             {records.length > 1 && (
               <div
-                className="league-hall__history"
+                className={styles.leagueHallHistory}
                 aria-label="Victory history"
               >
                 <GameButton
@@ -137,12 +140,12 @@ export const LeagueDestination = ({
               number={index + 1}
             />
             {!resultSaved && record.id === freshRecord?.id && (
-              <p className="league-hall__notice" role="alert">
+              <p className={styles.leagueHallNotice} role="alert">
                 This victory could not be saved on this device.
               </p>
             )}
             {onViewResults && record.id === freshRecord?.id && (
-              <footer className="league-hall__actions">
+              <footer className={styles.leagueHallActions}>
                 <GameButton tone="quiet" onClick={onViewResults}>
                   View results
                 </GameButton>
@@ -150,7 +153,7 @@ export const LeagueDestination = ({
             )}
           </>
         ) : (
-          <div className="league-hall__empty">
+          <div className={styles.leagueHallEmpty}>
             <h1 tabIndex={-1}>Hall of Fame</h1>
             <LeagueTrophy />
             <h2>Your Champion title is yours.</h2>
@@ -159,7 +162,7 @@ export const LeagueDestination = ({
               add your first record.
             </p>
             <GameButton
-              className="league-gold-button"
+              className={styles.leagueGoldButton}
               onClick={() => onViewChange('challenge')}
             >
               Go to challenge{' '}

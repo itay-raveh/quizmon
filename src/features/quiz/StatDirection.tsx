@@ -1,3 +1,4 @@
+import * as styles from './styles/classes.css.ts';
 import { RelationArrow } from './RelationArrow';
 
 export const StatDirection = ({
@@ -10,7 +11,7 @@ export const StatDirection = ({
   compact?: boolean;
 }) => (
   <span
-    className={`stat-direction${compact ? ' stat-direction--compact' : ''}`}
+    className={`${styles.statDirection}${compact ? ` ${styles.statDirectionCompact}` : ''}`}
   >
     <strong>{label}</strong>
     <RelationArrow direction={direction} />
