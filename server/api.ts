@@ -210,16 +210,19 @@ export function createAccountApi(services: AccountServices) {
     });
   const signedIn = new Hono<AccountEnv>();
   signedIn.use('*', async (context, next) => {
-    const session = await Sentry.startSpan(
-      { name: 'auth.session', op: 'auth' },
+    const { response: session, headers } = await Sentry.startSpan(
+      { name: 'auth.session+jwt', op: 'auth' },
       () =>
-        context
-          .get('auth')
-          .api.getSession({ headers: context.req.raw.headers }),
+        context.get('auth').api.getSession({
+          headers: context.req.raw.headers,
+          returnHeaders: true,
+        }),
     );
     if (!session)
       return context.json({ error: 'Sign in to continue syncing.' }, 401);
     context.set('accountId', session.user.id);
+    const token = headers.get('set-auth-jwt');
+    if (token) context.set('syncToken', Promise.resolve(token));
     try {
       Sentry.setUser({ id: session.user.id, email: session.user.email });
     } catch {

@@ -17,7 +17,7 @@ const dataCollection = {
   httpBodies: [],
   urlQueryParams: false,
   genAI: { inputs: false, outputs: false },
-  databaseQueryData: false,
+  databaseQueryData: true,
   queues: false,
   graphQL: { document: false, variables: false },
 } satisfies NonNullable<Sentry.CloudflareOptions['dataCollection']>;

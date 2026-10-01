@@ -5,7 +5,7 @@ import {
   filterWorkerDatabaseSpan,
 } from '../../server/sentry-spans.ts';
 
-void test('database spans retain operations while removing queries and connection details', () => {
+void test('database spans retain safe query shapes without values or connection details', () => {
   const mongo = filterNodeDatabaseSpan({
     op: 'db',
     description: 'find { email: secret }',
@@ -45,6 +45,7 @@ void test('database spans retain operations while removing queries and connectio
     'db.system.name': 'postgresql',
     'db.namespace': 'quizmon',
     'db.query.summary': 'SELECT users',
+    'db.query.text': 'SELECT * FROM users WHERE email = ?',
     'sentry.op': 'db',
   });
 
