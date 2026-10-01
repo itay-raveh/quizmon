@@ -133,13 +133,13 @@ function Standings({
       return readTrainingLeaderboard(owner, scope, after, pageSize, signal);
     },
     enabled: active,
-    refetchInterval: 60_000,
   });
   const data = board.data;
   const busy = board.isFetching;
   const friends = useInfiniteQuery({
     ...friendsPageQuery(owner, 'friends'),
     enabled: active && scope === 'friends' && data?.items.length === 0,
+    refetchInterval: false,
   });
   useEffect(() => {
     const cause = board.error ?? (scope === 'friends' ? friends.error : null);
