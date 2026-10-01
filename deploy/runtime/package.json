@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@sentry/node": "10.75.1",
+    "@sentry/node": "11.2.0",
     "drizzle-orm": "0.45.2",
     "express": "5.2.1",
     "jose": "6.2.12",

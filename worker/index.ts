@@ -19,6 +19,7 @@ const dataCollection = {
   databaseQueryData: true,
   queues: false,
   graphQL: { document: false, variables: false },
+  stackFrameVariables: false,
 } satisfies NonNullable<Sentry.CloudflareOptions['dataCollection']>;
 
 export const handler = {

@@ -32,8 +32,14 @@ export const initSentry = () => {
     Sentry.init({
       dsn,
       release: env.VITE_SENTRY_RELEASE,
-      sendDefaultPii: false,
-      enableLogs: true,
+      dataCollection: {
+        userInfo: false,
+        cookies: false,
+        httpHeaders: false,
+        httpBodies: [],
+        urlQueryParams: false,
+        stackFrameVariables: false,
+      },
       tracesSampleRate: 0.1,
       tracePropagationTargets: [
         /^\/api\//,
