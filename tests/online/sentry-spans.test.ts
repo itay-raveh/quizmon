@@ -1,9 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import {
-  filterNodeDatabaseSpan,
-  filterWorkerDatabaseSpan,
-} from '../../server/sentry-spans.ts';
+import { filterNodeDatabaseSpan } from '../../server/sentry-spans.ts';
+import { filterWorkerDatabaseSpan } from '../../worker/sentry-spans.ts';
 
 void test('database spans retain safe query shapes without values or connection details', () => {
   const mongo = filterNodeDatabaseSpan({

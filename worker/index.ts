@@ -1,7 +1,7 @@
 import game, { DailyReminder as DailyReminderClass } from './game.ts';
 import accounts from '../server/worker.ts';
 import * as Sentry from '@sentry/cloudflare';
-import { filterWorkerDatabaseSpan } from '../server/sentry-spans.ts';
+import { filterWorkerDatabaseSpan } from './sentry-spans.ts';
 import type { DailyReminderEnv } from './daily-reminder.ts';
 
 type GameAccountEnv = Partial<AccountEnv> &
