@@ -26,10 +26,7 @@ interface HomeScreenProps {
   dailyResultSaved: boolean;
   dailyStreak: number;
   level: Difficulty;
-  earnedBadgeCount: number;
-  badgeCount: number;
-  badges?: readonly Pick<TrainerBadge, 'id' | 'tier'>[];
-  leagueUnlocked: boolean;
+  badges: readonly Pick<TrainerBadge, 'id' | 'tier' | 'earned'>[];
   leagueCompleted?: boolean;
   onCustomizeTraining: () => void;
   onRetryCatalog: () => void;
@@ -47,10 +44,7 @@ export const HomeScreen = ({
   dailyResultSaved,
   dailyStreak,
   level,
-  earnedBadgeCount,
-  badgeCount,
-  badges = [],
-  leagueUnlocked,
+  badges,
   leagueCompleted = false,
   onCustomizeTraining,
   onRetryCatalog,
@@ -62,22 +56,18 @@ export const HomeScreen = ({
   const playSound = useInteractionSound();
   const catalogReady = catalogStatus === 'ready';
   const dailyDetail = `${formatDailyDate(dailyDate)}${storageAvailable ? '' : ' · Browser storage required'}`;
+  const badgeCount = badges.length;
+  const earnedBadgeCount = badges.filter(({ earned }) => earned).length;
+  const leagueUnlocked = badgeCount > 0 && earnedBadgeCount === badgeCount;
   const leagueContent = (
     <>
       {leagueUnlocked ? (
         <LeagueTrophy locked={!leagueCompleted} />
       ) : (
         <span className="landing__league-badges" aria-hidden="true">
-          {badges.length
-            ? badges.map(({ id, tier }) => (
-                <TrainerBadgeMark key={id} id={id} tier={tier} />
-              ))
-            : Array.from({ length: badgeCount }, (_, index) => (
-                <span
-                  className="landing__league-badge-placeholder"
-                  key={index}
-                />
-              ))}
+          {badges.map(({ id, tier }) => (
+            <TrainerBadgeMark key={id} id={id} tier={tier} />
+          ))}
         </span>
       )}
       <span className="landing__league-copy">
@@ -87,7 +77,9 @@ export const HomeScreen = ({
             ? leagueCompleted
               ? 'Challenge · Hall of Fame'
               : 'Challenge'
-            : `${earnedBadgeCount} / ${badgeCount} badges`}
+            : badgeCount
+              ? `${earnedBadgeCount} / ${badgeCount} badges`
+              : 'Preparing badges…'}
         </span>
       </span>
       {leagueUnlocked ? (
@@ -194,7 +186,11 @@ export const HomeScreen = ({
         ) : (
           <Link
             to="/trainer/badges"
-            aria-label={`Quizmon League locked. Earn all ${badgeCount} League Badges. ${earnedBadgeCount} of ${badgeCount} earned. View Badge Case.`}
+            aria-label={
+              badgeCount
+                ? `Quizmon League locked. Earn all ${badgeCount} League Badges. ${earnedBadgeCount} of ${badgeCount} earned. View Badge Case.`
+                : 'Quizmon League locked. Preparing badges. View Badge Case.'
+            }
             className="game-button game-button--quiet landing__league-button landing__league-button--locked"
             onClick={() => playSound('tap')}
           >

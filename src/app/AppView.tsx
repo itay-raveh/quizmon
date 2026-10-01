@@ -257,10 +257,7 @@ const AppScreen = ({
           dailyError={daily.error}
           dailyStreak={daily.date === getUtcDate() ? daily.streak : 0}
           level={settings.difficulty ?? 1}
-          earnedBadgeCount={leagueBadges.filter(({ earned }) => earned).length}
-          badgeCount={leagueBadges.length}
           badges={leagueBadges}
-          leagueUnlocked={leagueUnlocked}
           leagueCompleted={trainer.stats.leagueCompleted}
           onCustomizeTraining={settingsDialog.openTraining}
           onRetryCatalog={catalogState.retry}
