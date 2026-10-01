@@ -358,13 +358,13 @@
   margin: 0 0 1.2rem;
 }
 
-.level-advancement-offer {
+.results-offer {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 0.7rem;
-  margin: -12px calc(-1 * var(--results-padding)) 12px;
+  margin: 0 calc(-1 * var(--results-padding)) 12px;
   padding: 0.8rem var(--results-padding);
   color: var(--navy);
   background: var(--metal-gold);
@@ -372,8 +372,22 @@
   text-align: left;
 }
 
-.level-advancement-offer > strong {
+.level-advancement-offer {
+  margin-top: -12px;
+}
+
+.results-offer > strong {
   font-size: var(--text-control);
+}
+
+@container (max-width: 28rem) {
+  .daily-install-offer .install-action {
+    width: 100%;
+  }
+
+  .daily-install-offer .install-action__buttons {
+    justify-content: space-between;
+  }
 }
 
 .level-advancement-offer__actions {

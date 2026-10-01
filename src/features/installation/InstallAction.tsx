@@ -7,40 +7,34 @@ import { InstallDialog } from './InstallDialog';
 
 export const InstallAction = ({
   onDismiss,
-  compact = false,
+  tone = 'quiet',
 }: {
   onDismiss?: () => void;
-  compact?: boolean;
+  tone?: 'primary' | 'quiet';
 }) => {
   const { status, guide, busy, error, install } = useInstall();
   const [expanded, setExpanded] = useState(false);
   if (status === 'installed' || (status === 'unavailable' && !error))
     return null;
-  const ActionButton = compact ? SoundButton : GameButton;
-  const appearance = compact
-    ? { className: 'install-link' }
-    : { tone: 'quiet' as const };
   return (
-    <div
-      className={`install-action${compact ? ' install-action--compact' : ''}`}
-    >
+    <div className="install-action">
       <div className="install-action__buttons">
         {status === 'native' ? (
-          <ActionButton
-            {...appearance}
+          <GameButton
+            tone={tone}
             disabled={busy}
             onClick={() => void install()}
           >
             {busy ? 'Opening…' : 'Install Quizmon'}
-          </ActionButton>
+          </GameButton>
         ) : guide ? (
-          <ActionButton
-            {...appearance}
+          <GameButton
+            tone={tone}
             aria-haspopup="dialog"
             onClick={() => setExpanded(true)}
           >
             How to install
-          </ActionButton>
+          </GameButton>
         ) : null}
         {onDismiss ? (
           <SoundButton

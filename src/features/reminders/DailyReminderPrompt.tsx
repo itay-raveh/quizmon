@@ -48,14 +48,12 @@ export const DailyReminderPrompt = ({ dailyDate }: { dailyDate: string }) => {
       return null;
     return (
       <aside
-        className="daily-reminder-offer daily-reminder-offer--install"
+        className="results-offer daily-install-offer"
         aria-labelledby="daily-install-title"
       >
-        <span className="daily-reminder-offer__copy">
-          <strong id="daily-install-title">Ready for tomorrow’s Daily?</strong>
-        </span>
+        <strong id="daily-install-title">Ready for tomorrow’s Daily?</strong>
         <InstallAction
-          compact
+          tone="primary"
           onDismiss={() => {
             installation.dismissOffer();
             setVisible(false);

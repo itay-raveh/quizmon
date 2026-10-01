@@ -9,19 +9,6 @@
   text-align: left;
 }
 
-.daily-reminder-offer--install {
-  padding: 0;
-  border: 0;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 0.5rem;
-}
-
-.daily-reminder-offer--install .daily-reminder-offer__copy strong {
-  color: var(--muted);
-  font-size: var(--text-small);
-  font-weight: 400;
-}
-
 .daily-reminder-offer > svg {
   width: 2rem;
   height: 2rem;
@@ -60,7 +47,7 @@
 }
 
 @container (max-width: 19rem) {
-  .daily-reminder-offer:not(.daily-reminder-offer--install) {
+  .daily-reminder-offer {
     grid-template-columns: 2rem minmax(0, 1fr);
   }
 

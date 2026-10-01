@@ -40,7 +40,10 @@ const LevelAdvancementOffer = ({
   onTryLevel: (level: Difficulty) => void;
 }) => {
   return (
-    <aside className="level-advancement-offer" aria-label="Training suggestion">
+    <aside
+      className="results-offer level-advancement-offer"
+      aria-label="Training suggestion"
+    >
       <strong>
         Ready to try <LevelLabel level={nextLevel} />?
       </strong>
