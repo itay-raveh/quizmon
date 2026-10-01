@@ -17,7 +17,6 @@ const rendering = {
 
 export const typeOddOneOut = {
   rendering,
-  lastLevel: 4,
   unleveled: {
     ...controls,
     response: responsePresets.single,
@@ -32,5 +31,6 @@ export const typeOddOneOut = {
       ...controls,
       response: responsePresets.single,
     },
+    5: null,
   },
 } satisfies QuestionRuleRow<FamilyRules['typeOddOneOut'], 'typeOddOneOut'>;

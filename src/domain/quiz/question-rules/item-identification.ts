@@ -21,7 +21,6 @@ const rendering = {
 
 export const itemIdentification = {
   rendering,
-  lastLevel: 4,
   levels: {
     2: {
       ...controls,
@@ -37,6 +36,7 @@ export const itemIdentification = {
       ...controls,
       response: { kind: 'search', selection: 'single', candidates: 'provided' },
     },
+    5: null,
   },
 } satisfies QuestionRuleRow<
   FamilyRules['itemIdentification'],

@@ -15,7 +15,6 @@ const rendering =
 
 export const legendaryMythicalSelection = {
   rendering,
-  lastLevel: 3,
   unleveled: {
     ...controls,
     response: responsePresets.multi,
@@ -25,6 +24,7 @@ export const legendaryMythicalSelection = {
       ...controls,
       response: responsePresets.multi,
     },
+    4: null,
   },
 } satisfies QuestionRuleRow<
   FamilyRules['legendaryMythicalSelection'],

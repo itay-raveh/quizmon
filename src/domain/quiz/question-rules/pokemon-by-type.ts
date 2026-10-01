@@ -17,7 +17,6 @@ const rendering = {
 
 export const pokemonByType = {
   rendering,
-  lastLevel: 4,
   unleveled: {
     ...controls,
     response: responsePresets.multi,
@@ -32,5 +31,6 @@ export const pokemonByType = {
       ...controls,
       response: responsePresets.multi,
     },
+    5: null,
   },
 } satisfies QuestionRuleRow<FamilyRules['pokemonByType'], 'pokemonByType'>;

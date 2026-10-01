@@ -16,7 +16,6 @@ const rendering = {} satisfies RenderingControlsFor<'moveCategory'>;
 
 export const moveCategory = {
   rendering,
-  lastLevel: 4,
   levels: {
     3: {
       ...controls,
@@ -29,5 +28,6 @@ export const moveCategory = {
       sameMoveType: true,
       response: responsePresets.single,
     },
+    5: null,
   },
 } satisfies QuestionRuleRow<FamilyRules['moveCategory'], 'moveCategory'>;

@@ -15,12 +15,12 @@ const rendering = {} satisfies RenderingControlsFor<'locationRegion'>;
 
 export const locationRegion = {
   rendering,
-  lastLevel: 3,
   levels: {
     3: {
       ...controls,
       allOptions: true,
       response: responsePresets.shortSingle,
     },
+    4: null,
   },
 } satisfies QuestionRuleRow<FamilyRules['locationRegion'], 'locationRegion'>;

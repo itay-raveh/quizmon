@@ -16,7 +16,6 @@ const rendering = {
 
 export const pokemonByGeneration = {
   rendering,
-  lastLevel: 3,
   unleveled: {
     ...controls,
     response: responsePresets.multi,
@@ -26,6 +25,7 @@ export const pokemonByGeneration = {
       ...controls,
       response: responsePresets.multi,
     },
+    4: null,
   },
 } satisfies QuestionRuleRow<
   FamilyRules['pokemonByGeneration'],

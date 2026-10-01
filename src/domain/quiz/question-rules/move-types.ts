@@ -17,7 +17,6 @@ const rendering = {} satisfies RenderingControlsFor<'moveTypes'>;
 
 export const moveTypes = {
   rendering,
-  lastLevel: 4,
   levels: {
     3: {
       ...controls,
@@ -30,5 +29,6 @@ export const moveTypes = {
       excludeTypeHintNames: true,
       response: responsePresets.shortSingle,
     },
+    5: null,
   },
 } satisfies QuestionRuleRow<FamilyRules['moveTypes'], 'moveTypes'>;

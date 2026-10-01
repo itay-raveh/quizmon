@@ -51,8 +51,6 @@ export const getQuestionVariant = <Type extends keyof FamilyRules>(
     }
   | undefined => {
   const row = questionRules[type] as QuestionRuleRow<FamilyRules[Type], Type>;
-  if (row.lastLevel !== undefined && difficulty > row.lastLevel)
-    return undefined;
   const resolved = resolveDifficultyVariant(row.levels, difficulty);
   return resolved
     ? { level: resolved.level, variant: withRendering(row, resolved.variant) }

@@ -26,7 +26,6 @@ const rendering = {
 
 export const pokemonTypes = {
   rendering,
-  lastLevel: 4,
   unleveled: {
     ...controls,
     response: responsePresets.single,
@@ -46,5 +45,6 @@ export const pokemonTypes = {
         correct: 'subject-types',
       },
     },
+    5: null,
   },
 } satisfies QuestionRuleRow<FamilyRules['pokemonTypes'], 'pokemonTypes'>;

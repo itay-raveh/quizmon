@@ -31,7 +31,6 @@ const rendering = {
 
 export const dualTypeMatch = {
   rendering,
-  lastLevel: 4,
   unleveled: {
     ...controls,
     response: responsePresets.single,
@@ -41,5 +40,6 @@ export const dualTypeMatch = {
       ...controls,
       response: responsePresets.single,
     },
+    5: null,
   },
 } satisfies QuestionRuleRow<FamilyRules['dualTypeMatch'], 'dualTypeMatch'>;

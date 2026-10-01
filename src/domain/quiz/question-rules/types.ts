@@ -1,4 +1,4 @@
-import type { Difficulty, DifficultyRules } from '../difficulty.ts';
+import type { DifficultyRules } from '../difficulty.ts';
 import {
   type EntityRendering,
   type QuestionRendering,
@@ -212,8 +212,8 @@ export type QuestionRuleEntry<
     };
 
 /**
- * One family's rules. Numeric `levels` may be sparse; resolution selects the
- * highest defined level at or below the requested difficulty.
+ * One family's rules. Numeric `levels` may be sparse; resolution uses the
+ * latest entry at or below the requested difficulty.
  */
 export type QuestionRuleRow<
   Rules extends { rendering: QuestionRendering; response: { kind: string } },
@@ -223,9 +223,7 @@ export type QuestionRuleRow<
   rendering: RenderingControlsFor<Type>;
   /** Complete rules for questions without a difficulty level. */
   unleveled?: QuestionRuleEntry<Rules, Type>;
-  /** Highest level where this family is available. */
-  lastLevel?: Difficulty;
-  /** Complete numeric level entries; the highest available level is selected. */
+  /** Sparse rules. A `null` entry ends availability until another rule. */
   levels: DifficultyRules<QuestionRuleEntry<Rules, Type>>;
 };
 

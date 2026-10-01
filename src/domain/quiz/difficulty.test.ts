@@ -7,6 +7,7 @@ describe('difficulty variants', () => {
     [{ 1: 'a', 3: 'b' }, [1, 1, 3, 3, 3]],
     [{ 3: 'a', 5: 'b' }, [undefined, undefined, 3, 3, 5]],
     [{ 3: 'a' }, [undefined, undefined, 3, 3, 3]],
+    [{ 1: 'a', 3: 'b', 4: null }, [1, 1, 3, undefined, undefined]],
     [{}, [undefined, undefined, undefined, undefined, undefined]],
   ] as const)('resolves sparse definitions %j', (variants, expected) => {
     expect(
