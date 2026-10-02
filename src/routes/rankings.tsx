@@ -6,6 +6,7 @@ import { getUtcDate } from '../domain/quiz/daily';
 
 export const Route = createFileRoute('/rankings')({
   component: RankingsRouteScreen,
+  staticData: { title: 'Rankings' },
   validateSearch: z.object({
     date: z
       .string()

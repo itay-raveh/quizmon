@@ -3,6 +3,7 @@ import { AppRouteShell } from '../app/AppRouteShell';
 
 export const Route = createRootRoute({
   component: AppRouteShell,
+  staticData: { title: 'Page not found' },
   notFoundComponent: () => (
     <section>
       <h1>Page not found</h1>

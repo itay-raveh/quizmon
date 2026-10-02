@@ -1,4 +1,4 @@
-import { Outlet, useLocation } from '@tanstack/react-router';
+import { Outlet, useLocation, useMatches } from '@tanstack/react-router';
 import { useLayoutEffect, useRef } from 'react';
 import { InstallProvider } from '../features/installation/InstallProvider';
 import { LeaveGameDialog } from '../features/quiz/LeaveGameDialog';
@@ -21,20 +21,27 @@ export const AppView = () => {
     settingsDialog,
   } = useAppGameContext();
   const location = useLocation();
+  const match = useMatches({ select: (matches) => matches.at(-1) });
   const main = useRef<HTMLElement>(null);
-  const screen =
-    session.phase === 'landing'
-      ? location.pathname
-      : `${location.pathname}:${session.phase}`;
+  const leagueResults =
+    location.pathname === '/league' &&
+    new URLSearchParams(location.searchStr).get('view') === 'results';
+  const screen = `${match?.id}:${session.phase}:${leagueResults}`;
   const previousScreen = useRef(screen);
 
   useLayoutEffect(() => {
+    const title =
+      session.phase === 'questions'
+        ? 'Question'
+        : session.phase === 'results' &&
+            (location.pathname === '/' || leagueResults)
+          ? 'Results'
+          : match?.staticData.title;
+    document.title = title ? `${title} | Quizmon` : site.title;
+    if (match?.status !== 'success') return;
     const heading = [
       ...(main.current?.querySelectorAll<HTMLElement>('h1') ?? []),
     ].find((candidate) => !candidate.closest('[hidden]'));
-    document.title = heading?.textContent
-      ? `${heading.textContent.trim()} | Quizmon`
-      : site.title;
     if (previousScreen.current === screen) {
       if (heading && document.activeElement === document.body) {
         heading.tabIndex = -1;
@@ -47,7 +54,15 @@ export const AppView = () => {
       heading.tabIndex = -1;
       heading.focus({ preventScroll: true });
     }
-  }, [catalogState.status, screen]);
+  }, [
+    catalogState.status,
+    leagueResults,
+    location.pathname,
+    match?.staticData.title,
+    match?.status,
+    screen,
+    session.phase,
+  ]);
 
   const showNavigation = session.phase !== 'questions';
   const accountOpen = location.pathname.startsWith('/account');

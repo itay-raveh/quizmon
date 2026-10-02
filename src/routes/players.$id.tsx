@@ -6,6 +6,7 @@ import { getUtcDate } from '../domain/quiz/daily';
 
 export const Route = createFileRoute('/players/$id')({
   component: PlayerRouteScreen,
+  staticData: { title: 'Trainer profile' },
   validateSearch: z.object({
     from: z.enum(['friends', 'rankings']).optional().catch(undefined),
     friendId: z.string().optional(),

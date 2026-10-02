@@ -3,4 +3,5 @@ import { createFileRoute } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/trainer/titles')({
   component: () => <TrainerRouteScreen view="titles" />,
+  staticData: { title: 'Trainer Titles' },
 });
