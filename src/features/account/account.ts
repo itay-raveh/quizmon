@@ -534,9 +534,8 @@ async function connectAccountSyncWork() {
     update({
       error: '',
       recoveryReason: null,
-      status: navigator.onLine
-        ? 'Saved on this device. Syncing…'
-        : 'Saved on this device. Will sync when connected.',
+      offline: false,
+      status: 'Saved on this device. Syncing…',
     });
     void Promise.all(
       replications.map((replication) => replication.awaitInitialReplication()),

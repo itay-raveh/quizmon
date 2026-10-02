@@ -257,3 +257,47 @@ it('waits for Retry-After before retrying a rate-limited sync bootstrap', async 
     vi.unstubAllGlobals();
   }
 });
+
+it('clears the offline hint after successful account requests', async () => {
+  vi.resetModules();
+  vi.useFakeTimers();
+  mocks.invalidConfig = false;
+  vi.stubGlobal('localStorage', {
+    getItem: (key: string) =>
+      key === 'quizmon.baseline.account' ? 'owner' : null,
+  });
+  vi.stubGlobal('navigator', { onLine: false });
+  vi.stubGlobal('window', new EventTarget());
+  vi.stubGlobal(
+    'document',
+    Object.assign(new EventTarget(), { visibilityState: 'visible' }),
+  );
+  vi.stubGlobal(
+    'fetch',
+    vi.fn((input: string) =>
+      Promise.resolve(
+        Response.json(
+          input === '/api/account'
+            ? { id: 'owner', sync: {} }
+            : { token: 'test-token' },
+        ),
+      ),
+    ),
+  );
+  const players = replication();
+  const rounds = replication();
+  players.state.awaitInitialReplication = () => new Promise<void>(() => {});
+  rounds.state.awaitInitialReplication = () => new Promise<void>(() => {});
+  mocks.replications.push(players.state, rounds.state);
+  try {
+    const { accountSnapshot, startAccountSync } = await import('./account');
+    await startAccountSync();
+    expect(accountSnapshot()).toMatchObject({
+      offline: false,
+      status: 'Saved on this device. Syncing…',
+    });
+  } finally {
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+  }
+});
