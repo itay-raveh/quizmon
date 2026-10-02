@@ -192,6 +192,7 @@ export const TrainerPassport = ({
         <nav aria-label="Trainer profile" className="trainer-passport__views">
           {trainerViews.map(([nextView, label, ViewIcon]) => (
             <Link
+              activeOptions={{ exact: true }}
               aria-current={view === nextView ? 'page' : undefined}
               className="trainer-passport__view"
               key={nextView}
