@@ -1,5 +1,6 @@
 import type { FamilyRules } from './family-rules.ts';
 import { formatPokemonName } from '../../pokemon/format.ts';
+import { moveVisual } from '../move-presentation.ts';
 import { generations } from '../../pokemon/types.ts';
 import type { QuestionBuilder } from './context.ts';
 import {
@@ -101,31 +102,11 @@ export const buildMove: QuestionBuilder<
             optionLabels: Object.fromEntries(
               options.map((move) => [move.name, move.label]),
             ),
-            optionImages: Object.fromEntries(
-              options.map((move) => {
-                const entry = move.contexts.find(
-                  (entry) => entry.game === rules.game,
-                )!;
-                return [move.name, `/sprites/items/tm-${entry.type}.png`];
-              }),
-            ),
-            optionReveals: Object.fromEntries(
-              options.map((move) => {
-                const entry = move.contexts.find(
-                  (entry) => entry.game === rules.game,
-                )!;
-                return [
-                  move.name,
-                  `${formatPokemonName(entry.type)} · ${formatPokemonName(entry.damageClass)}`,
-                ];
-              }),
-            ),
           },
           'move',
         );
         if (question) return question;
       } else {
-        const prompt = `What is the default type of ${target.label}?`;
         const types = Object.keys(context.catalog.typeRelations);
         const options =
           'allOptions' in context.variant && context.variant.allOptions
@@ -143,17 +124,16 @@ export const buildMove: QuestionBuilder<
             ...topicSubject(context, 'move', target),
             generation: rules.generation,
           },
-          prompt,
+          `What is the default type of ${target.label}?`,
           rules.type,
           options,
           {
             prompt: {
-              kind: 'text',
-              text: prompt,
-              move: {
-                name: target.label,
-                sprite: `/sprites/items/tm-${rules.type}.png`,
-              },
+              kind: 'move',
+              before: 'What is the default type of ',
+              after: '?',
+              name: target.label,
+              visual: moveVisual(rules.type, rules.damageClass),
               description:
                 'showMoveDescription' in context.variant &&
                 context.variant.showMoveDescription

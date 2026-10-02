@@ -31,6 +31,19 @@ const prompt = z.discriminatedUnion('kind', [
     sprite: text.optional(),
     supportingText: text.optional(),
   }),
+  z.object({
+    kind: z.literal('move'),
+    name: text,
+    before: text,
+    after: text,
+    visual: z.object({
+      sprite: text.optional(),
+      type: text.optional(),
+      damageClass: text.optional(),
+    }),
+    description: text.optional(),
+    supportingText: text.optional(),
+  }),
 ]);
 export const answerObservationSchema = z
   .object({

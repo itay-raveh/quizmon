@@ -90,29 +90,34 @@ test('item identification searches item names when using a search response', () 
   expect(isQuestionData(question)).toBe(true);
 });
 
-test('berry sprites cannot produce four berry choices below level four', () => {
+test('level three item choices never consist only of berries', () => {
   const catalog = {
     pokemon: {},
     typeRelations: {},
     topics: {
-      items: ['cheri', 'chesto', 'pecha', 'rawst'].map((name) => ({
-        ...item(`${name}-berry`, 'berries', name),
-        pocket: 'berries',
-      })),
+      items: [
+        ...['cheri', 'chesto', 'pecha', 'rawst'].map((name) => ({
+          ...item(`${name}-berry`, 'berries', name),
+          pocket: 'berries',
+        })),
+        ...['potion', 'antidote', 'ether', 'elixir'].map((name) =>
+          item(name, 'medicine', name),
+        ),
+      ],
     },
   } as unknown as PokemonCatalog;
-  const build = (level: (typeof gameLevels)[number]) =>
-    buildQuestionType(
-      {
-        catalog,
-        level,
-        pool: [],
-        random: () => 0.999,
-        used: new Set(),
-      },
-      'itemIdentification',
-    );
-  expect(build(3)).toBeUndefined();
-  expect(build(4)?.subject.name).toMatch(/-berry$/);
-  expect(build(4)?.answer.interaction).toBe('search');
+  const question = buildQuestionType(
+    {
+      catalog,
+      level: 3,
+      pool: [],
+      random: () => 0.999,
+      used: new Set(),
+    },
+    'itemIdentification',
+  );
+  expect(question).toBeDefined();
+  expect(question!.options.some((option) => !option.endsWith('-berry'))).toBe(
+    true,
+  );
 });

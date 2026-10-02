@@ -4,7 +4,7 @@ import type {
   QuestionRuleRow,
   RenderingControlsFor,
 } from './types.ts';
-import { responsePresets } from './shared.ts';
+import { itemSprite, responsePresets } from './shared.ts';
 
 const controls = {
   view: { answer: { kind: 'type' } },
@@ -13,7 +13,9 @@ const controls = {
   excludeTypeHintNames: false,
 } as const satisfies QuestionControlsFor<'moveTypes'>;
 
-const rendering = {} satisfies RenderingControlsFor<'moveTypes'>;
+const rendering = {
+  subject: { sprite: { ...itemSprite, reveal: 'after-answer' } },
+} satisfies RenderingControlsFor<'moveTypes'>;
 
 export const moveTypes = {
   rendering,

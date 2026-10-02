@@ -18,6 +18,7 @@ const answerViewSchema = z.discriminatedUnion('kind', [
   }),
   z.object({ kind: z.literal('type') }),
   z.object({ kind: z.literal('item') }),
+  z.object({ kind: z.literal('move') }),
 ]);
 
 /** Saved answer and subject presentation shape, separate from visibility. */

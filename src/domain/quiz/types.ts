@@ -41,6 +41,12 @@ export interface PokemonOptionVisual {
   types: string[];
 }
 
+export interface MoveVisual {
+  sprite?: string;
+  type?: string;
+  damageClass?: string;
+}
+
 export interface PokemonSearchOption {
   sprite?: string | null;
   dexNumber?: number;
@@ -102,6 +108,15 @@ export type QuestionPrompt =
       supportingText?: string;
     }
   | {
+      before: string;
+      after: string;
+      kind: 'move';
+      name: string;
+      visual: MoveVisual;
+      description?: string;
+      supportingText?: string;
+    }
+  | {
       /** Text before the item rendered with the question's subject policy. */
       before: string;
       /** Text after the item rendered with the question's subject policy. */
@@ -154,6 +169,7 @@ export interface QuestionData {
   optionDetails?: Record<string, ChoiceDetail[]>;
   optionLabels?: Record<string, string>;
   optionImages?: Record<string, string>;
+  optionMoves?: Record<string, MoveVisual>;
   optionReveals?: Record<string, string>;
   explanation?: string;
   context?: string;

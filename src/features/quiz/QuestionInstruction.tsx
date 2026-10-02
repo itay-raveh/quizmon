@@ -76,6 +76,8 @@ export const QuestionInstruction = ({
     );
   if (prompt.kind === 'item')
     return `${prompt.before}${prompt.name}${prompt.after}`;
+  if (prompt.kind === 'move')
+    return `${prompt.before}${prompt.name}${prompt.after}`;
   return (
     <>
       {prompt.before}

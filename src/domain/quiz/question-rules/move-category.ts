@@ -7,12 +7,14 @@ import type {
 import { responsePresets } from './shared.ts';
 
 const controls = {
-  view: { answer: { kind: 'text', detail: 'move' } },
+  view: { answer: { kind: 'move' } },
   statusMovesOnly: false,
   sameMoveType: false,
 } as const satisfies QuestionControlsFor<'moveCategory'>;
 
-const rendering = {} satisfies RenderingControlsFor<'moveCategory'>;
+const rendering = {
+  choices: { types: 'after-answer' },
+} satisfies RenderingControlsFor<'moveCategory'>;
 
 export const moveCategory = {
   rendering,

@@ -1,4 +1,6 @@
 import { PokemonIdentity } from '@/components/PokemonIdentity';
+import { formatPokemonName } from '@/domain/pokemon/format';
+import type { MoveVisual } from '@/domain/quiz/types';
 import { TypeBadges } from '@/components/TypeBadge';
 import {
   isVisible,
@@ -191,6 +193,7 @@ export const ItemRenderable = ({
 
 export const MoveRenderable = ({
   name,
+  visual,
   src,
   policy,
   state,
@@ -201,8 +204,9 @@ export const MoveRenderable = ({
   children,
 }: {
   name: string;
+  visual?: MoveVisual;
   src?: string;
-  policy: Pick<EntityRendering, 'name' | 'sprite'>;
+  policy: Pick<EntityRendering, 'name' | 'sprite' | 'types'>;
   state: RevealState;
   className?: string;
   spriteClassName?: string;
@@ -211,10 +215,10 @@ export const MoveRenderable = ({
   children?: ReactNode;
 }) => (
   <span className={className}>
-    {src && policy.sprite !== null ? (
+    {(visual?.sprite || src) && policy.sprite !== null ? (
       <span className={spriteSlotClassName} aria-hidden="true">
         <QuestionSprite
-          src={src}
+          src={(visual?.sprite ?? src)!}
           rule={policy.sprite}
           state={state}
           className={spriteClassName}
@@ -229,6 +233,20 @@ export const MoveRenderable = ({
       >
         {name}
       </strong>
+      {policy.types !== 'never' && (visual?.type || visual?.damageClass) ? (
+        <span
+          className="answer__reveal move-reveal"
+          aria-hidden="true"
+          style={{
+            visibility: isVisible(policy.types, state) ? undefined : 'hidden',
+          }}
+        >
+          {visual.type ? <TypeBadges types={[visual.type]} /> : null}
+          {visual.damageClass ? (
+            <span>{formatPokemonName(visual.damageClass)}</span>
+          ) : null}
+        </span>
+      ) : null}
       {children}
     </span>
   </span>

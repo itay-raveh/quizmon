@@ -64,7 +64,7 @@ const QuestionPrompt = ({
                 name={prompt.move.name}
                 src={prompt.move.sprite}
                 policy={{
-                  name: policy.name,
+                  ...policy,
                   sprite: { reveal: 'after-answer', silhouette: false },
                 }}
                 state={state}
@@ -112,6 +112,29 @@ const QuestionPrompt = ({
             numberClassName="question__subject-number"
           />
           {prompt.after}
+          {prompt.supportingText ? (
+            <span className="question__supporting-text">
+              {prompt.supportingText}
+            </span>
+          ) : null}
+        </>
+      ) : prompt.kind === 'move' ? (
+        <>
+          {prompt.before}
+          <MoveRenderable
+            className="question__move-subject"
+            name={prompt.name}
+            visual={prompt.visual}
+            policy={policy}
+            state={state}
+            spriteClassName="question__move-disc"
+          />
+          {prompt.after}
+          {prompt.description ? (
+            <span className="question__move-description">
+              {prompt.description}
+            </span>
+          ) : null}
           {prompt.supportingText ? (
             <span className="question__supporting-text">
               {prompt.supportingText}

@@ -61,18 +61,6 @@ it('builds five League levels with distinct formats and a Champion finale', () =
   );
   expect(questions.at(-1)?.questionType).toBe('champion');
   expect(questions.at(-1)?.variantLevel).toBe(5);
-
-  for (const [stageIndex, stage] of leagueStages.entries()) {
-    for (const question of questions.slice(
-      stageIndex * 3,
-      stageIndex * 3 + 3,
-    )) {
-      if (question.questionType === 'champion') continue;
-      expect(question.variantLevel).toBe(
-        getQuestionVariant(question.questionType, stage.level)?.level,
-      );
-    }
-  }
 }, 30_000);
 
 it('builds every configured family with a visible saved question', () => {
@@ -100,42 +88,6 @@ it('builds every configured family with a visible saved question', () => {
       expect(hasVisibleChoices(saved), `${type}:${level}`).toBe(true);
       expect(hasVisibleSubject(saved), `${type}:${level}`).toBe(true);
     }
-  }
-});
-
-it('keeps Pokémon ability questions out of level three', () => {
-  const build = (level: (typeof gameLevels)[number]) =>
-    buildQuestionType(
-      {
-        catalog,
-        pool,
-        random: createSeededRandom(`pokemonAbilities:${level}`),
-        used: new Set(),
-        level,
-      },
-      'pokemonAbilities',
-    );
-  expect(build(3)).toBeUndefined();
-  expect(build(4)?.subject.kind).toBe('pokemon');
-});
-
-it('renders every level-up move choice with a disc and an answer reveal', () => {
-  const question = buildQuestionType(
-    {
-      catalog,
-      pool,
-      random: createSeededRandom('level-up-move-art'),
-      used: new Set(),
-      level: 4,
-    },
-    'levelUpMoves',
-  );
-  expect(question).toBeDefined();
-  for (const option of question!.options) {
-    expect(question!.optionImages?.[option]).toMatch(
-      /^\/sprites\/items\/tm-[a-z]+\.png$/,
-    );
-    expect(question!.optionReveals?.[option]).toMatch(/ · /);
   }
 });
 

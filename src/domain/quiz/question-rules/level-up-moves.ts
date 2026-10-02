@@ -7,12 +7,13 @@ import type {
 import { frontSprite, responsePresets } from './shared.ts';
 
 const controls = {
-  view: { answer: { kind: 'text', detail: 'move' } },
+  view: { answer: { kind: 'move' } },
   plausibleProperties: false,
 } as const satisfies QuestionControlsFor<'levelUpMoves'>;
 
 const rendering = {
   subject: { sprite: frontSprite },
+  choices: { types: 'after-answer' },
 } satisfies RenderingControlsFor<'levelUpMoves'>;
 
 export const levelUpMoves = {

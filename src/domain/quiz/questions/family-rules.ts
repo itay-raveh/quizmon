@@ -280,7 +280,7 @@ type FamilyAnswerKinds = {
   heightComparison: 'pokemon';
   moveTypes: 'type';
   locationRegion: 'text';
-  moveCategory: 'text';
+  moveCategory: 'move';
   pokedexCategories: 'pokemon';
   evolutionConditions: 'text';
   abilityEffects: 'text';
@@ -307,7 +307,7 @@ type FamilyAnswerKinds = {
   evolutionChain: 'pokemon';
   evolutionGainedType: 'type';
   pokemonAbilities: 'text';
-  levelUpMoves: 'text';
+  levelUpMoves: 'move';
   statExtremes: 'pokemon';
   typeMatchup: 'type';
   superEffectiveAttacker: 'pokemon';

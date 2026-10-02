@@ -21,6 +21,11 @@ const sprite = z.object({
   src: text.nullable(),
   types: strings,
 });
+const moveVisual = z.object({
+  sprite: text.optional(),
+  type: text.optional(),
+  damageClass: text.optional(),
+});
 const generationClue = z.object({
   kind: z.literal('generation'),
   generation: z.enum(generations),
@@ -97,6 +102,15 @@ const prompt = z.discriminatedUnion('kind', [
     sprite: text.optional(),
     supportingText: text.optional(),
   }),
+  z.object({
+    kind: z.literal('move'),
+    before: text,
+    after: text,
+    name: text,
+    visual: moveVisual,
+    description: text.optional(),
+    supportingText: text.optional(),
+  }),
 ]);
 const question = z
   .object({
@@ -125,6 +139,7 @@ const question = z
       .optional(),
     optionLabels: z.record(z.string(), text).optional(),
     optionImages: z.record(z.string(), text).optional(),
+    optionMoves: z.record(z.string(), moveVisual).optional(),
     optionReveals: z.record(z.string(), text).optional(),
     explanation: text.optional(),
     context: text.optional(),

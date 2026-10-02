@@ -60,36 +60,31 @@ test('Move types excludes names that reveal their type when the hint filter is e
   expect(buildQuestionType(context(strict), 'moveTypes')?.subject.name).toBe(
     'pound',
   );
-  const question = buildQuestionType(context(strict), 'moveTypes');
-  expect(question?.prompt).toMatchObject({
-    move: {
-      name: 'Pound',
-      sprite: '/sprites/items/tm-normal.png',
-    },
-  });
 });
 
-test('move category choices carry matching disc art and reveal their class', () => {
+test('move choices use their type in the question’s game', () => {
+  const entries = [
+    { ...move('pound', 'Pound', 'normal'), damageClass: 'physical' },
+    { ...move('ember', 'Ember', 'fire'), damageClass: 'special' },
+    { ...move('water-gun', 'Water Gun', 'water'), damageClass: 'special' },
+    { ...move('vine-whip', 'Vine Whip', 'grass'), damageClass: 'special' },
+  ].map((entry) => ({
+    ...entry,
+    generations: ['IV'],
+    contexts: [
+      {
+        game: 'diamond',
+        generation: 'IV',
+        type: entry.name === 'pound' ? 'fire' : entry.type,
+        damageClass: entry.damageClass,
+      },
+    ],
+  }));
   const catalog = {
     pokemon: {},
     typeRelations: { fire: {}, water: {}, normal: {}, grass: {} },
     topics: {
-      moves: [
-        move('pound', 'Pound', 'normal'),
-        move('ember', 'Ember', 'fire'),
-        move('water-gun', 'Water Gun', 'water'),
-        move('vine-whip', 'Vine Whip', 'grass'),
-      ].map((entry, index) => ({
-        ...entry,
-        generations: ['IV'],
-        damageClass: index === 0 ? 'physical' : 'special',
-        contexts: entry.contexts.map((context) => ({
-          ...context,
-          game: 'diamond',
-          generation: 'IV',
-          damageClass: index === 0 ? 'physical' : 'special',
-        })),
-      })),
+      moves: entries,
       games: { diamond: { label: 'Diamond', generation: 'IV' } },
     },
   } as unknown as PokemonCatalog;
@@ -104,14 +99,9 @@ test('move category choices carry matching disc art and reveal their class', () 
     },
     'moveCategory',
   );
-  expect(question).toBeDefined();
-  for (const option of question!.options) {
-    const move = catalog.topics!.moves.find((entry) => entry.name === option)!;
-    expect(question!.optionImages?.[option]).toBe(
-      `/sprites/items/tm-${move.type}.png`,
-    );
-    expect(question!.optionReveals?.[option]).toContain(
-      move.damageClass === 'physical' ? 'Physical' : 'Special',
-    );
-  }
+  expect(question?.options).toContain('pound');
+  expect(question?.optionMoves?.pound).toMatchObject({
+    type: 'fire',
+    sprite: '/sprites/items/tm-fire.png',
+  });
 });

@@ -84,6 +84,8 @@ type RenderingControls<
 
 /** Only fields with a real rendering consumer are configurable per family. */
 type FamilyRenderingControls = {
+  moveTypes: RenderingControls<'sprite'>;
+  moveCategory: RenderingControls<never, 'types'>;
   itemIdentification: {
     subject?: VisibleItem;
     choices?: ItemChoices;
@@ -175,7 +177,10 @@ type FamilyRenderingControls = {
     search?: PokemonSearch;
   };
   pokemonAbilities: RenderingControls<'sprite' | 'name' | 'number' | 'types'>;
-  levelUpMoves: RenderingControls<'sprite' | 'name' | 'number' | 'types'>;
+  levelUpMoves: RenderingControls<
+    'sprite' | 'name' | 'number' | 'types',
+    'types'
+  >;
 };
 
 /**

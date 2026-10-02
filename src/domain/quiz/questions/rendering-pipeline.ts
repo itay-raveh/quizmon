@@ -1,4 +1,5 @@
 import { spriteState } from '../rendering.ts';
+import { moveVisual } from '../move-presentation.ts';
 import { choosePokemonSprite, getOptionVisuals } from './assembly.ts';
 import { applyResponseStrategy } from './response-strategies.ts';
 import type { Level } from '../level.ts';
@@ -10,7 +11,8 @@ export const hasVisibleChoices = (question: QuestionDraft): boolean => {
   if (question.answer.interaction === 'search') return true;
   const policy = question.rendering?.choices;
   const kind = question.view?.answer.kind;
-  if (!policy || (kind !== 'pokemon' && kind !== 'item')) return true;
+  if (!policy || (kind !== 'pokemon' && kind !== 'item' && kind !== 'move'))
+    return true;
   const spriteVisible = spriteState(policy.sprite, {
     answered: false,
     cluesShown: question.initialClues ?? 0,
@@ -20,6 +22,11 @@ export const hasVisibleChoices = (question: QuestionDraft): boolean => {
       return (
         policy.name === 'always' ||
         (spriteVisible && Boolean(question.optionImages?.[option]))
+      );
+    if (kind === 'move')
+      return (
+        policy.name === 'always' ||
+        (spriteVisible && Boolean(question.optionMoves?.[option]?.sprite))
       );
     const visual = question.optionVisuals?.[option];
     return (
@@ -178,6 +185,29 @@ const applyAnswerRendering = (
             }
           : option;
       });
+  }
+  if (rules.view.answer.kind === 'move' && response.kind !== 'search') {
+    const moves = new Map(
+      context.catalog.topics?.moves.map((move) => [move.name, move]) ?? [],
+    );
+    question.optionMoves = Object.fromEntries(
+      question.options.flatMap((name) => {
+        const move = moves.get(name);
+        if (!move) return [];
+        const version = move.contexts.find(
+          (entry) => entry.game === question.context,
+        );
+        return [
+          [
+            name,
+            moveVisual(
+              version?.type ?? move.type,
+              version?.damageClass ?? move.damageClass,
+            ),
+          ],
+        ];
+      }),
+    );
   }
 };
 

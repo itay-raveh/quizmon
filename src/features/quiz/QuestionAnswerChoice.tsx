@@ -52,8 +52,8 @@ const QuestionAnswerChoiceInner = ({
   const hasTypeOptionBadges = view.answer.kind === 'type';
   const isItemChoice = view.answer.kind === 'item';
   const isMoveChoice =
-    question.questionType === 'moveCategory' ||
-    question.questionType === 'levelUpMoves';
+    view.answer.kind === 'move' ||
+    (view.answer.kind === 'text' && view.answer.detail === 'move');
   const state = { answered, cluesShown };
   const typeRule = policy.types;
   const revealsOptionTypes = isVisible(typeRule, state);
@@ -82,6 +82,14 @@ const QuestionAnswerChoiceInner = ({
       </span>
     ) : null;
   const itemImage = question.optionImages?.[option];
+  const move = question.optionMoves?.[option];
+  const moveAnnouncement =
+    answered && isMoveChoice && move && isVisible(policy.types, state)
+      ? [move.type, move.damageClass]
+          .filter(Boolean)
+          .map((value) => formatPokemonName(value!))
+          .join(', ')
+      : '';
   const visual =
     view.answer.kind === 'pokemon'
       ? question.optionVisuals?.[option]
@@ -169,12 +177,12 @@ const QuestionAnswerChoiceInner = ({
                       : 'Sprite'
                     : 'Choice'
                 } ${index + 1}`
-      }${answered && reveal ? `. ${reveal}.` : ''}${typeAnnouncement}${generationAnnouncement}${classificationAnnouncement}${statAnnouncement}${resultAnnouncement}`}
+      }${answered && reveal ? `. ${reveal}.` : ''}${moveAnnouncement ? `. ${moveAnnouncement}.` : ''}${typeAnnouncement}${generationAnnouncement}${classificationAnnouncement}${statAnnouncement}${resultAnnouncement}`}
       aria-keyshortcuts={
         question.options.length <= 9 ? String(index + 1) : undefined
       }
       aria-pressed={multiSelect ? optionSelected : undefined}
-      className={`${optionClassName} ${hasSprite ? 'answer--pokemon' : ''} ${isItemChoice && itemImage && policy.sprite !== null ? 'answer--item' : ''} ${isMoveChoice && itemImage && policy.sprite !== null ? 'answer--move' : ''} ${concealed ? 'answer--concealed' : ''}`.trim()}
+      className={`${optionClassName} ${hasSprite ? 'answer--pokemon' : ''} ${isItemChoice && itemImage && policy.sprite !== null ? 'answer--item' : ''} ${isMoveChoice && (move?.sprite || itemImage) && policy.sprite !== null ? 'answer--move' : ''} ${concealed ? 'answer--concealed' : ''}`.trim()}
       disabled={answered}
       onClick={() => onSelect(option)}
       sound="none"
@@ -195,6 +203,7 @@ const QuestionAnswerChoiceInner = ({
         <MoveRenderable
           className="answer__move-renderable"
           name={label}
+          visual={move}
           src={itemImage}
           policy={policy}
           state={state}
@@ -202,7 +211,7 @@ const QuestionAnswerChoiceInner = ({
           spriteClassName="answer__move-disc"
           nameClassName="answer__text"
         >
-          {detail}
+          {move ? null : detail}
         </MoveRenderable>
       ) : visual ? (
         <PokemonRenderable

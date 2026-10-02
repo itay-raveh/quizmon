@@ -1,5 +1,4 @@
 import type { FamilyRules } from './family-rules.ts';
-import { formatPokemonName } from '../../pokemon/format.ts';
 import { pick, shuffle } from '../../../lib/random.ts';
 import { randomOptionSet } from './answers.ts';
 import { makeQuestion, targetMedia } from './assembly.ts';
@@ -8,9 +7,11 @@ import { pokemonPrompt } from './prompts.ts';
 import { targetRepetition } from './repetition.ts';
 import { pickTarget } from './selection.ts';
 
-export const buildPropertyQuestion = (
-  category: 'ability' | 'move',
-): QuestionBuilder<FamilyRules['pokemonAbilities']> => {
+export const buildPropertyQuestion = <Category extends 'ability' | 'move'>(
+  category: Category,
+): QuestionBuilder<
+  FamilyRules[Category extends 'ability' ? 'pokemonAbilities' : 'levelUpMoves']
+> => {
   const property = category === 'ability' ? 'abilities' : 'levelMoves';
   const subject = category === 'ability' ? 'ability' : 'move by leveling up';
   return (context) => {
@@ -51,7 +52,7 @@ export const buildPropertyQuestion = (
           context.random,
         )
       : randomOptionSet(correct, [...candidates], context.random);
-    const question = makeQuestion(context, {
+    return makeQuestion(context, {
       repeat: targetRepetition({ pokemonOptions: false }),
       category,
       target,
@@ -61,30 +62,5 @@ export const buildPropertyQuestion = (
       presentation: { kind: 'text' },
       media: targetMedia(target),
     });
-    if (category === 'move' && context.catalog.topics) {
-      const moves = new Map(
-        context.catalog.topics.moves.map((move) => [move.name, move]),
-      );
-      question.optionImages = Object.fromEntries(
-        options.flatMap((name) => {
-          const move = moves.get(name);
-          return move ? [[name, `/sprites/items/tm-${move.type}.png`]] : [];
-        }),
-      );
-      question.optionReveals = Object.fromEntries(
-        options.flatMap((name) => {
-          const move = moves.get(name);
-          return move
-            ? [
-                [
-                  name,
-                  `${formatPokemonName(move.type)} · ${formatPokemonName(move.damageClass)}`,
-                ],
-              ]
-            : [];
-        }),
-      );
-    }
-    return question;
   };
 };
