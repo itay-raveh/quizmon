@@ -7,7 +7,7 @@ import type {
 import { frontSprite, responsePresets } from './shared.ts';
 
 const controls = {
-  view: { answer: { kind: 'text' } },
+  view: { answer: { kind: 'text', detail: 'move' } },
   plausibleProperties: false,
 } as const satisfies QuestionControlsFor<'levelUpMoves'>;
 

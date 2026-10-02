@@ -188,3 +188,48 @@ export const ItemRenderable = ({
     ) : null}
   </span>
 );
+
+export const MoveRenderable = ({
+  name,
+  src,
+  policy,
+  state,
+  className,
+  spriteClassName,
+  spriteSlotClassName,
+  nameClassName,
+  children,
+}: {
+  name: string;
+  src?: string;
+  policy: Pick<EntityRendering, 'name' | 'sprite'>;
+  state: RevealState;
+  className?: string;
+  spriteClassName?: string;
+  spriteSlotClassName?: string;
+  nameClassName?: string;
+  children?: ReactNode;
+}) => (
+  <span className={className}>
+    {src && policy.sprite !== null ? (
+      <span className={spriteSlotClassName} aria-hidden="true">
+        <QuestionSprite
+          src={src}
+          rule={policy.sprite}
+          state={state}
+          className={spriteClassName}
+        />
+      </span>
+    ) : null}
+    <span className={nameClassName}>
+      <strong
+        style={{
+          visibility: isVisible(policy.name, state) ? undefined : 'hidden',
+        }}
+      >
+        {name}
+      </strong>
+      {children}
+    </span>
+  </span>
+);

@@ -221,3 +221,58 @@ test('choice name visibility follows the saved rendering policy', () => {
   expect(typeOnly).toContain('aria-label="Type: Grass."');
   expect(typeOnly).toContain('type-badge');
 });
+
+test('move disc stays hidden during type questions and appears beside move choices', () => {
+  const question: QuestionData = {
+    answer: { interaction: 'single-choice', correctOptions: ['fire'] },
+    category: 'move',
+    id: 'moveTypes:ember',
+    media: { kind: 'none' },
+    options: ['fire'],
+    prompt: {
+      kind: 'text',
+      text: 'What is the default type of Ember?',
+      move: { name: 'Ember', sprite: '/sprites/items/tm-fire.png' },
+    },
+    questionType: 'moveTypes',
+    repetition: {
+      identity: 'ember',
+      subjects: ['move/ember'],
+      primary: [],
+      distractors: [],
+    },
+    subject: { kind: 'move', name: 'ember', generation: 'IV' },
+  };
+  const prompt = (answered: boolean) =>
+    renderToStaticMarkup(
+      <QuestionPresentation
+        question={question}
+        rendering={baseQuestionRendering}
+        answered={answered}
+        cluesShown={0}
+        isLeague={false}
+      />,
+    );
+  expect(prompt(false)).toContain('visibility:hidden');
+  expect(prompt(false)).toContain('tm-fire.png');
+  expect(prompt(true)).not.toContain('visibility:hidden');
+
+  const choices = renderToStaticMarkup(
+    <QuestionAnswers
+      question={{
+        ...question,
+        answer: { interaction: 'single-choice', correctOptions: ['ember'] },
+        options: ['ember'],
+        optionImages: { ember: '/sprites/items/tm-fire.png' },
+        optionLabels: { ember: 'Ember' },
+        optionReveals: { ember: 'Fire · Special' },
+        questionType: 'moveCategory',
+      }}
+      answered={false}
+      onSelect={() => {}}
+      selectedOptions={[]}
+    />,
+  );
+  expect(choices).toContain('tm-fire.png');
+  expect(choices).toContain('answer__reveal--reserved');
+});

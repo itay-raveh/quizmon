@@ -40,6 +40,11 @@ export const buildItemIdentification: QuestionBuilder<
   );
   for (const target of pool) {
     if (spriteCounts.get(target.spriteIdentity!) !== 1) continue;
+    if (
+      target.pocket === 'berries' &&
+      context.variant.response.kind !== 'search'
+    )
+      continue;
     if (context.variant.response.kind === 'search') {
       if (labelCounts.get(target.label) !== 1) continue;
       const question = makeTopicQuestion(

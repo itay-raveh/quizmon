@@ -89,3 +89,30 @@ test('item identification searches item names when using a search response', () 
   expect(question?.searchOptions).toHaveLength(1);
   expect(isQuestionData(question)).toBe(true);
 });
+
+test('berry sprites cannot produce four berry choices below level four', () => {
+  const catalog = {
+    pokemon: {},
+    typeRelations: {},
+    topics: {
+      items: ['cheri', 'chesto', 'pecha', 'rawst'].map((name) => ({
+        ...item(`${name}-berry`, 'berries', name),
+        pocket: 'berries',
+      })),
+    },
+  } as unknown as PokemonCatalog;
+  const build = (level: (typeof gameLevels)[number]) =>
+    buildQuestionType(
+      {
+        catalog,
+        level,
+        pool: [],
+        random: () => 0.999,
+        used: new Set(),
+      },
+      'itemIdentification',
+    );
+  expect(build(3)).toBeUndefined();
+  expect(build(4)?.subject.name).toMatch(/-berry$/);
+  expect(build(4)?.answer.interaction).toBe('search');
+});

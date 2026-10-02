@@ -79,6 +79,7 @@ const prompt = z.discriminatedUnion('kind', [
     text,
     description: text.optional(),
     supportingText: text.optional(),
+    move: z.object({ name: text, sprite: text }).optional(),
   }),
   z.object({
     kind: z.literal('pokemon'),

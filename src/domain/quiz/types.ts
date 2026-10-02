@@ -91,6 +91,7 @@ export type QuestionPrompt =
       text: string;
       description?: string;
       supportingText?: string;
+      move?: { name: string; sprite: string };
     }
   | {
       after: string;

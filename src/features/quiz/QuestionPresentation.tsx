@@ -15,6 +15,7 @@ import {
 } from '@/domain/quiz/rendering';
 import {
   ItemRenderable,
+  MoveRenderable,
   QuestionIdentity,
   QuestionSprite,
 } from './QuestionEntity';
@@ -55,7 +56,30 @@ const QuestionPrompt = ({
               spriteClassName="question__item-portrait"
             />
           ) : null}
-          {itemName ? prompt.text.replace(itemName, 'it') : prompt.text}
+          {prompt.move ? (
+            <>
+              {prompt.text.split(prompt.move.name)[0]}
+              <MoveRenderable
+                className="question__move-subject"
+                name={prompt.move.name}
+                src={prompt.move.sprite}
+                policy={{
+                  name: policy.name,
+                  sprite: { reveal: 'after-answer', silhouette: false },
+                }}
+                state={state}
+                spriteClassName="question__move-disc"
+              />
+              {prompt.text
+                .split(prompt.move.name)
+                .slice(1)
+                .join(prompt.move.name)}
+            </>
+          ) : itemName ? (
+            prompt.text.replace(itemName, 'it')
+          ) : (
+            prompt.text
+          )}
           {prompt.description ? (
             <span className="question__move-description">
               {prompt.description}

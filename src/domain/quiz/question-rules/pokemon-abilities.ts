@@ -18,7 +18,7 @@ const rendering = {
 export const pokemonAbilities = {
   rendering,
   levels: {
-    3: {
+    4: {
       ...controls,
       response: responsePresets.single,
     },

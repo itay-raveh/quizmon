@@ -527,6 +527,27 @@
   object-fit: contain;
 }
 
+.answer--move {
+  grid-template-columns: auto 3rem minmax(0, 1fr);
+}
+
+.answer__move-renderable {
+  display: contents;
+}
+
+.answer__move-slot {
+  display: grid;
+  width: 3rem;
+  height: 3rem;
+  place-items: center;
+}
+
+.answer__move-disc {
+  width: 3rem;
+  height: 3rem;
+  object-fit: contain;
+}
+
 .answer__reveal {
   min-width: 0;
   font-size: var(--text-small);

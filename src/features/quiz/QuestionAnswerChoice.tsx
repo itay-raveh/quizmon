@@ -20,6 +20,7 @@ import { MoveReveal } from './MoveReveal';
 import { NatureEffect } from './NatureEffect';
 import {
   ItemRenderable,
+  MoveRenderable,
   PokemonRenderable,
   QuestionIdentity,
 } from './QuestionEntity';
@@ -50,6 +51,9 @@ const QuestionAnswerChoiceInner = ({
   const view = getQuestionView(question);
   const hasTypeOptionBadges = view.answer.kind === 'type';
   const isItemChoice = view.answer.kind === 'item';
+  const isMoveChoice =
+    question.questionType === 'moveCategory' ||
+    question.questionType === 'levelUpMoves';
   const state = { answered, cluesShown };
   const typeRule = policy.types;
   const revealsOptionTypes = isVisible(typeRule, state);
@@ -170,7 +174,7 @@ const QuestionAnswerChoiceInner = ({
         question.options.length <= 9 ? String(index + 1) : undefined
       }
       aria-pressed={multiSelect ? optionSelected : undefined}
-      className={`${optionClassName} ${hasSprite ? 'answer--pokemon' : ''} ${isItemChoice && itemImage && policy.sprite !== null ? 'answer--item' : ''} ${concealed ? 'answer--concealed' : ''}`.trim()}
+      className={`${optionClassName} ${hasSprite ? 'answer--pokemon' : ''} ${isItemChoice && itemImage && policy.sprite !== null ? 'answer--item' : ''} ${isMoveChoice && itemImage && policy.sprite !== null ? 'answer--move' : ''} ${concealed ? 'answer--concealed' : ''}`.trim()}
       disabled={answered}
       onClick={() => onSelect(option)}
       sound="none"
@@ -187,6 +191,19 @@ const QuestionAnswerChoiceInner = ({
           spriteClassName="answer__item-sprite"
           nameClassName="answer__text"
         />
+      ) : isMoveChoice ? (
+        <MoveRenderable
+          className="answer__move-renderable"
+          name={label}
+          src={itemImage}
+          policy={policy}
+          state={state}
+          spriteSlotClassName="answer__move-slot"
+          spriteClassName="answer__move-disc"
+          nameClassName="answer__text"
+        >
+          {detail}
+        </MoveRenderable>
       ) : visual ? (
         <PokemonRenderable
           name={option}

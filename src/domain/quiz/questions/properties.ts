@@ -1,4 +1,5 @@
 import type { FamilyRules } from './family-rules.ts';
+import { formatPokemonName } from '../../pokemon/format.ts';
 import { pick, shuffle } from '../../../lib/random.ts';
 import { randomOptionSet } from './answers.ts';
 import { makeQuestion, targetMedia } from './assembly.ts';
@@ -50,7 +51,7 @@ export const buildPropertyQuestion = (
           context.random,
         )
       : randomOptionSet(correct, [...candidates], context.random);
-    return makeQuestion(context, {
+    const question = makeQuestion(context, {
       repeat: targetRepetition({ pokemonOptions: false }),
       category,
       target,
@@ -60,5 +61,30 @@ export const buildPropertyQuestion = (
       presentation: { kind: 'text' },
       media: targetMedia(target),
     });
+    if (category === 'move' && context.catalog.topics) {
+      const moves = new Map(
+        context.catalog.topics.moves.map((move) => [move.name, move]),
+      );
+      question.optionImages = Object.fromEntries(
+        options.flatMap((name) => {
+          const move = moves.get(name);
+          return move ? [[name, `/sprites/items/tm-${move.type}.png`]] : [];
+        }),
+      );
+      question.optionReveals = Object.fromEntries(
+        options.flatMap((name) => {
+          const move = moves.get(name);
+          return move
+            ? [
+                [
+                  name,
+                  `${formatPokemonName(move.type)} · ${formatPokemonName(move.damageClass)}`,
+                ],
+              ]
+            : [];
+        }),
+      );
+    }
+    return question;
   };
 };

@@ -61,6 +61,19 @@
   text-wrap: pretty;
 }
 
+.question__move-subject {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  vertical-align: middle;
+}
+
+.question__move-disc {
+  width: 2rem;
+  height: 2rem;
+  object-fit: contain;
+}
+
 .nature-effect {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

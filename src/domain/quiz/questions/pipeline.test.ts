@@ -55,9 +55,9 @@ it('builds five League levels with distinct formats and a Champion finale', () =
     'league-levels',
     defaultGameSettings,
   );
-  expect(questions).toHaveLength(15);
+  expect(questions).toHaveLength(leagueStages.length * 3);
   expect(new Set(questions.map(({ questionType }) => questionType)).size).toBe(
-    15,
+    questions.length,
   );
   expect(questions.at(-1)?.questionType).toBe('champion');
   expect(questions.at(-1)?.variantLevel).toBe(5);
@@ -71,8 +71,6 @@ it('builds five League levels with distinct formats and a Champion finale', () =
       expect(question.variantLevel).toBe(
         getQuestionVariant(question.questionType, stage.level)?.level,
       );
-      if (stage.level === 4)
-        expect(getQuestionVariant(question.questionType, 3)).toBeUndefined();
     }
   }
 }, 30_000);
@@ -102,6 +100,42 @@ it('builds every configured family with a visible saved question', () => {
       expect(hasVisibleChoices(saved), `${type}:${level}`).toBe(true);
       expect(hasVisibleSubject(saved), `${type}:${level}`).toBe(true);
     }
+  }
+});
+
+it('keeps Pokémon ability questions out of level three', () => {
+  const build = (level: (typeof gameLevels)[number]) =>
+    buildQuestionType(
+      {
+        catalog,
+        pool,
+        random: createSeededRandom(`pokemonAbilities:${level}`),
+        used: new Set(),
+        level,
+      },
+      'pokemonAbilities',
+    );
+  expect(build(3)).toBeUndefined();
+  expect(build(4)?.subject.kind).toBe('pokemon');
+});
+
+it('renders every level-up move choice with a disc and an answer reveal', () => {
+  const question = buildQuestionType(
+    {
+      catalog,
+      pool,
+      random: createSeededRandom('level-up-move-art'),
+      used: new Set(),
+      level: 4,
+    },
+    'levelUpMoves',
+  );
+  expect(question).toBeDefined();
+  for (const option of question!.options) {
+    expect(question!.optionImages?.[option]).toMatch(
+      /^\/sprites\/items\/tm-[a-z]+\.png$/,
+    );
+    expect(question!.optionReveals?.[option]).toMatch(/ · /);
   }
 });
 

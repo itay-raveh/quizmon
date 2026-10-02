@@ -101,6 +101,14 @@ export const buildMove: QuestionBuilder<
             optionLabels: Object.fromEntries(
               options.map((move) => [move.name, move.label]),
             ),
+            optionImages: Object.fromEntries(
+              options.map((move) => {
+                const entry = move.contexts.find(
+                  (entry) => entry.game === rules.game,
+                )!;
+                return [move.name, `/sprites/items/tm-${entry.type}.png`];
+              }),
+            ),
             optionReveals: Object.fromEntries(
               options.map((move) => {
                 const entry = move.contexts.find(
@@ -142,6 +150,10 @@ export const buildMove: QuestionBuilder<
             prompt: {
               kind: 'text',
               text: prompt,
+              move: {
+                name: target.label,
+                sprite: `/sprites/items/tm-${rules.type}.png`,
+              },
               description:
                 'showMoveDescription' in context.variant &&
                 context.variant.showMoveDescription
