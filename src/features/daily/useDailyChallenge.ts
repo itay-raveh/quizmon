@@ -18,7 +18,6 @@ import {
 } from '../../domain/quiz/question-generation';
 import type { GameResult } from '../../domain/quiz/types';
 import type { GameSettings } from '../../domain/settings/types';
-import { type ActiveGameSnapshot } from '../../lib/storage/active-game-storage';
 import { subscribeToPlayerChanges } from '../../lib/storage/player-storage';
 import { canPersistResults } from '../../lib/storage/results-storage';
 import { readDailyState } from './daily-state';
@@ -28,7 +27,6 @@ interface DailyChallengeOptions {
   settings: GameSettings;
   refreshSavedData: () => void;
   startGame: StartGame;
-  resume: (snapshot: ActiveGameSnapshot) => void;
 }
 
 export const useDailyChallenge = ({
@@ -36,7 +34,6 @@ export const useDailyChallenge = ({
   settings,
   refreshSavedData,
   startGame,
-  resume,
 }: DailyChallengeOptions) => {
   const location = useLocation();
   const route = useMemo(() => {
@@ -104,18 +101,13 @@ export const useDailyChallenge = ({
     if (saved.readError) return;
     const key = selectedDate;
     const exactResult = saved.results.daily[key];
-    const exactAttempt = saved.attempts[key];
     const result = exactResult;
     if (result) {
       setCompletion({ date: selectedDate, result, resultSaved: true });
       return;
     }
     if (!catalog || !canPersistResults()) return;
-    const attempt = exactAttempt;
-    if (attempt) {
-      resume(attempt);
-      return;
-    }
+    if (saved.forfeited) return;
     try {
       const next = resolveTrainingSettings(catalog, {
         ...settings,
@@ -132,10 +124,13 @@ export const useDailyChallenge = ({
         { kind: 'daily', date: selectedDate },
         seed,
       );
-      if (started === false)
-        setError(
-          'Your browser could not save this attempt. Free some storage and try again.',
-        );
+      if (started === false) {
+        refresh();
+        if (!readDailyState(selectedDate).forfeited)
+          setError(
+            'Your browser could not save this attempt. Free some storage and try again.',
+          );
+      }
     } catch {
       setError('This challenge could not be prepared. Please try again.');
     }
@@ -165,6 +160,7 @@ export const useDailyChallenge = ({
     resultSaved:
       Boolean(savedResult) ||
       (completion.date === date && completion.resultSaved),
+    forfeited: savedState.forfeited,
     error: savedState.readError
       ? 'Saved results could not be read. Open Settings, then Backup to restore a valid backup.'
       : error,

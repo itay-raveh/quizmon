@@ -53,3 +53,17 @@ it('validates backup identity and device data before any restore writes', () => 
     parseBackup(JSON.stringify({ ...backup(), format: 'quizmon-backup-v2' })),
   ).toThrow('valid Quizmon backup');
 });
+
+it('drops obsolete unfinished rounds from a backup', () => {
+  const parsed = parseBackup(
+    JSON.stringify({
+      ...backup(),
+      device: [
+        ...backup().device,
+        { id: 'round:old-tab', payload: { retired: true } },
+        { id: 'closed:old-round', payload: { reason: 'left' } },
+      ],
+    }),
+  );
+  expect(parsed.device).toEqual(backup().device);
+});

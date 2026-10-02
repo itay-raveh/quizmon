@@ -125,10 +125,8 @@ const refreshDeviceState = async () => {
     previous.restoreId !== next.restoreId ||
     Object.keys(previous.dailyAttempts).length !==
       Object.keys(next.dailyAttempts).length ||
-    Object.entries(next.dailyAttempts).some(
-      ([date, round]) =>
-        previous.dailyAttempts[date]?.roundId !== round.roundId ||
-        previous.dailyAttempts[date]?.answers.length !== round.answers.length,
+    Object.keys(next.dailyAttempts).some(
+      (date) => !previous.dailyAttempts[date],
     )
   )
     emit();

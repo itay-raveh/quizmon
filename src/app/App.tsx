@@ -8,7 +8,6 @@ import {
 } from '../lib/storage/update-reload-state';
 import { useLeagueChallenge } from '../features/league/useLeagueChallenge';
 import { useLeagueDestination } from '../features/league/useLeagueDestination';
-import { useActiveGame } from '../features/quiz/useActiveGame';
 import { useGameCompletion } from '../features/quiz/useGameCompletion';
 import { useTrainingGame } from '../features/quiz/useTrainingGame';
 import { useGameSettings } from '../features/settings/useGameSettings';
@@ -17,7 +16,7 @@ import { useTrainerCard } from '../features/trainer/useTrainerCard';
 import { usePokemonCatalog } from '../hooks/usePokemonCatalog';
 import { useStopwatch } from '../hooks/useStopwatch';
 import { trackGameStarted } from '../lib/analytics';
-import { writeActiveGame } from '../lib/storage/active-game-storage';
+import { claimDailyAttempt } from '../lib/storage/round-storage';
 import { reportSaveError } from '../lib/storage/player-storage';
 import { AppView } from './AppView';
 import {
@@ -59,18 +58,11 @@ export const App = () => {
                 ),
               }
             : {};
-        await writeActiveGame({
-          answers: [],
-          mode: nextMode,
-          settings: nextSettings,
-          questions: nextQuestions,
-          questionCount: nextQuestions.length,
-          roundId,
-          startedOn,
-          seed,
-          ...scoring,
-          elapsedMilliseconds: 0,
-        });
+        if (
+          nextMode.kind === 'daily' &&
+          !(await claimDailyAttempt(nextMode.date))
+        )
+          return false;
         trackGameStarted(nextMode, nextQuestions.length);
         dispatchSession({
           mode: nextMode,
@@ -112,13 +104,6 @@ export const App = () => {
     catalog,
     settings,
     refreshSavedData: trainer.refresh,
-    resume: (snapshot) => {
-      dispatchSession({ ...snapshot, type: 'restored' });
-      reset(snapshot.elapsedMilliseconds);
-      if (snapshot.answers.length === snapshot.questions.length)
-        void Promise.resolve(completeGame(snapshot)).catch(reportSaveError);
-      else start();
-    },
     startGame,
   });
 
@@ -141,11 +126,7 @@ export const App = () => {
     timerRunning: running,
   });
 
-  const {
-    answerQuestion,
-    complete: completeGame,
-    recordAnswer,
-  } = useGameCompletion({
+  const { answerQuestion, recordAnswer } = useGameCompletion({
     catalog,
     dispatch: dispatchSession,
     pauseTimer: pause,
@@ -155,42 +136,47 @@ export const App = () => {
     startTimer: start,
   });
 
-  const restoringGame = useActiveGame({
-    autoStartDaily: daily.autoStart,
-    catalog,
-    completeGame,
-    dispatch: dispatchSession,
-    getElapsedMilliseconds,
-    resetTimer: reset,
-    session,
-    startDailyGame: () => {
-      void daily.start();
-    },
-    startTimer: start,
-    timerRunning: running,
-  });
+  const autoStartedDaily = useRef<string | null>(null);
+  useEffect(() => {
+    if (!daily.autoStart) {
+      autoStartedDaily.current = null;
+      return;
+    }
+    if (!catalog || session.phase !== 'landing') return;
+    if (autoStartedDaily.current === daily.date) return;
+    autoStartedDaily.current = daily.date;
+    void daily.start();
+  }, [catalog, daily, session.phase]);
+  useEffect(() => {
+    if (session.phase !== 'questions') return;
+    const confirmReload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = true;
+    };
+    window.addEventListener('beforeunload', confirmReload);
+    return () => window.removeEventListener('beforeunload', confirmReload);
+  }, [session.phase]);
   const promptedDailyLink = useRef<string | null>(null);
   useEffect(() => {
     if (!daily.linkedDate) {
       promptedDailyLink.current = null;
       return;
     }
-    if (restoringGame || session.phase !== 'questions') return;
+    if (session.phase !== 'questions') return;
     if (session.mode.kind === 'daily' && session.mode.date === daily.linkedDate)
       return;
     const key = `${daily.linkedDate}:${session.roundId}`;
     if (promptedDailyLink.current === key) return;
     promptedDailyLink.current = key;
     navigation.requestLeave(true);
-  }, [daily.linkedDate, navigation, restoringGame, session]);
+  }, [daily.linkedDate, navigation, session]);
 
   return (
     <>
       <AutomaticUpdate
         allowed={
           session.phase !== 'questions' &&
-          (catalogState.status === 'error' ||
-            (!restoringGame && catalogState.status === 'ready'))
+          (catalogState.status === 'error' || catalogState.status === 'ready')
         }
       />
       <AppView

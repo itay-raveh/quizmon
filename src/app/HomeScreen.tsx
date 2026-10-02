@@ -24,6 +24,7 @@ interface HomeScreenProps {
   dailyError?: string;
   dailyResult: GameResult | null;
   dailyResultSaved: boolean;
+  dailyForfeited: boolean;
   dailyStreak: number;
   level: Difficulty;
   badges: readonly TrainerBadge[];
@@ -42,6 +43,7 @@ export const HomeScreen = ({
   dailyError,
   dailyResult,
   dailyResultSaved,
+  dailyForfeited,
   dailyStreak,
   level,
   badges,
@@ -127,14 +129,20 @@ export const HomeScreen = ({
           </ShareResultButton>
         ) : (
           <GameButton
-            aria-label={`Play Daily Challenge for ${formatDailyDate(dailyDate)}${dailyStreak > 0 ? `. ${dailyStreak}-day Daily Combo.` : ''}`}
+            aria-label={
+              dailyForfeited
+                ? `Daily Challenge for ${formatDailyDate(dailyDate)} forfeited`
+                : `Play Daily Challenge for ${formatDailyDate(dailyDate)}${dailyStreak > 0 ? `. ${dailyStreak}-day Daily Combo.` : ''}`
+            }
             className={`daily-action ${dailyStreak > 0 ? 'daily-action--with-combo' : ''}`.trim()}
-            disabled={!catalogReady || !storageAvailable}
+            disabled={dailyForfeited || !catalogReady || !storageAvailable}
             onClick={onStartDaily}
           >
             <span className="daily-action__copy">
               <strong className="daily-action__title">Daily Challenge</strong>
-              {catalogStatus === 'loading' ? (
+              {dailyForfeited ? (
+                <span className="daily-action__detail">Attempt forfeited</span>
+              ) : catalogStatus === 'loading' ? (
                 <span className="daily-action__detail" role="status">
                   <span className="landing__spinner" aria-hidden="true" />
                   Preparing Daily Challenge…

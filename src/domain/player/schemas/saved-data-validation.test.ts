@@ -2,7 +2,6 @@ import { isQuestionData } from '../../quiz/lineup';
 import { completion } from '../../../../tests/online/progress-fixtures';
 import { defaultGameSettings } from '../../settings/game-settings';
 import { emptyPlayerData } from '../player-save';
-import { parseActiveGameSave } from '../active-game';
 import { SaveError } from '../save-schema';
 import { parseRound } from './round';
 import { parsePlayerData } from './player-data';
@@ -93,15 +92,6 @@ it('rejects unsafe saved round counts', () => {
   expect(
     parseRound({ ...round, questionCount: Number.MAX_SAFE_INTEGER + 1 }),
   ).toBeNull();
-});
-
-it('rejects unfinished rounds without a stable round ID', () => {
-  expect(() => parseActiveGameSave({ ...round, roundId: round.seed })).toThrow(
-    SaveError,
-  );
-  expect(() => parseActiveGameSave({ ...round, roundId: undefined })).toThrow(
-    SaveError,
-  );
 });
 
 it('keeps player-data normalization and recovery error category', () => {

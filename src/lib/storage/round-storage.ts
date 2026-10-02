@@ -9,7 +9,6 @@ import {
   compactRoundSchema,
   scoreCompactRound,
 } from '../../domain/sync/compact-rounds';
-import type { ActiveGameSnapshot } from './active-game-storage';
 import {
   currentOwnerId,
   getPlayerDatabase,
@@ -19,92 +18,59 @@ import {
 } from './player-storage';
 import { updateDeviceState, writeCompletedRound } from './rxdb-game';
 
-let tabId: string;
-let active: ActiveGameSnapshot | null = null;
+export const claimDailyAttempt = async (date: string) => {
+  const db = getPlayerDatabase();
+  const claimed = await updateDeviceState(db, (state) => {
+    if (state.dailyAttempts[date]) return false;
+    state.dailyAttempts[date] = true;
+    return true;
+  });
+  await refreshPlayerData();
+  return claimed;
+};
 
-const roundKey = () => `round:${tabId}`;
-
-export const initializeLocalRound = async () => {
-  tabId = sessionStorage.getItem('quizmon.baseline.tab') ?? crypto.randomUUID();
-  sessionStorage.setItem('quizmon.baseline.tab', tabId);
-  const document = await getPlayerDatabase().device.findOne(roundKey()).exec();
-  active = document ? parseRound(document.toMutableJSON().payload) : null;
-  if (!active) {
-    await document?.remove();
-    return;
-  }
-  const closed = await getPlayerDatabase()
-    .device.findOne(`closed:${active.roundId}`)
-    .exec();
-  if (closed) {
-    await document?.remove();
-    active = null;
-    return;
-  }
-  if (!active.completedAt) return;
-  const { completion, victory } = completeRound(
-    active,
-    active.completedAt,
-    readPlayerData().profile?.name ?? '',
+export const discardSavedRounds = async () => {
+  const db = getPlayerDatabase();
+  const documents = await db.device.find().exec();
+  const closed = new Set(
+    documents.filter(({ id }) => id.startsWith('closed:')).map(({ id }) => id),
   );
-  await commitRoundCompletion(completion, victory, true);
-};
-
-export const readLocalRound = () => structuredClone(active);
-
-export const persistLocalRound = async (round: ActiveGameSnapshot) => {
-  if (round.playerRestoreId !== readPlayerRestoreId())
-    throw new Error('This round belongs to a replaced save. Reload Quizmon.');
-  const db = getPlayerDatabase();
-  const [completed, closed, stored] = await Promise.all([
-    db.rounds.findOne(round.roundId).exec(),
-    db.device.findOne(`closed:${round.roundId}`).exec(),
-    db.device.findOne(roundKey()).exec(),
-  ]);
-  if (completed || closed) return;
-  const previous = stored ? parseRound(stored.toJSON().payload) : null;
-  if (
-    previous?.roundId === round.roundId &&
-    previous.answers.length > round.answers.length
-  )
-    return;
-  if (
-    round.answers.length === round.questionCount ||
-    (round.mode.kind === 'league' &&
-      round.answers.some((answer) => !answer.correct))
-  )
-    round.completedAt =
-      previous?.completedAt ?? round.completedAt ?? new Date().toISOString();
-  if (stored)
-    await stored.incrementalModify((data) => ({ ...data, payload: round }));
-  else await db.device.insert({ id: roundKey(), payload: round });
-  const mode = round.mode;
-  if (mode.kind === 'daily')
-    await updateDeviceState(db, (state) => {
-      state.dailyAttempts[mode.date] = round;
-    });
-  active = structuredClone(round);
-};
-
-export const removeLocalRound = async () => {
-  const db = getPlayerDatabase();
-  const stored = await db.device.findOne(roundKey()).exec();
-  if (stored) {
-    const round = parseRound(stored.toJSON().payload);
-    if (round)
-      await db.device.incrementalUpsert({
-        id: `closed:${round.roundId}`,
-        payload: { reason: 'left' },
-      });
-    await stored.remove();
+  for (const document of documents) {
+    if (document.id.startsWith('round:')) {
+      const round = parseRound(document.toMutableJSON().payload);
+      if (
+        round?.mode.kind === 'daily' &&
+        round.playerRestoreId === readPlayerRestoreId() &&
+        !round.completedAt
+      ) {
+        const date = round.mode.date;
+        await updateDeviceState(db, (state) => {
+          state.dailyAttempts[date] = true;
+        });
+      }
+      if (
+        round?.completedAt &&
+        round.playerRestoreId === readPlayerRestoreId() &&
+        !closed.has(`closed:${round.roundId}`)
+      ) {
+        const { completion, victory } = completeRound(
+          round,
+          round.completedAt,
+          readPlayerData().profile?.name ?? '',
+        );
+        await commitRoundCompletion(completion, victory);
+      }
+      await document.remove();
+    } else if (document.id.startsWith('closed:')) {
+      await document.remove();
+    }
   }
-  active = null;
+  await refreshPlayerData();
 };
 
 export const commitRoundCompletion = async (
   completion: RoundCompletion,
   victory?: LeagueVictoryRecord,
-  keepRound = false,
 ) => {
   const db = getPlayerDatabase();
   const ownerId = currentOwnerId();
@@ -131,11 +97,6 @@ export const commitRoundCompletion = async (
     await updateDeviceState(db, (state) => {
       delete state.dailyAttempts[round.day];
     });
-  }
-  if (!keepRound) {
-    const stored = await db.device.findOne(roundKey()).exec();
-    await stored?.remove();
-    active = null;
   }
   await refreshPlayerData();
   if (saved) trackGameCompleted(completion.mode, completion.result);

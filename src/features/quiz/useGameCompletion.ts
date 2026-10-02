@@ -9,18 +9,13 @@ import { completeRound } from '../../domain/player/game-history';
 import { getTrainerStats } from '../../domain/player/progress';
 import { getTrainerProgressChanges } from '../../domain/player/trainer-progression';
 import type { PokemonCatalog } from '../../domain/pokemon/types';
-import { getResponseTime } from '../../domain/quiz/scoring';
 import type { AnswerResult, GameResult } from '../../domain/quiz/types';
-import { writeActiveGame } from '../../lib/storage/active-game-storage';
 import {
   readPlayerData,
   reportSaveError,
 } from '../../lib/storage/player-storage';
 import { readTrainerStats } from '../../lib/storage/results-storage';
-import {
-  commitRoundCompletion,
-  readLocalRound,
-} from '../../lib/storage/round-storage';
+import { commitRoundCompletion } from '../../lib/storage/round-storage';
 import { recordCompletedTrainingRound } from './level-advancement';
 
 interface GameCompletionOptions {
@@ -51,9 +46,7 @@ export const useGameCompletion = ({
     async (round) => {
       const { mode, seed, roundId } = round;
       const completedAt =
-        readLocalRound()?.completedAt ??
-        completionTimes.current.get(roundId) ??
-        new Date().toISOString();
+        completionTimes.current.get(roundId) ?? new Date().toISOString();
       completionTimes.current.set(roundId, completedAt);
       const previousData = readPlayerData();
       const previousTrainerStats =
@@ -66,7 +59,7 @@ export const useGameCompletion = ({
         previousData.profile?.name ?? '',
       );
       const { result } = completion;
-      const best = await commitRoundCompletion(completion, leagueRecord, false);
+      const best = await commitRoundCompletion(completion, leagueRecord);
       if (mode.kind === 'training' && result.rules) {
         recordCompletedTrainingRound(result.rules.difficulty, seed);
       }
@@ -95,7 +88,7 @@ export const useGameCompletion = ({
   );
 
   const recordAnswer = useCallback(
-    async (answer: AnswerResult) => {
+    (answer: AnswerResult) => {
       if (session.phase !== 'questions') return;
       if (progressStart.current?.seed !== session.seed) {
         progressStart.current = {
@@ -103,12 +96,6 @@ export const useGameCompletion = ({
           stats: readTrainerStats(),
         };
       }
-      const round = recordSessionAnswer(session, answer);
-      await writeActiveGame({
-        ...round,
-        questionCount: round.questions.length,
-        elapsedMilliseconds: getResponseTime(round.answers).elapsedMilliseconds,
-      });
       dispatch({ answer, type: 'answer-recorded' });
     },
     [dispatch, session],
@@ -136,5 +123,5 @@ export const useGameCompletion = ({
     [complete, dispatch, session, startTimer],
   );
 
-  return { answerQuestion, complete, recordAnswer };
+  return { answerQuestion, recordAnswer };
 };

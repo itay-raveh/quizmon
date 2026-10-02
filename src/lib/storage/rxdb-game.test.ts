@@ -57,7 +57,7 @@ it('projects saved rounds and preferences after IndexedDB reload', async () => {
   await second.remove();
 });
 
-it('returns cloneable Daily attempts from RxDB documents', async () => {
+it('reduces saved Daily rounds to spent-attempt markers', async () => {
   const db = await openPlayerDatabase(
     `quizmon_daily_save_${crypto.randomUUID().replaceAll('-', '')}`,
     getRxStorageDexie({ indexedDB, IDBKeyRange }),
@@ -112,8 +112,7 @@ it('returns cloneable Daily attempts from RxDB documents', async () => {
       }),
     );
     const attempts = (await readDeviceState(db)).dailyAttempts;
-    const attempt = attempts[date];
-    expect(structuredClone(attempt!).mode).toEqual(round.mode);
+    expect(attempts[date]).toBe(true);
     expect(attempts.invalid).toBeUndefined();
   } finally {
     await db.remove();

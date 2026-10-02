@@ -12,7 +12,6 @@ import {
   savedSettingsSchema,
 } from '../../domain/player/schemas/player-data';
 import { trainerProfileSchema } from '../../domain/player/trainer-profile';
-import { parseActiveGameSave } from '../../domain/player/active-game';
 import { compactRoundSchema } from '../../domain/sync/compact-rounds';
 import { downloadJson } from '../../lib/download';
 import { clearSaveIssue } from '../../lib/storage/save-health';
@@ -156,7 +155,13 @@ export function parseBackup(text: string): PlayerBackup {
       throw new Error('The backup has an invalid completed round.');
     return { ...round.data, ownerId };
   });
-  const device: DeviceRecord[] = deviceDocs.map((value) => {
+  const device: DeviceRecord[] = deviceDocs.flatMap((value) => {
+    if (
+      isRecord(value) &&
+      typeof value.id === 'string' &&
+      (value.id.startsWith('round:') || value.id.startsWith('closed:'))
+    )
+      return [];
     if (
       !isRecord(value) ||
       typeof value.id !== 'string' ||
@@ -164,10 +169,8 @@ export function parseBackup(text: string): PlayerBackup {
     )
       throw new Error('The backup has invalid device data.');
     if (value.id === 'state') parseDeviceState(value.payload);
-    else if (value.id.startsWith('round:')) parseActiveGameSave(value.payload);
-    else if (!value.id.startsWith('closed:'))
-      throw new Error('The backup has an unknown device record.');
-    return { id: value.id, payload: value.payload };
+    else throw new Error('The backup has an unknown device record.');
+    return [{ id: value.id, payload: value.payload }];
   });
   if (
     !device.some((record) => record.id === 'state') ||
@@ -244,20 +247,6 @@ export async function restoreBackup(backup: PlayerBackup): Promise<void> {
       ...current.dailyAttempts,
     };
   });
-  const currentState = parseDeviceState(
-    (await db.device.findOne('state').exec())!.toJSON().payload,
-  );
-  for (const record of backup.device) {
-    if (record.id === 'state' || (await db.device.findOne(record.id).exec()))
-      continue;
-    const payload = record.id.startsWith('round:')
-      ? {
-          ...parseActiveGameSave(record.payload),
-          playerRestoreId: currentState.restoreId,
-        }
-      : record.payload;
-    await db.device.insert({ id: record.id, payload });
-  }
   await refreshPlayerData();
   clearSaveIssue();
 }

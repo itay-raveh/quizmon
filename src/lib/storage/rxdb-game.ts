@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { ActiveGameSnapshot } from '../../domain/player/active-game';
+import { isDailyDate } from '../validation';
 import { parseRound } from '../../domain/player/schemas/round';
 import {
   projectCompactRoundHistory,
@@ -29,7 +29,7 @@ const deviceStateSchema = z.object({
 });
 
 export type DeviceState = z.infer<typeof deviceStateSchema> & {
-  dailyAttempts: Record<string, ActiveGameSnapshot>;
+  dailyAttempts: Record<string, true>;
 };
 
 export const emptyDeviceState = (): DeviceState => {
@@ -45,8 +45,12 @@ export const parseDeviceState = (payload: unknown): DeviceState => {
     ...parsed,
     dailyAttempts: Object.fromEntries(
       Object.entries(parsed.dailyAttempts).flatMap(([key, value]) => {
+        if (!isDailyDate(key)) return [];
+        if (value === true) return [[key, true]];
         const round = parseRound(value);
-        return round ? [[key, round]] : [];
+        return round?.mode.kind === 'daily' && round.mode.date === key
+          ? [[key, true]]
+          : [];
       }),
     ),
   };

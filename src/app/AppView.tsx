@@ -246,6 +246,7 @@ const AppScreen = ({
           dailyDate={daily.date}
           dailyResult={daily.result}
           dailyResultSaved={daily.resultSaved}
+          dailyForfeited={daily.forfeited}
           dailyError={daily.error}
           dailyStreak={daily.date === getUtcDate() ? daily.streak : 0}
           level={settings.difficulty ?? 1}
@@ -350,9 +351,7 @@ const AppOverlays = ({
         confirmLabel={
           navigation.dailyLinkConfirmation ? 'Play Daily' : undefined
         }
-        resumable={
-          session.phase === 'questions' && session.mode.kind === 'daily'
-        }
+        daily={session.phase === 'questions' && session.mode.kind === 'daily'}
         onCancel={navigation.cancelLeave}
         onConfirm={() => void navigation.confirmLeave()}
       />

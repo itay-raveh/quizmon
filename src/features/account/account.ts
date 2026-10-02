@@ -22,7 +22,6 @@ import {
   emptyDeviceState,
   ensureDeviceState,
   parseDeviceState,
-  readDeviceState,
   updateDeviceState,
   writeCompletedRound,
 } from '../../lib/storage/rxdb-game';
@@ -206,7 +205,6 @@ export async function finishSignIn(merge: boolean, useAccountOnly = false) {
             id: owner,
           });
         const local = await guest.device.find().exec();
-        const accountState = await readDeviceState(target);
         const source = local.find((entry) => entry.id === 'state');
         const guestState = source
           ? parseDeviceState(source.toMutableJSON().payload)
@@ -217,19 +215,6 @@ export async function finishSignIn(merge: boolean, useAccountOnly = false) {
             ...state.dailyAttempts,
           };
         });
-        for (const entry of local.filter(
-          (document) => document.id !== 'state',
-        )) {
-          if (!(await target.device.findOne(entry.id).exec())) {
-            const payload = entry.toMutableJSON().payload;
-            await target.device.insert({
-              id: entry.id,
-              payload: entry.id.startsWith('round:')
-                ? { ...payload, playerRestoreId: accountState.restoreId }
-                : payload,
-            });
-          }
-        }
       } finally {
         await target.close();
       }

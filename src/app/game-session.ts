@@ -55,7 +55,6 @@ export type CompleteGame = (
 
 export type GameSessionAction =
   | (Omit<GameRound, 'answers'> & { type: 'started' })
-  | (GameRound & { type: 'restored' })
   | { type: 'assistance'; count: number }
   | { answer: AnswerResult; type: 'answer-recorded' }
   | { answer: AnswerResult; type: 'advanced' }
@@ -85,19 +84,15 @@ export const gameSessionReducer = (
 ): GameSession => {
   switch (action.type) {
     case 'started':
-    case 'restored':
       return {
-        answers: action.type === 'restored' ? action.answers : [],
+        answers: [],
         mode: action.mode,
         settings: action.settings,
         scoreMultipliers: action.scoreMultipliers,
         phase: 'questions',
         roundId: action.roundId,
         startedOn: action.startedOn,
-        questionIndex:
-          action.type === 'restored'
-            ? Math.min(action.answers.length, action.questions.length - 1)
-            : 0,
+        questionIndex: 0,
         questions: action.questions,
         seed: action.seed,
       };

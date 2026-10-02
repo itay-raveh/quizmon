@@ -31,6 +31,7 @@ export const mountGame = (root: HTMLElement) => {
                 dailyDate={getUtcDate()}
                 dailyResult={null}
                 dailyResultSaved={true}
+                dailyForfeited={false}
                 dailyStreak={0}
                 level={1}
                 badges={[]}

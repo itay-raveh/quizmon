@@ -3,14 +3,14 @@ import { useModalDialog } from '@/hooks/useModalDialog';
 
 interface LeaveGameDialogProps {
   confirmLabel?: string;
-  resumable?: boolean;
+  daily?: boolean;
   onCancel: () => void;
   onConfirm: () => void;
 }
 
 export const LeaveGameDialog = ({
   confirmLabel = 'Leave game',
-  resumable = false,
+  daily = false,
   onCancel,
   onConfirm,
 }: LeaveGameDialogProps) => {
@@ -31,8 +31,8 @@ export const LeaveGameDialog = ({
       <div className="confirm-dialog__body">
         <h2 id="leave-game-title">Leave this game?</h2>
         <p id="leave-game-description">
-          {resumable
-            ? 'Your Daily progress is saved. Choose this challenge to resume it.'
+          {daily
+            ? 'Your Daily attempt will be forfeited.'
             : 'Your answers from this game will be lost.'}
         </p>
         <div className="confirm-dialog__actions">

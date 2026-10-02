@@ -6,7 +6,7 @@ import {
   initializePlayerStorage,
   subscribeToPlayerRestore,
 } from '../lib/storage/player-storage';
-import { initializeLocalRound } from '../lib/storage/round-storage';
+import { discardSavedRounds } from '../lib/storage/round-storage';
 
 export const initializeGame = async () => {
   void loadPokemonCatalog().catch(() => {});
@@ -22,7 +22,7 @@ export const initializeGame = async () => {
     if (selectedAccount() === activeAccount) window.location.assign('/');
   });
   await initializePlayerStorage(activeAccount)
-    .then(initializeLocalRound)
+    .then(discardSavedRounds)
     .catch(reportSaveIssue);
   if (!getSaveIssue()) void startAccountSync().catch(reportSaveIssue);
 };

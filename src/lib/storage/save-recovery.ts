@@ -1,6 +1,5 @@
 import { parseUpdateSave } from '../../domain/player/update-save';
 import { removeStoredValue } from './browser-storage';
-import { inspectRoundStorage } from './active-game-storage';
 import {
   canRecoverGuestSave,
   currentOwnerId,
@@ -14,7 +13,6 @@ import { ensureDeviceState } from './rxdb-game';
 export const inspectSavedData = (): void => {
   try {
     readPlayerSave();
-    inspectRoundStorage();
     const update = window.sessionStorage.getItem(
       'quizmon.baseline.update-state',
     );
