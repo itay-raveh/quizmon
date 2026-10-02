@@ -786,22 +786,6 @@
   min-width: 0;
 }
 
-.training-multiplier {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1rem;
-  margin: 0 0 1.25rem;
-  padding-block: 0.5rem;
-  border-bottom: 2px solid var(--navy);
-  color: var(--navy);
-  font-weight: 800;
-}
-
-.training-multiplier strong {
-  font: 800 1.25rem / 1.2 var(--font-data);
-}
-
 .save-recovery {
   width: min(34rem, calc(100vw - 2rem));
   max-height: calc(100dvh - 2rem);

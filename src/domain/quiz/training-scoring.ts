@@ -42,5 +42,6 @@ export const getQuestionTypeMultiplier = (
   const variantLevel = getQuestionVariant(type, level)?.level;
   return variantLevel === undefined
     ? undefined
-    : getTrainingRuleFactor(level, variantLevel);
+    : getTrainingLevelFactor(level) *
+        getTrainingRuleFactor(level, variantLevel);
 };

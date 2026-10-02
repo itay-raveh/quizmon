@@ -6,6 +6,9 @@ import {
   getSpeedBonusPoints,
   getTrainingScoreBreakdown,
 } from './scoring';
+import { gameLevels } from './level';
+import { questionTypes } from './questions/definitions';
+import { getQuestionTypeMultiplier, trainingScoring } from './training-scoring';
 
 describe('scoring', () => {
   it('reduces Champion awards for help without dropping below the final clue', () => {
@@ -126,6 +129,31 @@ describe('scoring', () => {
       getTrainingScoreBreakdown([{ ...oldAnswer, questionType: 'evYields' }], 5)
         .score,
     );
+  });
+
+  it('shows the factor used for each available Training question', () => {
+    for (const level of gameLevels) {
+      for (const questionType of questionTypes) {
+        const factor = getQuestionTypeMultiplier(questionType, level);
+        if (factor === undefined) continue;
+
+        const score = getTrainingScoreBreakdown(
+          [
+            {
+              category: 'identity',
+              questionType,
+              correct: true,
+              points: 1000,
+              responseMilliseconds: 5000,
+            },
+          ],
+          level,
+        );
+        expect(score.answers).toBe(
+          Math.round(trainingScoring.basePoints * factor),
+        );
+      }
+    }
   });
 
   it('totals only active answer time', () => {

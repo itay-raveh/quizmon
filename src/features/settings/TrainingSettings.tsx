@@ -4,8 +4,6 @@ import { SelectionTile } from './SelectionTile';
 import { SoundButton } from '@/components/SoundButton';
 import { formGroups, generations } from '@/domain/pokemon/types';
 import { gameLevels } from '@/domain/quiz/level';
-import { formatScoreMultiplier } from '@/domain/quiz/format';
-import { getTrainingLevelFactor } from '@/domain/quiz/training-scoring';
 import { type GameSettings } from '@/domain/settings/types';
 import type { Dispatch, RefObject, SetStateAction } from 'react';
 import { QuestionTypeSettings } from './QuestionTypeSettings';
@@ -51,14 +49,6 @@ export const TrainingSettings = ({
 
   return (
     <>
-      {draft.level && matchingCount > 0 && formGroupsAreValid ? (
-        <p className="training-multiplier" role="status">
-          <span>Base multiplier</span>
-          <strong>
-            {formatScoreMultiplier(getTrainingLevelFactor(draft.level))}
-          </strong>
-        </p>
-      ) : null}
       {trainingChangesApplyNextGame ? (
         <p className="settings-note">
           Training changes apply to your next game.
