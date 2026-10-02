@@ -1,5 +1,5 @@
 import { useMemo, useState, type SubmitEvent } from 'react';
-import { Link, useLocation, useNavigate } from '@tanstack/react-router';
+import { Link, useNavigate } from '@tanstack/react-router';
 import { GameButton } from '../../components/GameButton';
 import { useInteractionSound } from '../../lib/audio/sound-context';
 import {
@@ -22,6 +22,7 @@ import {
   trainerViewLabels,
   type TrainerBadgeId,
   type TrainerSpecialty,
+  type TrainerView,
 } from '../../domain/player/trainer-progression';
 import type { PokemonCatalog } from '../../domain/pokemon/types';
 import { getUtcDate } from '../../domain/quiz/daily';
@@ -40,10 +41,11 @@ import { trainerPath } from './trainer-route';
 
 interface TrainerPassportProps {
   catalog: PokemonCatalog;
+  editing: boolean;
   trainer: Pick<
     ReturnType<typeof useTrainerCard>,
-    'profile' | 'stats' | 'updateProfile' | 'view'
-  >;
+    'profile' | 'stats' | 'updateProfile'
+  > & { view: TrainerView };
 }
 
 const trainerViews = [
@@ -62,7 +64,11 @@ const searchAvatars = createSearch(
   })),
 );
 
-export const TrainerPassport = ({ catalog, trainer }: TrainerPassportProps) => {
+export const TrainerPassport = ({
+  catalog,
+  trainer,
+  editing,
+}: TrainerPassportProps) => {
   const { profile, stats, updateProfile: onProfileChange, view } = trainer;
   const data = readPlayerData();
   const found = new Set(data.pokedex);
@@ -73,10 +79,8 @@ export const TrainerPassport = ({ catalog, trainer }: TrainerPassportProps) => {
     pokedexFound: pokemon.filter((name) => found.has(name)).length,
     pokedexTotal: pokemon.length,
   };
-  const location = useLocation();
   const navigate = useNavigate();
   const playSound = useInteractionSound();
-  const editing = location.pathname === '/trainer/edit';
   const [name, setName] = useUpdateState('trainer-name', profile.name);
   const [avatar, setAvatar] = useUpdateState('trainer-avatar', profile.avatar);
   const [avatarQuery, setAvatarQuery] = useState('');

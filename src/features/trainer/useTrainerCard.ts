@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useLocation } from '@tanstack/react-router';
 import { subscribeToPlayerChanges } from '../../lib/storage/player-storage';
 import { readTrainerStats } from '../../lib/storage/results-storage';
 import {
@@ -7,11 +6,8 @@ import {
   saveTrainerProfile,
   type TrainerProfile,
 } from '../../lib/storage/trainer-profile-storage';
-import { parseTrainerRoute } from './trainer-route';
 
 export const useTrainerCard = () => {
-  const location = useLocation();
-  const view = parseTrainerRoute(location.pathname);
   const [profile, setProfile] = useState(readTrainerProfile);
   const [stats, setStats] = useState(readTrainerStats);
 
@@ -33,12 +29,10 @@ export const useTrainerCard = () => {
   }, []);
 
   return {
-    isOpen: view !== null,
     profile,
     refresh,
     refreshStats,
     stats,
     updateProfile,
-    view: view ?? 'front',
   };
 };

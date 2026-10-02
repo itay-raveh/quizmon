@@ -1,33 +1,18 @@
 import type { LeagueView } from '@/domain/quiz/league';
-import { useUpdateState } from '@/lib/storage/update-reload-state';
-import { useNavigate, useLocation } from '@tanstack/react-router';
+import { useNavigate } from '@tanstack/react-router';
 
 export const useLeagueDestination = () => {
-  const location = useLocation();
   const navigate = useNavigate();
-  const isOpen = location.pathname === '/league';
-  const requestedView = (location.state as { view?: unknown } | null)?.view;
-  const view: LeagueView | null =
-    isOpen && (requestedView === 'hall' || requestedView === 'challenge')
-      ? requestedView
-      : null;
-  const [showResults, setShowResults] = useUpdateState('league-results', false);
-
   const open = (next: LeagueView) => {
-    void navigate({ to: '/league', state: { view: next }, replace: isOpen });
+    void navigate({ to: '/league', search: { view: next } });
   };
 
   const close = () => {
-    void navigate({ to: '/', replace: true });
-    setShowResults(false);
+    void navigate({ to: '/', replace: true, ignoreBlocker: true });
   };
 
   return {
-    isOpen,
-    view,
     open,
     close,
-    showResults,
-    setShowResults,
   };
 };

@@ -95,7 +95,6 @@ function Standings({
   active,
   pageSize,
   onViewPlayer,
-  onOpenPlay,
   onError,
 }: {
   owner: string;
@@ -105,7 +104,6 @@ function Standings({
   active: boolean;
   pageSize: number;
   onViewPlayer: (id: string) => void;
-  onOpenPlay: () => void;
   onError: (message: string) => void;
 }) {
   const playSound = useInteractionSound();
@@ -344,7 +342,6 @@ function Standings({
                     )
                       return;
                     playSound('tap');
-                    onOpenPlay();
                   }}
                 >
                   {`Open ${mode === 'daily' ? 'today’s Daily Challenge' : 'Training'}`}
@@ -394,19 +391,17 @@ function Standings({
 export function LeaderboardScreen({
   onAccount,
   onViewPlayer,
-  onOpenPlay,
-  initialDate,
-  initialScope = 'friends',
-  initialMode = 'daily',
+  selectedDate,
+  selectedScope = 'friends',
+  selectedMode = 'daily',
   onSelectionChange,
 }: {
   onAccount: () => void;
   onViewPlayer: (id: string) => void;
-  onOpenPlay: () => void;
-  initialDate?: string;
-  initialScope?: LeaderboardScope;
-  initialMode?: LeaderboardMode;
-  onSelectionChange?: (
+  selectedDate?: string;
+  selectedScope?: LeaderboardScope;
+  selectedMode?: LeaderboardMode;
+  onSelectionChange: (
     date: string,
     scope: LeaderboardScope,
     mode: LeaderboardMode,
@@ -414,14 +409,13 @@ export function LeaderboardScreen({
 }) {
   const account = useSyncExternalStore(subscribeAccount, accountSnapshot);
   const queryClient = useQueryClient();
-  const [scope, setScope] = useState<LeaderboardScope>(initialScope);
-  const [mode, setMode] = useState<LeaderboardMode>(initialMode);
-  const [date, setDate] = useState(() =>
-    initialDate && isDailyDate(initialDate) && initialDate <= getUtcDate()
-      ? initialDate
-      : getUtcDate(),
-  );
   const [today, setToday] = useState(getUtcDate);
+  const scope = selectedScope;
+  const mode = selectedMode;
+  const date =
+    selectedDate && isDailyDate(selectedDate) && selectedDate <= today
+      ? selectedDate
+      : today;
   const [pageSize, setPageSize] = useState(() =>
     window.matchMedia('(max-width: 42rem)').matches ? 5 : 10,
   );
@@ -438,22 +432,20 @@ export function LeaderboardScreen({
   const standingsError = standingsErrors[scope];
   const [shareFallbackLink, setShareFallbackLink] = useState('');
   const swipe = useRef<HTMLDivElement>(null);
-  const firstScope = useRef(initialScope);
   useLayoutEffect(() => {
     if (account.owner && !account.mergeRequired && swipe.current)
       swipe.current.scrollLeft =
-        firstScope.current === 'global'
+        scope === 'global'
           ? swipe.current.scrollWidth - swipe.current.clientWidth
           : 0;
-  }, [account.owner, account.mergeRequired]);
+  }, [account.owner, account.mergeRequired, scope]);
   useEffect(() => {
     const timer = window.setInterval(() => {
       const next = getUtcDate();
       if (next !== today) {
         setToday(next);
         if (date === today) {
-          setDate(next);
-          onSelectionChange?.(next, scope, mode);
+          onSelectionChange(next, scope, mode);
         }
       }
     }, 30_000);
@@ -461,8 +453,7 @@ export function LeaderboardScreen({
   }, [today, date, scope, mode, onSelectionChange]);
   const chooseScope = (next: LeaderboardScope) => {
     if (next === scope) return;
-    setScope(next);
-    onSelectionChange?.(date, next, mode);
+    onSelectionChange(date, next, mode);
   };
   const scrollToScope = (next: LeaderboardScope) => {
     swipe.current?.scrollTo({
@@ -473,15 +464,13 @@ export function LeaderboardScreen({
     });
   };
   const chooseMode = (next: LeaderboardMode) => {
-    setMode(next);
     setStandingsErrors({ friends: '', global: '' });
-    onSelectionChange?.(date, scope, next);
+    onSelectionChange(date, scope, next);
   };
   const chooseDate = (next: string) => {
     if (isDailyDate(next) && next <= today) {
-      setDate(next);
       setStandingsErrors({ friends: '', global: '' });
-      onSelectionChange?.(next, scope, mode);
+      onSelectionChange(next, scope, mode);
     }
   };
   return (
@@ -630,7 +619,6 @@ export function LeaderboardScreen({
                   active={scope === boardScope}
                   pageSize={pageSize}
                   onViewPlayer={onViewPlayer}
-                  onOpenPlay={onOpenPlay}
                   onError={(message) =>
                     setStandingsErrors((current) =>
                       current[boardScope] === message

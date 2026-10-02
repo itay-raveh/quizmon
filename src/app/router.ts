@@ -14,8 +14,4 @@ declare module '@tanstack/react-router' {
   interface Register {
     router: typeof router;
   }
-  interface HistoryState {
-    from?: 'friends' | 'rankings';
-    view?: 'hall' | 'challenge';
-  }
 }

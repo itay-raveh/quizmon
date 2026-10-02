@@ -15,4 +15,7 @@ test('rankings discards invalid query values', () => {
     date: undefined,
     scope: undefined,
   });
+  expect(matchUrl('/rankings?date=9999-12-31')?.search).toEqual({
+    date: undefined,
+  });
 });

@@ -1,3 +1,4 @@
+import { useBlocker } from '@tanstack/react-router';
 import { useDailyChallenge } from '@/features/daily/useDailyChallenge';
 import { AutomaticUpdate } from '@/features/installation/AutomaticUpdate';
 import { useCallback, useEffect, useReducer, useRef } from 'react';
@@ -24,8 +25,9 @@ import {
   type StartGame,
 } from './game-session';
 import { useGameNavigation } from './useGameNavigation';
+import { AppGameContext } from './AppGameContext';
 
-export const App = () => {
+const useAppGame = () => {
   const leagueDestination = useLeagueDestination();
   const catalogState = usePokemonCatalog();
   const { catalog } = catalogState;
@@ -101,10 +103,36 @@ export const App = () => {
     pauseTimer: pause,
     resetTimer: reset,
     session,
-    startDailyGame: daily.start,
     startTimer: start,
     timerRunning: running,
   });
+
+  const routeBlocker = useBlocker({
+    shouldBlockFn: ({ current, next }) =>
+      session.phase === 'questions' && current.pathname !== next.pathname,
+    withResolver: true,
+    enableBeforeUnload: false,
+  });
+  const pausedForRoute = useRef(false);
+  useEffect(() => {
+    if (routeBlocker.status === 'blocked' && running) {
+      pausedForRoute.current = true;
+      pause();
+    }
+  }, [routeBlocker.status, running, pause]);
+  const routeLeave = {
+    open: routeBlocker.status === 'blocked',
+    cancel: () => {
+      routeBlocker.reset?.();
+      if (pausedForRoute.current) start();
+      pausedForRoute.current = false;
+    },
+    confirm: () => {
+      navigation.returnToLanding();
+      pausedForRoute.current = false;
+      routeBlocker.proceed?.();
+    },
+  };
 
   const settingsDialog = useSettingsDialog({
     dispatch: dispatchSession,
@@ -134,38 +162,50 @@ export const App = () => {
     window.addEventListener('beforeunload', confirmReload);
     return () => window.removeEventListener('beforeunload', confirmReload);
   }, [session.phase]);
+  return {
+    catalogState,
+    daily,
+    league: {
+      ...leagueDestination,
+      start: async () => {
+        if (await startLeague()) leagueDestination.close();
+      },
+    },
+    navigation,
+    question: {
+      assistance: (count: number) =>
+        dispatchSession({ type: 'assistance', count }),
+      answer: answerQuestion,
+      getElapsedMilliseconds,
+      pauseTimer: pause,
+      recordAnswer,
+      timerRunning: running,
+    },
+    routeLeave,
+    session,
+    settings,
+    settingsDialog,
+    trainer,
+    training,
+  };
+};
+
+export type AppGame = ReturnType<typeof useAppGame>;
+
+export const App = () => {
+  const game = useAppGame();
   return (
     <>
       <AutomaticUpdate
         allowed={
-          session.phase !== 'questions' &&
-          (catalogState.status === 'error' || catalogState.status === 'ready')
+          game.session.phase !== 'questions' &&
+          (game.catalogState.status === 'error' ||
+            game.catalogState.status === 'ready')
         }
       />
-      <AppView
-        catalogState={catalogState}
-        daily={daily}
-        settings={settings}
-        league={{
-          ...leagueDestination,
-          start: async () => {
-            if (await startLeague()) leagueDestination.close();
-          },
-        }}
-        navigation={navigation}
-        question={{
-          assistance: (count) => dispatchSession({ type: 'assistance', count }),
-          answer: answerQuestion,
-          getElapsedMilliseconds,
-          pauseTimer: pause,
-          recordAnswer,
-          timerRunning: running,
-        }}
-        session={session}
-        settingsDialog={settingsDialog}
-        trainer={trainer}
-        training={training}
-      />
+      <AppGameContext.Provider value={game}>
+        <AppView />
+      </AppGameContext.Provider>
     </>
   );
 };

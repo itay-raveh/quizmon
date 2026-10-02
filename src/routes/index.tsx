@@ -1,6 +1,6 @@
-import { RouteScreen } from '../app/AppView';
+import { PlayRouteScreen } from '../app/GameScreen';
 import { createFileRoute } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/')({
-  component: () => <RouteScreen route="home" />,
+  component: PlayRouteScreen,
 });
