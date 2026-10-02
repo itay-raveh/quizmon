@@ -14,12 +14,12 @@ import { Route as AccountRouteImport } from './routes/account'
 import { Route as LeagueRouteImport } from './routes/league'
 import { Route as RankingsRouteImport } from './routes/rankings'
 import { Route as TrainerRouteImport } from './routes/trainer'
-import { Route as AccountFriendsRouteImport } from './routes/account.friends'
+import { Route as AccountFriendsRouteImport } from './routes/account_.friends'
 import { Route as PlayersIdRouteImport } from './routes/players.$id'
-import { Route as TrainerBadgesRouteImport } from './routes/trainer.badges'
-import { Route as TrainerEditRouteImport } from './routes/trainer.edit'
-import { Route as TrainerPokedexRouteImport } from './routes/trainer.pokedex'
-import { Route as TrainerTitlesRouteImport } from './routes/trainer.titles'
+import { Route as TrainerBadgesRouteImport } from './routes/trainer_.badges'
+import { Route as TrainerEditRouteImport } from './routes/trainer_.edit'
+import { Route as TrainerPokedexRouteImport } from './routes/trainer_.pokedex'
+import { Route as TrainerTitlesRouteImport } from './routes/trainer_.titles'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -47,9 +47,9 @@ const TrainerRoute = TrainerRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const AccountFriendsRoute = AccountFriendsRouteImport.update({
-  id: '/friends',
-  path: '/friends',
-  getParentRoute: () => AccountRoute,
+  id: '/account_/friends',
+  path: '/account/friends',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const PlayersIdRoute = PlayersIdRouteImport.update({
   id: '/players/$id',
@@ -57,32 +57,32 @@ const PlayersIdRoute = PlayersIdRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const TrainerBadgesRoute = TrainerBadgesRouteImport.update({
-  id: '/badges',
-  path: '/badges',
-  getParentRoute: () => TrainerRoute,
+  id: '/trainer_/badges',
+  path: '/trainer/badges',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const TrainerEditRoute = TrainerEditRouteImport.update({
-  id: '/edit',
-  path: '/edit',
-  getParentRoute: () => TrainerRoute,
+  id: '/trainer_/edit',
+  path: '/trainer/edit',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const TrainerPokedexRoute = TrainerPokedexRouteImport.update({
-  id: '/pokedex',
-  path: '/pokedex',
-  getParentRoute: () => TrainerRoute,
+  id: '/trainer_/pokedex',
+  path: '/trainer/pokedex',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const TrainerTitlesRoute = TrainerTitlesRouteImport.update({
-  id: '/titles',
-  path: '/titles',
-  getParentRoute: () => TrainerRoute,
+  id: '/trainer_/titles',
+  path: '/trainer/titles',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/account': typeof AccountRouteWithChildren
+  '/account': typeof AccountRoute
   '/league': typeof LeagueRoute
   '/rankings': typeof RankingsRoute
-  '/trainer': typeof TrainerRouteWithChildren
+  '/trainer': typeof TrainerRoute
   '/account/friends': typeof AccountFriendsRoute
   '/players/$id': typeof PlayersIdRoute
   '/trainer/badges': typeof TrainerBadgesRoute
@@ -92,10 +92,10 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/account': typeof AccountRouteWithChildren
+  '/account': typeof AccountRoute
   '/league': typeof LeagueRoute
   '/rankings': typeof RankingsRoute
-  '/trainer': typeof TrainerRouteWithChildren
+  '/trainer': typeof TrainerRoute
   '/account/friends': typeof AccountFriendsRoute
   '/players/$id': typeof PlayersIdRoute
   '/trainer/badges': typeof TrainerBadgesRoute
@@ -106,16 +106,16 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/account': typeof AccountRouteWithChildren
+  '/account': typeof AccountRoute
   '/league': typeof LeagueRoute
   '/rankings': typeof RankingsRoute
-  '/trainer': typeof TrainerRouteWithChildren
-  '/account/friends': typeof AccountFriendsRoute
+  '/trainer': typeof TrainerRoute
+  '/account_/friends': typeof AccountFriendsRoute
   '/players/$id': typeof PlayersIdRoute
-  '/trainer/badges': typeof TrainerBadgesRoute
-  '/trainer/edit': typeof TrainerEditRoute
-  '/trainer/pokedex': typeof TrainerPokedexRoute
-  '/trainer/titles': typeof TrainerTitlesRoute
+  '/trainer_/badges': typeof TrainerBadgesRoute
+  '/trainer_/edit': typeof TrainerEditRoute
+  '/trainer_/pokedex': typeof TrainerPokedexRoute
+  '/trainer_/titles': typeof TrainerTitlesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -151,21 +151,26 @@ export interface FileRouteTypes {
     | '/league'
     | '/rankings'
     | '/trainer'
-    | '/account/friends'
+    | '/account_/friends'
     | '/players/$id'
-    | '/trainer/badges'
-    | '/trainer/edit'
-    | '/trainer/pokedex'
-    | '/trainer/titles'
+    | '/trainer_/badges'
+    | '/trainer_/edit'
+    | '/trainer_/pokedex'
+    | '/trainer_/titles'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AccountRoute: typeof AccountRouteWithChildren
+  AccountRoute: typeof AccountRoute
   LeagueRoute: typeof LeagueRoute
   RankingsRoute: typeof RankingsRoute
-  TrainerRoute: typeof TrainerRouteWithChildren
+  TrainerRoute: typeof TrainerRoute
+  AccountFriendsRoute: typeof AccountFriendsRoute
   PlayersIdRoute: typeof PlayersIdRoute
+  TrainerBadgesRoute: typeof TrainerBadgesRoute
+  TrainerEditRoute: typeof TrainerEditRoute
+  TrainerPokedexRoute: typeof TrainerPokedexRoute
+  TrainerTitlesRoute: typeof TrainerTitlesRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -205,12 +210,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TrainerRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/account/friends': {
-      id: '/account/friends'
-      path: '/friends'
+    '/account_/friends': {
+      id: '/account_/friends'
+      path: '/account/friends'
       fullPath: '/account/friends'
       preLoaderRoute: typeof AccountFriendsRouteImport
-      parentRoute: typeof AccountRoute
+      parentRoute: typeof rootRouteImport
     }
     '/players/$id': {
       id: '/players/$id'
@@ -219,72 +224,49 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlayersIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/trainer/badges': {
-      id: '/trainer/badges'
-      path: '/badges'
+    '/trainer_/badges': {
+      id: '/trainer_/badges'
+      path: '/trainer/badges'
       fullPath: '/trainer/badges'
       preLoaderRoute: typeof TrainerBadgesRouteImport
-      parentRoute: typeof TrainerRoute
+      parentRoute: typeof rootRouteImport
     }
-    '/trainer/edit': {
-      id: '/trainer/edit'
-      path: '/edit'
+    '/trainer_/edit': {
+      id: '/trainer_/edit'
+      path: '/trainer/edit'
       fullPath: '/trainer/edit'
       preLoaderRoute: typeof TrainerEditRouteImport
-      parentRoute: typeof TrainerRoute
+      parentRoute: typeof rootRouteImport
     }
-    '/trainer/pokedex': {
-      id: '/trainer/pokedex'
-      path: '/pokedex'
+    '/trainer_/pokedex': {
+      id: '/trainer_/pokedex'
+      path: '/trainer/pokedex'
       fullPath: '/trainer/pokedex'
       preLoaderRoute: typeof TrainerPokedexRouteImport
-      parentRoute: typeof TrainerRoute
+      parentRoute: typeof rootRouteImport
     }
-    '/trainer/titles': {
-      id: '/trainer/titles'
-      path: '/titles'
+    '/trainer_/titles': {
+      id: '/trainer_/titles'
+      path: '/trainer/titles'
       fullPath: '/trainer/titles'
       preLoaderRoute: typeof TrainerTitlesRouteImport
-      parentRoute: typeof TrainerRoute
+      parentRoute: typeof rootRouteImport
     }
   }
 }
 
-interface AccountRouteChildren {
-  AccountFriendsRoute: typeof AccountFriendsRoute
-}
-
-const AccountRouteChildren: AccountRouteChildren = {
+const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
+  AccountRoute: AccountRoute,
+  LeagueRoute: LeagueRoute,
+  RankingsRoute: RankingsRoute,
+  TrainerRoute: TrainerRoute,
   AccountFriendsRoute: AccountFriendsRoute,
-}
-
-const AccountRouteWithChildren =
-  AccountRoute._addFileChildren(AccountRouteChildren)
-
-interface TrainerRouteChildren {
-  TrainerBadgesRoute: typeof TrainerBadgesRoute
-  TrainerEditRoute: typeof TrainerEditRoute
-  TrainerPokedexRoute: typeof TrainerPokedexRoute
-  TrainerTitlesRoute: typeof TrainerTitlesRoute
-}
-
-const TrainerRouteChildren: TrainerRouteChildren = {
+  PlayersIdRoute: PlayersIdRoute,
   TrainerBadgesRoute: TrainerBadgesRoute,
   TrainerEditRoute: TrainerEditRoute,
   TrainerPokedexRoute: TrainerPokedexRoute,
   TrainerTitlesRoute: TrainerTitlesRoute,
-}
-
-const TrainerRouteWithChildren =
-  TrainerRoute._addFileChildren(TrainerRouteChildren)
-
-const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  AccountRoute: AccountRouteWithChildren,
-  LeagueRoute: LeagueRoute,
-  RankingsRoute: RankingsRoute,
-  TrainerRoute: TrainerRouteWithChildren,
-  PlayersIdRoute: PlayersIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

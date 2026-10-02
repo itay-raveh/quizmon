@@ -27,6 +27,6 @@ export const AccountRouteScreen = ({
 };
 
 export const FriendsRouteScreen = () => {
-  const { id } = useSearch({ from: '/account/friends' });
+  const { id } = useSearch({ from: '/account_/friends' });
   return <AccountRouteScreen friendId={id} />;
 };
