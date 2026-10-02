@@ -1,6 +1,7 @@
 .wrangler
 coverage
 dist
+src/routeTree.gen.ts
 node_modules
 playwright-report
 test-results

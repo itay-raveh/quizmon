@@ -10,7 +10,7 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
-import { Link } from 'react-router';
+import { Link } from '@tanstack/react-router';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import { GameButton } from '../../components/GameButton';
@@ -334,7 +334,8 @@ function Standings({
               {!noFriends && (
                 <Link
                   className="game-button leaderboard-empty__action"
-                  to={pastDaily ? `/daily/${date}` : '/'}
+                  to={pastDaily ? '/daily/$date' : '/'}
+                  params={pastDaily ? { date } : {}}
                   onClick={(event) => {
                     if (
                       event.metaKey ||

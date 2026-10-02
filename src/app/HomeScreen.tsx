@@ -15,7 +15,7 @@ import { CatchCombo } from '@/features/daily/CatchCombo';
 import { ShareResultButton } from '@/features/sharing/ShareResultButton';
 import { TrainerBadgeCase } from '@/features/trainer/TrainerBadgeCase';
 import { Logo } from './Logo';
-import { Link } from 'react-router';
+import { Link } from '@tanstack/react-router';
 import { useInteractionSound } from '@/lib/audio/sound-context';
 
 interface HomeScreenProps {
@@ -187,6 +187,10 @@ export const HomeScreen = ({
           >
             {leagueContent}
           </GameButton>
+        ) : catalogStatus === 'loading' ? (
+          <span className="game-button game-button--quiet landing__league-button landing__league-button--locked">
+            {leagueContent}
+          </span>
         ) : (
           <Link
             to="/trainer/badges"

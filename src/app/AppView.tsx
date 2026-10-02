@@ -32,8 +32,8 @@ import { LeaderboardScreen } from '../features/friends/LeaderboardScreen';
 import { PublicTrainerScreen } from '../features/friends/PublicTrainerScreen';
 import { AppNavigation } from './AppNavigation';
 import { useAppDestination } from './useAppDestination';
-import { useLayoutEffect, useRef } from 'react';
-import { Navigate, NavigationType, useNavigationType } from 'react-router';
+import { createContext, useContext, useLayoutEffect, useRef } from 'react';
+import { Navigate, Outlet } from '@tanstack/react-router';
 import { site } from './site';
 import { GameButton } from '../components/GameButton';
 type CatalogState = ReturnType<typeof usePokemonCatalog>;
@@ -80,6 +80,28 @@ interface AppViewProps {
   training: ReturnType<typeof useTrainingGame>;
 }
 type DestinationNavigation = ReturnType<typeof useAppDestination>;
+type RouteKind =
+  | 'home'
+  | 'daily'
+  | 'account'
+  | 'friends'
+  | 'rankings'
+  | 'player'
+  | 'trainer'
+  | 'league';
+type RouteScreenProps = AppViewProps & {
+  destination: DestinationNavigation;
+  onViewPlayer: (id: string) => void;
+  onOpenPlay: () => void;
+};
+const RouteScreenContext = createContext<RouteScreenProps | null>(null);
+
+export const RouteScreen = ({ route }: { route: RouteKind }) => {
+  const props = useContext(RouteScreenContext);
+  if (!props) throw new Error('RouteScreen must render within AppView');
+  return <AppScreen {...props} route={route} />;
+};
+
 const AppScreen = ({
   catalogState,
   daily,
@@ -94,23 +116,13 @@ const AppScreen = ({
   destination,
   onViewPlayer,
   onOpenPlay,
-}: AppViewProps & {
-  destination: DestinationNavigation;
-  onViewPlayer: (id: string) => void;
-  onOpenPlay: () => void;
-}) => {
-  if (session.phase !== 'questions' && !destination.isKnownPath) {
-    return (
-      <section>
-        <h1>Page not found</h1>
-        <p>This Quizmon page does not exist.</p>
-      </section>
-    );
-  }
+  route,
+}: RouteScreenProps & { route: RouteKind }) => {
   if (
     session.phase !== 'questions' &&
-    (destination.destination === 'account' ||
-      destination.destination === 'friends')
+    (route === 'account' ||
+      route === 'friends' ||
+      (route === 'player' && destination.destination === 'friends'))
   ) {
     return (
       <>
@@ -144,7 +156,10 @@ const AppScreen = ({
       </>
     );
   }
-  if (session.phase !== 'questions' && destination.destination === 'rankings') {
+  if (
+    session.phase !== 'questions' &&
+    (route === 'rankings' || route === 'player')
+  ) {
     return (
       <>
         <div
@@ -177,7 +192,7 @@ const AppScreen = ({
       </>
     );
   }
-  if (session.phase !== 'questions' && trainer.isOpen) {
+  if (session.phase !== 'questions' && route === 'trainer') {
     if (catalogState.status !== 'ready')
       return (
         <CatalogRouteState
@@ -195,10 +210,10 @@ const AppScreen = ({
     session.phase === 'results' &&
     session.mode.kind === 'league' &&
     isLeagueVictory(session.result);
-  if (session.phase === 'landing' && league.isOpen && !leagueUnlocked)
+  if (session.phase === 'landing' && route === 'league' && !leagueUnlocked)
     return <Navigate to="/" replace />;
   if (
-    (league.isOpen && leagueUnlocked) ||
+    (route === 'league' && leagueUnlocked) ||
     (leagueVictory && !league.showResults)
   ) {
     if (catalogState.status !== 'ready')
@@ -360,7 +375,6 @@ const AppOverlays = ({
 );
 export const AppView = (props: AppViewProps) => {
   const destination = useAppDestination();
-  const navigationType = useNavigationType();
   const main = useRef<HTMLElement>(null);
   const profileTrigger = useRef<HTMLElement | null>(null);
   const sourceScroll = useRef(0);
@@ -425,13 +439,7 @@ export const AppView = (props: AppViewProps) => {
       heading.tabIndex = -1;
       heading.focus({ preventScroll: true });
     }
-    if (navigationType !== NavigationType.Pop) window.scrollTo(0, 0);
-  }, [
-    navigationType,
-    props.catalogState.status,
-    props.trainer.view,
-    screenKey,
-  ]);
+  }, [props.catalogState.status, props.trainer.view, screenKey]);
   const onViewPlayer = (id: string) => {
     profileTrigger.current = document.activeElement as HTMLElement;
     destination.viewPlayer(id);
@@ -471,10 +479,10 @@ export const AppView = (props: AppViewProps) => {
                       destination.destination === 'friends'
                     }
                     onSettings={props.settingsDialog.open}
-                    rankingsPath={
+                    rankingsDate={
                       props.session.phase === 'results' &&
                       props.session.mode.kind === 'daily'
-                        ? `/rankings?date=${props.session.mode.date}`
+                        ? props.session.mode.date
                         : undefined
                     }
                     trainerAvailable={props.catalogState.status === 'ready'}
@@ -484,12 +492,11 @@ export const AppView = (props: AppViewProps) => {
                   />
                 ) : null}
                 <main ref={main}>
-                  <AppScreen
-                    {...props}
-                    destination={destination}
-                    onViewPlayer={onViewPlayer}
-                    onOpenPlay={onOpenPlay}
-                  />
+                  <RouteScreenContext.Provider
+                    value={{ ...props, destination, onViewPlayer, onOpenPlay }}
+                  >
+                    <Outlet />
+                  </RouteScreenContext.Provider>
                 </main>
                 {showNavigation ? <Footer /> : null}
               </div>

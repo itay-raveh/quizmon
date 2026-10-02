@@ -1,5 +1,10 @@
 import { useCallback } from 'react';
-import { matchPath, useLocation, useNavigate } from 'react-router';
+import {
+  useLocation,
+  useMatchRoute,
+  useNavigate,
+  useSearch,
+} from '@tanstack/react-router';
 import type { TrainerView } from '../domain/player/trainer-progression';
 import type { LeaderboardMode } from '../domain/social/leaderboards';
 import { trainerPath } from '../features/trainer/trainer-route';
@@ -10,47 +15,54 @@ type ProfileState = { from?: 'friends' | 'rankings' };
 
 export function useAppDestination() {
   const location = useLocation();
+  const matchRoute = useMatchRoute();
   const navigate = useNavigate();
-  const params = new URLSearchParams(location.search);
-  const playerId =
-    matchPath('/players/:id', location.pathname)?.params.id ?? '';
+  const search = useSearch({ strict: false });
+  const playerMatch = matchRoute({ to: '/players/$id' });
+  const playerId = playerMatch ? playerMatch.id : '';
   const profileFrom = (location.state as ProfileState | null)?.from;
+  const accountOpen = Boolean(matchRoute({ to: '/account' }));
+  const friendsOpen = Boolean(matchRoute({ to: '/account/friends' }));
+  const rankingsOpen = Boolean(matchRoute({ to: '/rankings' }));
   const destination: Destination | null =
-    location.pathname === '/account'
+    accountOpen && !friendsOpen
       ? 'account'
-      : location.pathname === '/account/friends' ||
-          (playerId && profileFrom === 'friends')
+      : friendsOpen || (playerId && profileFrom === 'friends')
         ? 'friends'
-        : location.pathname === '/rankings' || playerId
+        : rankingsOpen || playerId
           ? 'rankings'
           : null;
 
   const account = (returnTo?: string) => {
     const origin =
-      returnTo ?? `${location.pathname}${location.search}${location.hash}`;
-    void navigate(`/account?returnTo=${encodeURIComponent(origin)}`);
+      returnTo ?? `${location.pathname}${location.searchStr}${location.hash}`;
+    void navigate({ to: '/account', search: { returnTo: origin } });
   };
 
   const viewPlayer = (id: string) => {
-    void navigate(`/players/${encodeURIComponent(id)}`, {
+    void navigate({
+      to: '/players/$id',
+      params: { id },
       state: { from: destination === 'friends' ? 'friends' : 'rankings' },
     });
   };
 
   const closePlayer = () => {
-    if (profileFrom) void navigate(-1);
-    else void navigate('/rankings', { replace: true });
+    if (profileFrom) window.history.back();
+    else void navigate({ to: '/rankings', replace: true });
   };
 
   const trainer = (view: TrainerView = 'front', edit = false) => {
-    void navigate(edit ? '/trainer/edit' : trainerPath(view));
+    void navigate({ to: edit ? '/trainer/edit' : trainerPath(view) });
   };
 
   const selectStandings = useCallback(
     (date: string, scope: 'global' | 'friends', mode: LeaderboardMode) => {
-      void navigate(`/rankings?${new URLSearchParams({ date, scope, mode })}`, {
+      void navigate({
+        to: '/rankings',
+        search: { date, scope, mode },
         replace: true,
-        preventScrollReset: true,
+        resetScroll: false,
       });
     },
     [navigate],
@@ -61,19 +73,18 @@ export function useAppDestination() {
     isKnownPath: isAppPath(location.pathname),
     pathname: location.pathname,
     destination,
-    friendId:
-      location.pathname === '/account/friends' ? (params.get('id') ?? '') : '',
+    friendId: friendsOpen && 'id' in search ? (search.id ?? '') : '',
     playerId,
     viewPlayer,
     closePlayer,
     trainer,
-    standingsDate: params.get('date') ?? undefined,
+    standingsDate: rankingsOpen && 'date' in search ? search.date : undefined,
     standingsScope:
-      params.get('scope') === 'global'
+      rankingsOpen && 'scope' in search && search.scope === 'global'
         ? ('global' as const)
         : ('friends' as const),
     standingsMode:
-      params.get('mode') === 'training'
+      rankingsOpen && 'mode' in search && search.mode === 'training'
         ? ('training' as const)
         : ('daily' as const),
     selectStandings,

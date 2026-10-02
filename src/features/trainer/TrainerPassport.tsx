@@ -1,5 +1,5 @@
 import { useMemo, useState, type SubmitEvent } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router';
+import { Link, useLocation, useNavigate } from '@tanstack/react-router';
 import { GameButton } from '../../components/GameButton';
 import { useInteractionSound } from '../../lib/audio/sound-context';
 import {
@@ -130,20 +130,20 @@ export const TrainerPassport = ({ catalog, trainer }: TrainerPassportProps) => {
       }))
     )
       return;
-    void navigate('/trainer', { replace: true });
+    void navigate({ to: '/trainer', replace: true });
     void requestPersistentStorage().catch(() => false);
   };
 
   const toggleEditor = () => {
     if (editing) {
-      void navigate('/trainer', { replace: true });
+      void navigate({ to: '/trainer', replace: true });
       return;
     }
 
     setName(profile.name);
     setAvatar(profile.avatar);
     setPartner(profile.partnerPokemon);
-    void navigate('/trainer/edit', { replace: true });
+    void navigate({ to: '/trainer/edit', replace: true });
   };
 
   const setTitle = async (specialty: TrainerSpecialty | null) => {

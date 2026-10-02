@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from 'react';
-import { Link, useLocation } from 'react-router';
+import { Link, useLocation } from '@tanstack/react-router';
 import { GameButton } from '../components/GameButton';
 import { useInteractionSound } from '../lib/audio/sound-context';
 import {
@@ -20,13 +20,32 @@ const destinations = [
   ['rankings', 'Rankings', ChartBarIcon],
 ] as const;
 
+export const AppNavigationLoading = () => (
+  <header className="app-header">
+    <SettingsButton disabled onClick={() => {}} />
+    <nav className="app-navigation" aria-label="Main" inert>
+      {destinations.map(([destination, label, Icon]) => (
+        <GameButton key={destination} disabled tone="quiet">
+          <Icon aria-hidden="true" weight="bold" />
+          {label}
+        </GameButton>
+      ))}
+      <GameButton disabled tone="quiet" className="app-navigation__account">
+        <UserCircleIcon aria-hidden="true" weight="bold" />
+        Sign in
+      </GameButton>
+    </nav>
+    <FeedbackButton />
+  </header>
+);
+
 export function AppNavigation({
   active,
   accountOpen,
   loading = false,
   onNavigate,
   onSettings,
-  rankingsPath = '/rankings',
+  rankingsDate,
   showNavigation = true,
   trainerAvailable,
 }: {
@@ -35,18 +54,19 @@ export function AppNavigation({
   loading?: boolean;
   onNavigate: (destination: MainDestination) => void;
   onSettings: () => void;
-  rankingsPath?: string;
+  rankingsDate?: string;
   showNavigation?: boolean;
   trainerAvailable: boolean;
 }) {
   const account = useSyncExternalStore(subscribeAccount, accountSnapshot);
   const location = useLocation();
   const playSound = useInteractionSound();
-  const paths = { play: '/', trainer: '/trainer', rankings: rankingsPath };
-  const accountPath =
-    accountOpen && location.pathname === '/account'
-      ? `${location.pathname}${location.search}${location.hash}`
-      : `/account?returnTo=${encodeURIComponent(`${location.pathname}${location.search}${location.hash}`)}`;
+  const paths = {
+    play: '/',
+    trainer: '/trainer',
+    rankings: '/rankings',
+  } as const;
+  const accountOrigin = `${location.pathname}${location.searchStr}${location.hash}`;
   return (
     <header className="app-header">
       <SettingsButton disabled={!trainerAvailable} onClick={onSettings} />
@@ -62,6 +82,11 @@ export function AppNavigation({
               <Link
                 key={destination}
                 to={paths[destination]}
+                search={
+                  destination === 'rankings' && rankingsDate
+                    ? { date: rankingsDate }
+                    : {}
+                }
                 aria-current={active === destination ? 'page' : undefined}
                 className={`game-button game-button--${active === destination ? 'primary' : 'quiet'}`}
                 onClick={(event) => {
@@ -73,8 +98,8 @@ export function AppNavigation({
                   )
                     return;
                   if (
-                    paths[destination] ===
-                    `${location.pathname}${location.search}`
+                    `${paths[destination]}${destination === 'rankings' && rankingsDate ? `?date=${rankingsDate}` : ''}` ===
+                    `${location.pathname}${location.searchStr}`
                   ) {
                     event.preventDefault();
                     if (destination === 'play') onNavigate(destination);
@@ -90,7 +115,13 @@ export function AppNavigation({
             ),
           )}
           <Link
-            to={accountPath}
+            to="/account"
+            search={{
+              returnTo:
+                accountOpen && location.pathname === '/account'
+                  ? undefined
+                  : accountOrigin,
+            }}
             aria-label={
               account.owner && account.error
                 ? 'Account, sync needs attention'

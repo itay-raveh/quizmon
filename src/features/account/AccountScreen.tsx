@@ -5,7 +5,7 @@ import {
   useSyncExternalStore,
   type SubmitEvent,
 } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate } from '@tanstack/react-router';
 import { GameButton } from '../../components/GameButton';
 import { PlayerName } from '../../components/PlayerName';
 import { PencilSimpleIcon } from '../../components/icons';
@@ -108,7 +108,7 @@ export function AccountScreen({
     if (!account.owner || welcomeFor !== account.owner) return;
     removeStoredValue('sessionStorage', accountWelcomeKey);
     if (hasTrainerName) {
-      void navigate(returnPath, { replace: true });
+      void navigate({ to: returnPath, replace: true });
     }
   }, [account.owner, hasTrainerName, navigate, returnPath, welcomeFor]);
   const closeNameEditor = () => {
@@ -248,7 +248,7 @@ export function AccountScreen({
                 initialInput={friendId}
                 adding={Boolean(friendId)}
                 onToggleAdding={() =>
-                  void navigate('/account', { replace: true })
+                  void navigate({ to: '/account', replace: true })
                 }
                 onViewPlayer={onViewPlayer}
               />
@@ -260,7 +260,8 @@ export function AccountScreen({
         <WelcomeTrainerDialog
           onEditCard={onEditCard}
           onContinue={() => {
-            void navigate(returnPath, {
+            void navigate({
+              to: returnPath,
               replace: true,
             });
           }}
