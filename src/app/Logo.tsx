@@ -1,3 +1,4 @@
+import * as styles from './classes.css.ts';
 import { site } from '@/app/site';
 import logo496Avif from '@/assets/images/wordmark-496.avif';
 import logo496Webp from '@/assets/images/wordmark-496.webp';
@@ -5,7 +6,7 @@ import logo992Avif from '@/assets/images/wordmark-992.avif';
 import logo992Webp from '@/assets/images/wordmark-992.webp';
 
 export const Logo = () => (
-  <picture className="logo-picture">
+  <picture className={styles.logoPicture}>
     <source
       sizes="(max-width: 22.2rem) 90vw, (max-width: 58.8rem) 20rem, (max-width: 91rem) 34vw, 31rem"
       srcSet={`${logo496Avif} 496w, ${logo992Avif} 992w`}
@@ -17,7 +18,7 @@ export const Logo = () => (
       type="image/webp"
     />
     <img
-      className="logo"
+      className={styles.logo}
       src="/assets/images/logo.png"
       alt={`${site.name}: ${site.tagline}`}
       fetchPriority="high"

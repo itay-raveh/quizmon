@@ -1,3 +1,4 @@
+import * as styles from './classes.css.ts';
 import { DialogCloseButton } from '@/components/DialogCloseButton';
 import { GameButton } from '@/components/GameButton';
 import type { GameMode, GameResult } from '@/domain/quiz/types';
@@ -65,10 +66,10 @@ export const ShareDialog = ({ mode, onClose, result }: ShareDialogProps) => {
   return (
     <dialog
       {...dialogProps}
-      className="share-dialog"
+      className={styles.shareDialog}
       aria-labelledby="share-title"
     >
-      <header className="share-dialog__header">
+      <header className={styles.shareDialogHeader}>
         <h2 id="share-title">Share result</h2>
         <DialogCloseButton
           autoFocus
@@ -77,13 +78,13 @@ export const ShareDialog = ({ mode, onClose, result }: ShareDialogProps) => {
         />
       </header>
 
-      <div className="share-dialog__body">
+      <div className={styles.shareDialogBody}>
         <p>Send your spoiler-free score card.</p>
-        <div className="share-targets">
+        <div className={styles.shareTargets}>
           {shareTargets.map(({ Button, Icon, label }) => (
             <Button
               key={label}
-              className="share-target"
+              className={styles.shareTarget}
               onClick={playTap}
               resetButtonStyle={false}
               title={message}
@@ -96,13 +97,13 @@ export const ShareDialog = ({ mode, onClose, result }: ShareDialogProps) => {
         </div>
 
         <GameButton
-          className="share-copy"
+          className={styles.shareCopy}
           tone="quiet"
           onClick={() => void copy()}
         >
           Copy result
         </GameButton>
-        <p className="share-status" aria-live="polite">
+        <p className={styles.shareStatus} aria-live="polite">
           {copyStatus}
         </p>
       </div>

@@ -111,6 +111,15 @@ a:hover {
   background: var(--yellow);
 }
 
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition: none !important;
+  }
+}
+
 input {
   caret-color: var(--blue);
 }
@@ -353,14 +362,6 @@ html:has(.app--questions) {
 
 .player-name__honor {
   white-space: nowrap;
-}
-
-.player-name__honor .trophy {
-  display: inline-block;
-  width: 1em;
-  height: 1em;
-  margin-inline-start: 0.2em;
-  vertical-align: -0.15em;
 }
 
 .generation-label--stacked {

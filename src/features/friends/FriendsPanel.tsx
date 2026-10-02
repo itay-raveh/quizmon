@@ -1,3 +1,4 @@
+import * as styles from '../../styles/classes.css.ts';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import Skeleton from 'react-loading-skeleton';
@@ -21,7 +22,6 @@ import {
 } from './friends-client';
 import { canShareFriendLink, shareFriendLink } from './friend-sharing';
 import { friendsPageQuery } from './social-queries';
-import './friends.css';
 
 const views = ['friends', 'incoming', 'outgoing'] as const;
 type View = (typeof views)[number];
@@ -50,8 +50,8 @@ function Player({
   onView?: (id: string) => void;
 }) {
   return (
-    <div className="friends-player">
-      <div className="friends-player__name">
+    <div className={styles.friendsPlayer}>
+      <div className={styles.friendsPlayerName}>
         <strong>
           {player ? <PlayerName trainer={player} /> : <Skeleton width="8ch" />}
         </strong>
@@ -59,7 +59,7 @@ function Player({
           (player ? (
             <GameButton
               aria-label={`View ${player.name}'s profile`}
-              className="friends-icon-button"
+              className={styles.friendsIconButton}
               onClick={() => onView(player.id)}
               title={`View ${player.name}'s profile`}
               tone="quiet"
@@ -68,7 +68,7 @@ function Player({
             </GameButton>
           ) : (
             <span
-              className="friends-icon-button game-button game-button--quiet"
+              className={`${styles.friendsIconButton} game-button game-button--quiet`}
               aria-hidden="true"
             >
               <Skeleton circle width="1.3rem" height="1.3rem" />
@@ -94,20 +94,20 @@ function RemoveFriendDialog({
       {...dialogProps}
       aria-describedby="remove-friend-description"
       aria-labelledby="remove-friend-title"
-      className="confirm-dialog"
+      className={styles.confirmDialog}
     >
-      <div className="confirm-dialog__body">
+      <div className={styles.confirmDialogBody}>
         <h2 id="remove-friend-title">Remove {name}?</h2>
         <p id="remove-friend-description">
           You will no longer see each other in Friends standings. You can send a
           new request later.
         </p>
-        <div className="confirm-dialog__actions">
+        <div className={styles.confirmDialogActions}>
           <GameButton autoFocus tone="quiet" onClick={closeDialog}>
             Keep friend
           </GameButton>
           <GameButton
-            className="confirm-dialog__confirm"
+            className={styles.confirmDialogConfirm}
             onClick={() => {
               dialog.current?.close();
               onConfirm();
@@ -259,11 +259,11 @@ export function FriendsPanel({
 
   function actions(row: FriendRelation, name: string) {
     return (
-      <div className="friends-actions">
+      <div className={styles.friendsActions}>
         {row.status === 'accepted' ? (
           <GameButton
             aria-label={`Remove ${name} as a friend`}
-            className="friends-icon-button"
+            className={styles.friendsIconButton}
             disabled={busy}
             onClick={() => setRemoving({ row, name })}
             title={`Remove ${name} as a friend`}
@@ -300,12 +300,12 @@ export function FriendsPanel({
   const link = `${location.origin}${friendInvitePath(owner)}`;
   const initialLoading = !pages.friends && !error;
   return (
-    <div className="friends-panel">
+    <div className={styles.friendsPanel}>
       {(error || showLink) && (
-        <div className="social-error-banner" role="alert">
+        <div className={styles.socialErrorBanner} role="alert">
           <strong>{error || 'Invite link could not be shared.'}</strong>
           {showLink && (
-            <label className="friends-field">
+            <label className={styles.friendsField}>
               Invite link
               <input
                 readOnly
@@ -336,7 +336,7 @@ export function FriendsPanel({
         </p>
       )}
       {notice && <Toast message={notice} onDismiss={() => setNotice('')} />}
-      <div className="friends-panel__heading">
+      <div className={styles.friendsPanelHeading}>
         <h2
           id={adding ? 'add-friend-title' : 'friends-title'}
           className={adding ? undefined : 'visually-hidden'}
@@ -378,20 +378,23 @@ export function FriendsPanel({
         )}
       </div>
       {adding && (
-        <section className="friends-add" aria-labelledby="add-friend-title">
+        <section
+          className={styles.friendsAdd}
+          aria-labelledby="add-friend-title"
+        >
           <p>
             This link finds a Trainer. It does not send a request until you
             choose to send one.
           </p>
           {initialInput && !found && !error && (
-            <section className="friends-found" aria-hidden="true">
+            <section className={styles.friendsFound} aria-hidden="true">
               <Player onView={onViewPlayer} />
               <Skeleton width="9rem" height="2.8rem" />
             </section>
           )}
           {found && (
             <section
-              className="friends-found"
+              className={styles.friendsFound}
               aria-label="Found Trainer"
               ref={foundRegion}
               tabIndex={-1}
@@ -450,13 +453,18 @@ export function FriendsPanel({
         </section>
       )}
       {!adding && initialLoading && (
-        <section className="friends-loading" aria-label="Loading your friends">
-          <ul className="friends-list" aria-hidden="true">
+        <section
+          className={styles.friendsLoading}
+          aria-label="Loading your friends"
+        >
+          <ul className={styles.friendsList} aria-hidden="true">
             {[0, 1, 2].map((row) => (
               <li key={row}>
                 <Player onView={onViewPlayer} />
-                <div className="friends-actions">
-                  <span className="friends-icon-button game-button game-button--quiet">
+                <div className={styles.friendsActions}>
+                  <span
+                    className={`${styles.friendsIconButton} game-button game-button--quiet`}
+                  >
                     <Skeleton circle width="1.3rem" height="1.3rem" />
                   </span>
                 </div>
@@ -474,14 +482,14 @@ export function FriendsPanel({
           .map((view) => (
             <section
               key={view}
-              className={`friends-section friends-section--${view}`}
+              className={styles.friendsSection}
               aria-label={labels[view]}
             >
               {view !== 'friends' && <h2>{labels[view]}</h2>}
               {pages[view] && !pages[view].items.length && (
-                <p className="friends-empty">{empty[view]}</p>
+                <p className={styles.friendsEmpty}>{empty[view]}</p>
               )}
-              <ul className="friends-list">
+              <ul className={styles.friendsList}>
                 {pages[view]?.items.map((row) => {
                   const player = pages[view]?.players.find(
                     (player) => player.id === row.peerId,

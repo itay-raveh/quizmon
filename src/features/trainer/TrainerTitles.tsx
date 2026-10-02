@@ -1,3 +1,4 @@
+import * as styles from './styles/classes.css.ts';
 import { CheckIcon } from '@/components/icons';
 import { SoundButton } from '@/components/SoundButton';
 import {
@@ -28,12 +29,12 @@ export const TrainerTitles = ({
   return (
     <article
       aria-label={`${trainerViewLabels.titles} collection`}
-      className="trainer-titles"
+      className={styles.trainerTitles}
     >
-      <CollectionCorners className="trainer-titles__fastener" />
+      <CollectionCorners kind="titles" />
       <section
         aria-label={`${earnedCount} of ${titles.length} Trainer Titles earned`}
-        className="trainer-titles__collection"
+        className={styles.trainerTitlesCollection}
       >
         {titles.map((title) => {
           const progress = Math.min(title.current, title.goal);
@@ -50,20 +51,20 @@ export const TrainerTitles = ({
           return (
             <SoundButton
               aria-label={`${title.label}. ${progressLabel}. ${state}.${title.earned ? ` ${trainerTierLabels[title.tier]} tier ${title.tier}.` : ''} Open title details.`}
-              className="trainer-title"
+              className={styles.trainerTitle}
               data-equipped={title.equipped}
               data-tier={title.tier}
               key={title.specialty}
               onClick={() => onSelect(title)}
             >
               <TrainerTitleMark tier={title.tier} specialty={title.specialty} />
-              <span className="trainer-title__copy">
+              <span className={styles.trainerTitleCopy}>
                 <strong>
                   {title.label}
                   {title.equipped ? (
                     <CheckIcon
                       aria-label="Equipped"
-                      className="trainer-title__equipped"
+                      className={styles.trainerTitleEquipped}
                       weight="bold"
                     />
                   ) : null}

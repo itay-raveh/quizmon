@@ -6,6 +6,42 @@ import { QuestionArtwork } from './QuestionArtwork';
 import { QuestionAnswers } from './QuestionAnswers';
 import { QuestionPresentation } from './QuestionPresentation';
 
+test('separates a move description from its question', () => {
+  const question: QuestionData = {
+    answer: { interaction: 'single-choice', correctOptions: ['normal'] },
+    category: 'move',
+    id: 'moveTypes:move:pound',
+    media: { kind: 'none' },
+    options: ['normal', 'ghost', 'water', 'psychic'],
+    prompt: {
+      kind: 'text',
+      text: 'What is the default type of Pound?',
+      description: 'The user strikes the target with its forelegs or tail.',
+      supportingText: 'Pokémon Pearl',
+    },
+    questionType: 'moveTypes',
+    repetition: {
+      identity: 'pound',
+      subjects: ['move/pound'],
+      primary: [],
+      distractors: [],
+    },
+    subject: { kind: 'move', name: 'pound', generation: 'IV' },
+  };
+  const markup = renderToStaticMarkup(
+    <QuestionPresentation
+      question={question}
+      rendering={baseQuestionRendering}
+      answered={false}
+      cluesShown={0}
+      isLeague={false}
+    />,
+  );
+
+  expect(markup).toMatch(/Pound\?<span[^>]*>The user strikes/);
+  expect(markup).toContain('Pokémon Pearl');
+});
+
 test('reveals a Field notes answer in its choice without a duplicate portrait', () => {
   const question: QuestionData = {
     answer: { interaction: 'single-choice', correctOptions: ['grotle'] },
@@ -219,5 +255,5 @@ test('choice name visibility follows the saved rendering policy', () => {
   });
   expect(typeOnly).not.toContain('/bulbasaur.png');
   expect(typeOnly).toContain('aria-label="Type: Grass."');
-  expect(typeOnly).toContain('type-badge');
+  expect(typeOnly).toContain('/src/assets/types/grass.png');
 });

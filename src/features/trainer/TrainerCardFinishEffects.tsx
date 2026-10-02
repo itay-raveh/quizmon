@@ -1,3 +1,4 @@
+import * as styles from './styles/classes.css.ts';
 import { useReducedMotion } from '@/app/providers/motion-context';
 import type { CardFinish } from '@/domain/player/trainer-progression';
 import { useEffect, useRef } from 'react';
@@ -20,8 +21,8 @@ export const TrainerCardFinishEffects = ({
     let isIntersecting = true;
     const updateMotion = () => {
       const visible = !document.hidden && isIntersecting;
-      effects.classList.toggle('is-motion-active', visible && !reduceMotion);
-      effects.classList.toggle('is-static', visible && reduceMotion);
+      effects.classList.toggle(styles.isMotionActive, visible && !reduceMotion);
+      effects.classList.toggle(styles.isStatic, visible && reduceMotion);
     };
     const observer =
       'IntersectionObserver' in window
@@ -47,12 +48,12 @@ export const TrainerCardFinishEffects = ({
     <div
       ref={effectsRef}
       aria-hidden="true"
-      className="trainer-card__finish-effects"
+      className={styles.trainerCardFinishEffects}
     >
       {polished ? (
-        <div className="trainer-card__polish" />
+        <div className={styles.trainerCardPolish} />
       ) : (
-        <div className="trainer-card__sheen" />
+        <div className={styles.trainerCardSheen} />
       )}
     </div>
   );

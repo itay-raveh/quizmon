@@ -1,3 +1,4 @@
+import * as styles from '../../components/classes.css.ts';
 import { useReducedMotion } from '@/app/providers/motion-context';
 import { formatScore, formatScoreMultiplier } from '@/domain/quiz/format';
 import {
@@ -110,7 +111,7 @@ export const MultipliedScore = ({
   return (
     <>
       <div
-        className="score score--multiplied"
+        className={`${styles.score} ${styles.scoreMultiplied}`}
         aria-label={`Score ${formatScore(score)}`}
         style={
           {
@@ -121,13 +122,13 @@ export const MultipliedScore = ({
         <span>Score</span>
         <strong aria-hidden="true">{formatScore(displayed)}</strong>
       </div>
-      <ol className="score-factors" aria-label="Score multipliers">
+      <ol className={styles.scoreFactors} aria-label="Score multipliers">
         {stages.map(({ label, factor, start }) => (
           <li
             key={label}
             className={
               time >= start && time < start + 500
-                ? 'score-factors__active'
+                ? styles.scoreFactorsActive
                 : undefined
             }
           >

@@ -1,10 +1,25 @@
-const corners = ['top-left', 'top-right', 'bottom-left', 'bottom-right'];
+import * as styles from './styles/classes.css.ts';
 
-export const CollectionCorners = ({ className }: { className: string }) =>
-  corners.map((corner) => (
+const corners = {
+  badge: [
+    styles.trainerBadgeCaseRivetTopLeft,
+    styles.trainerBadgeCaseRivetTopRight,
+    styles.trainerBadgeCaseRivetBottomLeft,
+    styles.trainerBadgeCaseRivetBottomRight,
+  ],
+  titles: [
+    styles.trainerTitlesFastenerTopLeft,
+    styles.trainerTitlesFastenerTopRight,
+    styles.trainerTitlesFastenerBottomLeft,
+    styles.trainerTitlesFastenerBottomRight,
+  ],
+};
+
+export const CollectionCorners = ({ kind }: { kind: keyof typeof corners }) =>
+  corners[kind].map((corner, index) => (
     <span
       aria-hidden="true"
-      className={`${className} ${className}--${corner}`}
-      key={corner}
+      className={`${kind === 'badge' ? styles.trainerBadgeCaseRivet : styles.trainerTitlesFastener} ${corner}`}
+      key={index}
     />
   ));

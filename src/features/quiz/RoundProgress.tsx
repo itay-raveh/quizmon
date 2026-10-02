@@ -1,3 +1,4 @@
+import * as styles from './styles/classes.css.ts';
 interface RoundProgressProps {
   current: number;
   total: number;
@@ -5,7 +6,7 @@ interface RoundProgressProps {
 
 export const RoundProgress = ({ current, total }: RoundProgressProps) => (
   <div
-    className="progress"
+    className={styles.progress}
     role="progressbar"
     aria-label="Quiz progress"
     aria-valuemax={total}
@@ -13,7 +14,7 @@ export const RoundProgress = ({ current, total }: RoundProgressProps) => (
     aria-valuenow={current}
     aria-valuetext={`Question ${current} of ${total}`}
   >
-    <span className="progress__label">
+    <span>
       {String(current).padStart(2, '0')} / {String(total).padStart(2, '0')}
     </span>
   </div>

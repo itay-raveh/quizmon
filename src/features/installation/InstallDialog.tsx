@@ -1,3 +1,4 @@
+import * as styles from '../../styles/classes.css.ts';
 import { DialogCloseButton } from '@/components/DialogCloseButton';
 import type { InstallGuide } from '@/features/installation/install-platform';
 import { useModalDialog } from '@/hooks/useModalDialog';
@@ -44,7 +45,7 @@ export const InstallDialog = ({
   return createPortal(
     <dialog
       {...dialogProps}
-      className="share-dialog install-dialog"
+      className={`${styles.shareDialog} ${styles.installDialog}`}
       aria-labelledby={titleId}
       onCancel={(event) => {
         event.stopPropagation();
@@ -55,7 +56,7 @@ export const InstallDialog = ({
         dialogProps.onPointerDown?.(event);
       }}
     >
-      <header className="share-dialog__header">
+      <header className={styles.shareDialogHeader}>
         <h2 id={titleId} ref={heading} tabIndex={-1}>
           Install Quizmon
         </h2>
@@ -64,7 +65,7 @@ export const InstallDialog = ({
           onClick={closeDialog}
         />
       </header>
-      <div className="share-dialog__body install-dialog__body">
+      <div className={`${styles.shareDialogBody} ${styles.installDialogBody}`}>
         {guide === 'ios' || guide === 'safari-mac' ? (
           <p>
             Your saved progress does not move into the app automatically. Before
@@ -72,7 +73,7 @@ export const InstallDialog = ({
             the app, use Restore backup in the same place.
           </p>
         ) : null}
-        <ol className="install-action__steps">
+        <ol className={styles.installActionSteps}>
           {instructions[guide].map((step) => (
             <li key={step}>{step}</li>
           ))}

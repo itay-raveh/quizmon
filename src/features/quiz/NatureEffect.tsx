@@ -1,3 +1,4 @@
+import * as styles from './styles/classes.css.ts';
 import { StatDirection } from './StatDirection';
 
 export const NatureEffect = ({
@@ -11,7 +12,7 @@ export const NatureEffect = ({
   if (!effect) return description;
   return (
     <span
-      className={`nature-effect${compact ? ' nature-effect--compact' : ''}`}
+      className={`${styles.natureEffect}${compact ? ` ${styles.natureEffectCompact}` : ''}`}
       aria-label={description}
       role="img"
     >

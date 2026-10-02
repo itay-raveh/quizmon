@@ -1,3 +1,4 @@
+import * as styles from './styles/classes.css.ts';
 import championsInstinct from '@/assets/images/badges/champions-instinct.png';
 import dailyResolve from '@/assets/images/badges/daily-resolve.png';
 import manyPaths from '@/assets/images/badges/many-paths.png';
@@ -28,7 +29,11 @@ const badgeImages = {
 } satisfies Record<TrainerBadgeId, string>;
 
 export const TrainerBadgeMark = ({ id, tier }: TrainerBadgeMarkProps) => (
-  <span className="trainer-badge-mark" data-earned={tier > 0} data-tier={tier}>
+  <span
+    className={styles.trainerBadgeMark}
+    data-earned={tier > 0}
+    data-tier={tier}
+  >
     <img
       aria-hidden="true"
       src={badgeImages[id]}

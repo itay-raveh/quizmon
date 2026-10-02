@@ -1,3 +1,4 @@
+import * as styles from '../../styles/classes.css.ts';
 import { useLayoutEffect, useSyncExternalStore } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { GameButton } from '../../components/GameButton';
@@ -58,7 +59,9 @@ export function PublicTrainerScreen({
       className="game-panel trainer-passport trainer-passport--public"
       aria-labelledby="public-trainer-title"
     >
-      <header className="game-panel__header trainer-passport__header trainer-passport__public-header">
+      <header
+        className={`game-panel__header ${styles.trainerPassportHeader} ${styles.trainerPassportPublicHeader}`}
+      >
         <BackButton label={backLabel} onClick={onBack} />
         <h1 className="game-panel__title" id="public-trainer-title">
           Trainer profile
@@ -80,21 +83,21 @@ export function PublicTrainerScreen({
         </>
       ) : (
         <div
-          className="public-trainer-loading"
+          className={styles.publicTrainerLoading}
           role="status"
           aria-label="Loading Trainer profile"
         >
           <span className="visually-hidden">Loading Trainer profile</span>
-          <div className="trainer-passport__views" aria-hidden="true">
+          <div className={styles.trainerPassportViews} aria-hidden="true">
             {[0, 1, 2, 3].map((slot) => (
-              <span className="trainer-passport__view" key={slot}>
-                <span className="social-skeleton" />
+              <span className={styles.trainerPassportView} key={slot}>
+                <span className={styles.socialSkeleton} />
               </span>
             ))}
           </div>
-          <div className="trainer-artifact-frame" aria-hidden="true">
-            <span className="social-skeleton" />
-            <span className="social-skeleton" />
+          <div className={styles.trainerArtifactFrame} aria-hidden="true">
+            <span className={styles.socialSkeleton} />
+            <span className={styles.socialSkeleton} />
           </div>
         </div>
       )}

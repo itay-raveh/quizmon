@@ -1,3 +1,4 @@
+import * as styles from './classes.css.ts';
 import bug from '@/assets/types/bug.png';
 import dark from '@/assets/types/dark.png';
 import dragon from '@/assets/types/dragon.png';
@@ -48,7 +49,7 @@ interface TypeBadgesProps {
 export const MysteryTypeBadge = () => (
   <img
     aria-hidden="true"
-    className="type-badge type-badge--mystery"
+    className={`${styles.typeBadge} ${styles.typeBadgeMystery}`}
     src={unknown}
     alt=""
     width="50"
@@ -64,14 +65,14 @@ export const TypeBadges = ({
   <span
     aria-hidden={label ? undefined : true}
     aria-label={label}
-    className={`type-badges ${className}`.trim()}
+    className={`${styles.typeBadges} ${className}`.trim()}
     role={label ? 'img' : undefined}
   >
     {types.map((type) =>
       typeBadgeSources[type] ? (
         <img
           key={type}
-          className="type-badge"
+          className={styles.typeBadge}
           src={typeBadgeSources[type]}
           alt=""
           aria-hidden="true"
