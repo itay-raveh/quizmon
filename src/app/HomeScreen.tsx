@@ -6,7 +6,7 @@ import {
   LockSimpleIcon,
   SlidersHorizontalIcon,
 } from '@/components/icons';
-import type { Difficulty } from '@/domain/quiz/difficulty';
+import type { Level } from '@/domain/quiz/level';
 import type { TrainerBadge } from '@/domain/player/trainer-progression';
 import { formatDailyDate } from '@/domain/quiz/format';
 import type { GameResult } from '@/domain/quiz/types';
@@ -26,7 +26,7 @@ interface HomeScreenProps {
   dailyResultSaved: boolean;
   dailyForfeited: boolean;
   dailyStreak: number;
-  level: Difficulty;
+  level: Level;
   badges: readonly TrainerBadge[];
   leagueCompleted?: boolean;
   onCustomizeTraining: () => void;

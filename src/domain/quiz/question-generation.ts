@@ -26,7 +26,7 @@ const createQuestionContext = (
   history?: QuestionHistory,
 ): QuestionContext => ({
   catalog,
-  difficulty: settings.difficulty,
+  level: settings.level,
   generations: settings.generations,
   pool: filterPokemon(catalog, settings),
   random,
@@ -53,7 +53,7 @@ export const buildQuestions = (
   history?: QuestionHistory,
 ): QuestionData[] => {
   const context = createQuestionContext(catalog, settings, random, history);
-  const count = settings.difficulty && context.pool.length ? requestedCount : 0;
+  const count = settings.level && context.pool.length ? requestedCount : 0;
   const questions: QuestionData[] = [];
 
   for (let index = 0; index < count; index += 1) {
@@ -127,7 +127,7 @@ export const buildLeagueQuestions = (
   const questions: QuestionData[] = [];
 
   for (const stage of leagueStages) {
-    context.difficulty = stage.level;
+    context.level = stage.level;
     const candidates = shuffle(
       questionTypes.filter(
         (type) =>
@@ -149,7 +149,7 @@ export const buildLeagueQuestions = (
     }
   }
 
-  context.difficulty = 5;
+  context.level = 5;
   const finale = buildQuestionType(context, 'champion');
   if (!finale) throw new Error('Unable to build Champion question');
   questions.push({ ...finale, id: `${finale.id}:${questions.length}` });
@@ -199,7 +199,7 @@ export const resolveTrainingSettings = (
   settings: GameSettings,
 ): GameSettings => {
   const resolved = getTrainingSettings(settings);
-  if (!settings.difficulty) return resolved;
+  if (!settings.level) return resolved;
   const automatic = getTrainingSettings({
     ...settings,
     questionSelection: 'automatic',

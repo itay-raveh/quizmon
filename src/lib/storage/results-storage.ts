@@ -1,4 +1,3 @@
-import type { GameResult } from '../../domain/quiz/types';
 import type { TrainerStats } from '../../domain/player/progress';
 import { getTrainerStats } from '../../domain/player/progress';
 import { type SavedResults } from '../../domain/player/results';
@@ -7,9 +6,6 @@ import { canPersistPlayerData, readPlayerData } from './player-storage';
 const readResults = (): SavedResults => readPlayerData().results;
 
 export const canPersistResults = canPersistPlayerData;
-
-export const readDailyResult = (date: string): GameResult | null =>
-  readResults().daily[date] ?? null;
 
 export const readCompletedDailyCount = (): number =>
   Object.keys(readResults().daily).length;

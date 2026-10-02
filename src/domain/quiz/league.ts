@@ -1,5 +1,5 @@
 import type { GameResult } from './types.ts';
-import type { Difficulty } from './difficulty.ts';
+import type { Level } from './level.ts';
 
 const LEAGUE_STAGE_SIZE = 3;
 
@@ -8,7 +8,7 @@ export type LeagueView = 'challenge' | 'hall';
 export interface LeagueStage {
   heading: string;
   id: 'elite-1' | 'elite-2' | 'elite-3' | 'elite-4' | 'champion';
-  level: Difficulty;
+  level: Level;
   marker: string;
   title: string;
 }

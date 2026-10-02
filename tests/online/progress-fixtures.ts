@@ -53,7 +53,7 @@ export function completion(
     mode === 'training'
       ? getTrainingScoreMultipliers(
           {
-            difficulty: 3,
+            level: 3,
             formGroups: ['standard', 'regional', 'mega', 'gigantamax'],
             generations: [...generations],
             questionTypes: [...coreQuestionTypes],
@@ -66,14 +66,14 @@ export function completion(
     mode,
     dailyDate: mode === 'daily' ? (options.dailyDate ?? '2026-09-11') : null,
     training: {
-      difficulty: 3,
+      level: 3,
       formGroups: ['standard', 'regional', 'mega', 'gigantamax'],
       generations: [...generations],
     },
     completedAt: options.completedAt ?? '2026-09-11T10:00:00.000Z',
     result: {
       rules: {
-        difficulty: 3,
+        level: 3,
         generations: [...generations],
         formGroups: ['standard', 'regional', 'mega', 'gigantamax'],
         questionTypes: [...coreQuestionTypes],

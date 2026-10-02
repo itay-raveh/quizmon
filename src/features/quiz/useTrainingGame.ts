@@ -6,7 +6,7 @@ import {
 } from '@/domain/quiz/question-generation';
 import { TRAINING_QUESTION_COUNT } from '@/domain/settings/game-settings';
 import { type GameSettings } from '@/domain/settings/types';
-import type { Difficulty } from '@/domain/quiz/difficulty';
+import type { Level } from '@/domain/quiz/level';
 import { createSeededRandom } from '@/lib/random';
 import { readPlayerData } from '@/lib/storage/player-storage';
 import { useCallback, useState } from 'react';
@@ -58,8 +58,7 @@ export const useTrainingGame = ({
     [settings, startRound],
   );
   const tryLevel = useCallback(
-    (level: Difficulty) =>
-      void startRound({ ...settings, difficulty: level }, true),
+    (level: Level) => void startRound({ ...settings, level }, true),
     [settings, startRound],
   );
 

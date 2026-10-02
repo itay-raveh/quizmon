@@ -1,13 +1,13 @@
 import { z } from 'zod';
 import type { GameSettings } from '../settings/types.ts';
 import { formGroups, generations } from '../pokemon/types.ts';
-import { difficultySchema } from './difficulty.ts';
+import { levelSchema } from './level.ts';
 import { questionTypes } from './questions/definitions.ts';
 import { type GameResult } from './types.ts';
 
 const roundRulesSchema = z.object({
   automaticQuestionTypes: z.array(z.enum(questionTypes)).min(1).optional(),
-  difficulty: difficultySchema,
+  level: levelSchema,
   generations: z.array(z.enum(generations)).min(1),
   formGroups: z.array(z.enum(formGroups)).min(1),
   questionTypes: z.array(z.enum(questionTypes)).min(1),
@@ -24,7 +24,7 @@ export const getRulesScoreKey = (
   if (!rules) return undefined;
   const ordered = (values: readonly string[]) => [...new Set(values)].sort();
   return `rules:${JSON.stringify([
-    rules.difficulty,
+    rules.level,
     ordered(rules.generations),
     ordered(rules.formGroups),
     ordered(rules.questionTypes),
@@ -34,12 +34,12 @@ export const getRulesScoreKey = (
 export const snapshotRoundRules = (
   settings: GameSettings,
 ): RoundRules | undefined => {
-  return settings.difficulty
+  return settings.level
     ? {
         ...(settings.automaticQuestionTypes
           ? { automaticQuestionTypes: [...settings.automaticQuestionTypes] }
           : {}),
-        difficulty: settings.difficulty,
+        level: settings.level,
         generations: [...settings.generations],
         formGroups: [...settings.formGroups],
         questionTypes: [...settings.questionTypes],

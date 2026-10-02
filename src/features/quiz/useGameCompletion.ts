@@ -61,7 +61,7 @@ export const useGameCompletion = ({
       const { result } = completion;
       const best = await commitRoundCompletion(completion, leagueRecord);
       if (mode.kind === 'training' && result.rules) {
-        recordCompletedTrainingRound(result.rules.difficulty, seed);
+        recordCompletedTrainingRound(result.rules.level, seed);
       }
       const progressChanges = getTrainerProgressChanges(
         previousTrainerStats,

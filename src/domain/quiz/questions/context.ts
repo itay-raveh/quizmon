@@ -1,4 +1,4 @@
-import type { Difficulty } from '../difficulty.ts';
+import type { Level } from '../level.ts';
 import type {
   Generation,
   PokemonCatalog,
@@ -14,7 +14,7 @@ export interface Candidate {
 
 export interface QuestionContext<Rules extends object = object> {
   generations?: Generation[];
-  difficulty?: Difficulty;
+  level?: Level;
   variant?: Rules;
   catalog: PokemonCatalog;
   pool: Candidate[];

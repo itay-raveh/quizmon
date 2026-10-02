@@ -10,7 +10,7 @@ const rules: MeasurementRules = {
   maximumSpread: 1.5,
 };
 
-it('uses supplied comparison rules rather than a fixed difficulty table', () => {
+it('uses supplied comparison rules rather than a fixed level table', () => {
   expect(measurementWinner([100, 110, 120, 150], 'highest', rules)).toBe(3);
   expect(measurementWinner([100, 110, 120, 150], 'lowest', rules)).toBe(0);
   expect(

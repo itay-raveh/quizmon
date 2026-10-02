@@ -3,7 +3,7 @@ import itemData from '../../pokemon/data/topics-items-0.json' with { type: 'json
 import moreItems from '../../pokemon/data/topics-items-1.json' with { type: 'json' };
 import type { PokemonCatalog } from '../../pokemon/types.ts';
 import { createSeededRandom } from '../../../lib/random.ts';
-import { difficultyLevels } from '../difficulty.ts';
+import { gameLevels } from '../level.ts';
 import { getQuestionVariant } from '../variants.ts';
 import { buildEffectDescription } from './effect-descriptions.ts';
 import { buildQuestionType } from './registry.ts';
@@ -22,20 +22,20 @@ it('builds ability, bag-item, and held-item effects from their own source pools'
     { type: 'heldItemEffects', kind: 'held' },
   ] as const;
   for (const { type: questionType, kind } of families)
-    for (const difficulty of difficultyLevels.filter((level) =>
+    for (const level of gameLevels.filter((level) =>
       getQuestionVariant(questionType, level),
     )) {
       const question = buildQuestionType(
         {
           catalog,
-          difficulty,
+          level,
           pool: [],
-          random: createSeededRandom(`${questionType}:${difficulty}`),
+          random: createSeededRandom(`${questionType}:${level}`),
           used: new Set(),
         },
         questionType,
       );
-      expect(question, `${questionType} level ${difficulty}`).toBeDefined();
+      expect(question, `${questionType} level ${level}`).toBeDefined();
       expect(new Set(question!.options).size).toBe(question!.options.length);
       expect(question!.options).toContain(question!.answer.correctOptions[0]);
       if (questionType === 'abilityEffects') {
@@ -71,7 +71,7 @@ it('builds ability, bag-item, and held-item effects from their own source pools'
 });
 
 it('searches ability names from an unambiguous short effect', () => {
-  const difficulty = difficultyLevels.find(
+  const level = gameLevels.find(
     (level) =>
       getQuestionVariant('abilityEffects', level)?.variant.response.kind ===
       'search',
@@ -85,9 +85,9 @@ it('searches ability names from an unambiguous short effect', () => {
     {
       catalog,
       questionType: 'abilityEffects',
-      difficulty,
+      level,
       generations: ['IX'],
-      variant: getQuestionVariant('abilityEffects', difficulty)!.variant,
+      variant: getQuestionVariant('abilityEffects', level)!.variant,
       pool: [],
       random: createSeededRandom('short-ability-effects'),
       used: new Set(),
@@ -109,9 +109,9 @@ it('searches ability names from an unambiguous short effect', () => {
       {
         catalog,
         questionType: 'abilityEffects',
-        difficulty,
+        level,
         generations: ['IX'],
-        variant: getQuestionVariant('abilityEffects', difficulty)!.variant,
+        variant: getQuestionVariant('abilityEffects', level)!.variant,
         pool: [],
         random: createSeededRandom('duplicate-ability-effect'),
         used: new Set(),
@@ -124,13 +124,13 @@ it('searches ability names from an unambiguous short effect', () => {
 });
 
 it('builds bag-item uses in an older-generation round', () => {
-  const difficulty = difficultyLevels.find((level) =>
+  const level = gameLevels.find((level) =>
     getQuestionVariant('itemUses', level),
   )!;
   const question = buildQuestionType(
     {
       catalog,
-      difficulty,
+      level,
       generations: ['I'],
       pool: [],
       random: createSeededRandom('bag-gen-one'),
@@ -142,7 +142,7 @@ it('builds bag-item uses in an older-generation round', () => {
 });
 
 it('excludes Data Cards and Mega accessories from Item uses', () => {
-  const difficulty = difficultyLevels.find((level) =>
+  const level = gameLevels.find((level) =>
     getQuestionVariant('itemUses', level),
   )!;
   const excluded = catalog.topics!.items.filter(
@@ -160,7 +160,7 @@ it('excludes Data Cards and Mega accessories from Item uses', () => {
           ...catalog,
           topics: { ...catalog.topics!, items: excluded },
         },
-        difficulty,
+        level,
         pool: [],
         random: createSeededRandom('excluded-item-uses'),
         used: new Set(),
@@ -171,7 +171,7 @@ it('excludes Data Cards and Mega accessories from Item uses', () => {
 });
 
 it('keeps held Berry distractors among Berries', () => {
-  const difficulty = difficultyLevels.find((level) =>
+  const level = gameLevels.find((level) =>
     getQuestionVariant('heldItemEffects', level),
   )!;
   const heldItems = catalog.topics!.items.filter(
@@ -182,9 +182,9 @@ it('keeps held Berry distractors among Berries', () => {
     {
       catalog,
       questionType: 'heldItemEffects',
-      difficulty,
+      level,
       generations: ['IX'],
-      variant: getQuestionVariant('heldItemEffects', difficulty)!.variant,
+      variant: getQuestionVariant('heldItemEffects', level)!.variant,
       pool: [],
       random: createSeededRandom('held-berries'),
       used: new Set(),
@@ -205,7 +205,7 @@ it('keeps held Berry distractors among Berries', () => {
 });
 
 it('respects a raw effect similarity limit', () => {
-  const difficulty = difficultyLevels.find((level) =>
+  const level = gameLevels.find((level) =>
     getQuestionVariant('itemUses', level),
   )!;
   const bagItems = catalog.topics!.items.filter(
@@ -213,7 +213,7 @@ it('respects a raw effect similarity limit', () => {
   );
   const target = bagItems.find((item) => item.name === 'rare-candy')!;
   const variant = {
-    ...getQuestionVariant('itemUses', difficulty)!.variant,
+    ...getQuestionVariant('itemUses', level)!.variant,
     maximumEffectSimilarity: 0,
   };
   expect(
@@ -221,7 +221,7 @@ it('respects a raw effect similarity limit', () => {
       {
         catalog,
         questionType: 'itemUses',
-        difficulty,
+        level,
         generations: ['IX'],
         variant,
         pool: [],

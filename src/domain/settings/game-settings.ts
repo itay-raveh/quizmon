@@ -10,7 +10,7 @@ import { questionTypes } from '../quiz/questions/definitions.ts';
 import { type ExperienceSettings, type GameSettings } from './types.ts';
 
 export const defaultGameSettings: GameSettings = {
-  difficulty: 1,
+  level: 1,
   questionSelection: 'automatic',
   answerFlow: 'manual',
   formGroups: [...formGroups],
@@ -35,7 +35,7 @@ export const getChallengeSettings = (
   experience: ExperienceSettings,
 ): GameSettings => ({
   ...defaultGameSettings,
-  difficulty: undefined,
+  level: undefined,
   questionSelection: undefined,
   ...getExperienceSettings(experience),
   generations: [...generations],
@@ -45,13 +45,13 @@ export const TRAINING_QUESTION_COUNT = 10;
 
 export const getTrainingSettings = (settings: GameSettings): GameSettings => ({
   ...settings,
-  questionTypes: settings.difficulty
+  questionTypes: settings.level
     ? (settings.questionSelection === 'custom'
         ? settings.questionTypes
         : questionTypes
       ).filter(
         (type) =>
-          getQuestionVariant(type, settings.difficulty!) &&
+          getQuestionVariant(type, settings.level!) &&
           (type !== 'pokemonByGeneration' || settings.generations.length > 1),
       )
     : [],

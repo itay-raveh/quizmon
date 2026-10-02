@@ -5,7 +5,7 @@ import type {
   QuestionRuleRow,
 } from './question-rules/types.ts';
 import { mergeRendering, type QuestionRendering } from './rendering.ts';
-import { resolveDifficultyVariant, type Difficulty } from './difficulty.ts';
+import { resolveLevelVariant, type Level } from './level.ts';
 import type { QuestionData } from './types.ts';
 import type { FamilyRules } from './questions/family-rules.ts';
 
@@ -27,20 +27,20 @@ const withRendering = <
   }) as unknown as Rules;
 
 /**
- * Resolve the highest available family level at or below `difficulty` and
+ * Resolve the highest available family level at or below `level` and
  * merge its rendering. The returned `level` is the selected rule's level.
  */
 export const getQuestionVariant = <Type extends keyof FamilyRules>(
   type: Type,
-  difficulty: Difficulty,
+  level: Level,
 ):
   | {
-      level: Difficulty;
+      level: Level;
       variant: FamilyRules[Type];
     }
   | undefined => {
   const row = questionRules[type] as QuestionRuleRow<FamilyRules[Type], Type>;
-  const resolved = resolveDifficultyVariant(row.levels, difficulty);
+  const resolved = resolveLevelVariant(row.levels, level);
   return resolved
     ? { level: resolved.level, variant: withRendering(row, resolved.variant) }
     : undefined;
@@ -52,7 +52,7 @@ export const getQuestionVariant = <Type extends keyof FamilyRules>(
  */
 const resolveQuestionRendering = (
   type: QuestionData['questionType'],
-  level?: Difficulty,
+  level?: Level,
 ): QuestionRendering =>
   (level ? getQuestionVariant(type, level)?.variant.rendering : undefined) ??
   mergeRendering(baseQuestionRendering, questionRules[type].rendering);

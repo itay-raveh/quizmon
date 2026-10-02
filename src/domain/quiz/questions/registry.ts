@@ -96,8 +96,8 @@ export const buildQuestionType = (
   context: QuestionContext,
   questionType: QuestionType | 'champion',
 ): QuestionData | undefined => {
-  if (!context.difficulty) return undefined;
-  const resolved = getQuestionVariant(questionType, context.difficulty);
+  if (!context.level) return undefined;
+  const resolved = getQuestionVariant(questionType, context.level);
   if (!resolved) return undefined;
   const activeRules = resolved.variant;
   const build = questionBuilders[questionType] as QuestionBuilder<

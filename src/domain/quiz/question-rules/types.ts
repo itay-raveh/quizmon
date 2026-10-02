@@ -1,4 +1,4 @@
-import type { DifficultyRules } from '../difficulty.ts';
+import type { LevelRules } from '../level.ts';
 import {
   type EntityRendering,
   type QuestionRendering,
@@ -213,7 +213,7 @@ export type QuestionRuleEntry<
 
 /**
  * One family's rules. Numeric `levels` may be sparse; resolution uses the
- * latest entry at or below the requested difficulty.
+ * latest entry at or below the requested level.
  */
 export type QuestionRuleRow<
   Rules extends { rendering: QuestionRendering; response: { kind: string } },
@@ -222,7 +222,7 @@ export type QuestionRuleRow<
   /** Family visibility changes applied after the base policy. */
   rendering: RenderingControlsFor<Type>;
   /** Sparse rules. A `null` entry ends availability until another rule. */
-  levels: DifficultyRules<QuestionRuleEntry<Rules, Type>>;
+  levels: LevelRules<QuestionRuleEntry<Rules, Type>>;
 };
 
 /** Shared controls required by one family's rule entries. */

@@ -16,7 +16,7 @@ Some questions ask you to pick one answer. Others ask you to select every matchi
 
 A standard correct answer earns 1,000 knowledge points, plus a bonus for answering quickly. Your final score also includes a mastery bonus based on accuracy. Champion points account for both supplied information and any help you request.
 
-Training multiplies that score by your difficulty level, the number of selected generations, and the factors for your selected question types. Each available type contributes ×0.75, ×1, or ×1.25. Training customization shows your combined multiplier before you play, and results show each factor as it applies.
+Training multiplies that score by your level, the number of selected generations, and the factors for your selected question types. Each available type contributes ×0.75, ×1, or ×1.25. Training customization shows your combined multiplier before you play, and results show each factor as it applies.
 
 New Training rounds share one personal best across settings. Daily and League keep their own scoring. Current-format results and unfinished rounds retain their original scores and rules. If a guest save cannot be loaded, download its raw data from the recovery dialog before restoring a backup or starting fresh.
 

@@ -18,7 +18,7 @@ describe('scoring', () => {
       },
     ];
     const multipliers: ScoreMultipliers = {
-      difficulty: 4,
+      level: 4,
       generations: 3,
       questionTypes: [
         { questionType: 'spriteForPokemon', multiplier: 0.75 },
@@ -60,7 +60,7 @@ describe('scoring', () => {
       },
     ];
     const multipliers: ScoreMultipliers = {
-      difficulty: 2,
+      level: 2,
       generations: 1,
       perQuestion: true,
       questionTypes: [
@@ -100,7 +100,7 @@ describe('scoring', () => {
       points: index === 0 ? 1_000 : 0,
     }));
     const multipliers: ScoreMultipliers = {
-      difficulty: 1,
+      level: 1,
       generations: 1,
       perQuestion: true,
       questionTypes: [{ questionType: 'evYields', multiplier: 1.25 }],

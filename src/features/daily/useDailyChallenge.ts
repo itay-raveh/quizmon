@@ -111,7 +111,7 @@ export const useDailyChallenge = ({
     try {
       const next = resolveTrainingSettings(catalog, {
         ...settings,
-        difficulty: 3,
+        level: 3,
         generations: [...generations],
         formGroups: [...formGroups],
         questionSelection: 'automatic',

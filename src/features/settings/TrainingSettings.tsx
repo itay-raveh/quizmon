@@ -1,8 +1,9 @@
 import { GenerationLabel } from '@/components/GenerationLabel';
+import { LevelNumber } from '@/components/LevelLabel';
 import { SelectionTile } from './SelectionTile';
 import { SoundButton } from '@/components/SoundButton';
 import { formGroups, generations } from '@/domain/pokemon/types';
-import { difficultyLevels } from '@/domain/quiz/difficulty';
+import { gameLevels } from '@/domain/quiz/level';
 import { formatScoreMultiplier } from '@/domain/quiz/format';
 import { getScoreMultiplier } from '@/domain/quiz/score-multipliers';
 import { type GameSettings } from '@/domain/settings/types';
@@ -67,25 +68,25 @@ export const TrainingSettings = ({
         </p>
       ) : null}
 
-      <fieldset className="difficulty-settings">
-        <legend>Difficulty</legend>
-        <div className="difficulty-control">
-          {difficultyLevels.map((level) => (
+      <fieldset className="level-settings">
+        <legend>Level</legend>
+        <div className="level-control">
+          {gameLevels.map((level) => (
             <SelectionTile
               key={level}
-              checked={draft.difficulty === level}
+              checked={draft.level === level}
               inputType="radio"
-              name="difficulty"
+              name="level"
               variant="training-mode"
               label={
                 <>
                   <span className="visually-hidden">{`Level ${level}`}</span>
-                  <span aria-hidden="true">{level}</span>
+                  <span aria-hidden="true">
+                    <LevelNumber level={level} />
+                  </span>
                 </>
               }
-              onChange={() =>
-                onChange((current) => ({ ...current, difficulty: level }))
-              }
+              onChange={() => onChange((current) => ({ ...current, level }))}
             />
           ))}
         </div>

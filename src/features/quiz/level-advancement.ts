@@ -1,4 +1,4 @@
-import type { Difficulty } from '@/domain/quiz/difficulty';
+import type { Level } from '@/domain/quiz/level';
 import type { GameResult } from '@/domain/quiz/types';
 import { readStoredJson, writeStoredJson } from '@/lib/storage/browser-storage';
 import { z } from 'zod';
@@ -9,14 +9,14 @@ const backoffSchema = z.object({
   lastRoundSeed: z.string(),
 });
 
-const backoffKey = (level: Difficulty) =>
+const backoffKey = (level: Level) =>
   `quizmon.baseline.level-advancement-backoff-${level}`;
 
-const readBackoff = (level: Difficulty) =>
+const readBackoff = (level: Level) =>
   backoffSchema.safeParse(readStoredJson('localStorage', backoffKey(level)))
     .data;
 
-export const markStayedAtLevel = (level: Difficulty, roundSeed: string) => {
+export const markStayedAtLevel = (level: Level, roundSeed: string) => {
   const backoff = readBackoff(level);
   if (backoff?.lastRoundSeed === roundSeed && backoff.remaining > 0) return;
   const delay = backoff?.delay === 1 ? 2 : backoff ? 4 : 1;
@@ -28,7 +28,7 @@ export const markStayedAtLevel = (level: Difficulty, roundSeed: string) => {
 };
 
 export const recordCompletedTrainingRound = (
-  level: Difficulty,
+  level: Level,
   roundSeed: string,
 ) => {
   const backoff = readBackoff(level);
@@ -47,9 +47,9 @@ export const recordCompletedTrainingRound = (
 
 export const suggestedLevel = (
   result: GameResult,
-  currentLevel: Difficulty | undefined,
-): Difficulty | null => {
-  const level = result.rules?.difficulty;
+  currentLevel: Level | undefined,
+): Level | null => {
+  const level = result.rules?.level;
   if (
     !level ||
     level === 5 ||
@@ -59,5 +59,5 @@ export const suggestedLevel = (
     (readBackoff(level)?.remaining ?? 0) > 0
   )
     return null;
-  return (level + 1) as Difficulty;
+  return (level + 1) as Level;
 };

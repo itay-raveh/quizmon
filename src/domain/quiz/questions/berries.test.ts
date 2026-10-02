@@ -2,10 +2,10 @@ import berries from '../../pokemon/data/topics-berries-0.json' with { type: 'jso
 import type { PokemonCatalog } from '../../pokemon/types.ts';
 import { buildBerry } from './berries.ts';
 import { getQuestionVariant } from '../variants.ts';
-import { difficultyLevels } from '../difficulty.ts';
+import { gameLevels } from '../level.ts';
 
 const question = (name: string) => {
-  const difficulty = difficultyLevels.find((level) =>
+  const level = gameLevels.find((level) =>
     getQuestionVariant('naturalGift', level),
   )!;
   const berry = berries.values.find((entry) => entry.name === name)!;
@@ -25,7 +25,7 @@ const question = (name: string) => {
     generations: ['VI'],
     pool: [],
     questionType: 'naturalGift',
-    variant: getQuestionVariant('naturalGift', difficulty)!.variant,
+    variant: getQuestionVariant('naturalGift', level)!.variant,
     random: () => 0.5,
     used: new Set(),
   });

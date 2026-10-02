@@ -1,10 +1,10 @@
 import type { PokemonCatalog } from '../../pokemon/types.ts';
 import { buildQuestionType } from './registry.ts';
-import { difficultyLevels } from '../difficulty.ts';
+import { gameLevels } from '../level.ts';
 import { getQuestionVariant } from '../variants.ts';
 
 it('asks only about distinct named places in Name that region', () => {
-  const difficulty = difficultyLevels.find((level) =>
+  const level = gameLevels.find((level) =>
     getQuestionVariant('locationRegion', level),
   )!;
   const regions = ['kanto', 'johto', 'sinnoh', 'paldea'].map((name) => ({
@@ -34,7 +34,7 @@ it('asks only about distinct named places in Name that region', () => {
   } as unknown as PokemonCatalog;
   const context = {
     catalog,
-    difficulty,
+    level,
     pool: [],
     random: () => 0,
     used: new Set<string>(),
@@ -58,12 +58,12 @@ it('asks only about distinct named places in Name that region', () => {
 });
 
 it('uses the whole location and selects every offered encounter for multi-select', () => {
-  const singleLevel = difficultyLevels.find(
+  const singleLevel = gameLevels.find(
     (level) =>
       getQuestionVariant('encounterLocations', level)?.variant.response
         .selection === 'single',
   )!;
-  const multiLevel = difficultyLevels.find(
+  const multiLevel = gameLevels.find(
     (level) =>
       getQuestionVariant('encounterLocations', level)?.variant.response
         .selection === 'multi',
@@ -129,11 +129,11 @@ it('uses the whole location and selects every offered encounter for multi-select
     used: new Set<string>(),
   };
   const single = buildQuestionType(
-    { ...base, difficulty: singleLevel },
+    { ...base, level: singleLevel },
     'encounterLocations',
   );
   const multi = buildQuestionType(
-    { ...base, difficulty: multiLevel },
+    { ...base, level: multiLevel },
     'encounterLocations',
   );
 

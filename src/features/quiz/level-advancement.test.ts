@@ -10,7 +10,7 @@ const result = (level: 1 | 2 | 3 | 4 | 5, correctCount = 10) =>
   ({
     correctCount,
     questionCount: 10,
-    rules: { difficulty: level },
+    rules: { level: level },
   }) as GameResult;
 
 describe('level advancement suggestion', () => {

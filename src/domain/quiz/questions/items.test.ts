@@ -1,7 +1,7 @@
 import type { PokemonCatalog } from '../../pokemon/types.ts';
 import { expect, test } from 'vitest';
 import { isQuestionData } from '../lineup.ts';
-import { difficultyLevels } from '../difficulty.ts';
+import { gameLevels } from '../level.ts';
 import { getQuestionVariant } from '../variants.ts';
 import { buildQuestionType } from './registry.ts';
 
@@ -16,7 +16,7 @@ const item = (name: string, category: string, spriteIdentity: string) => ({
 });
 
 test('item identification never asks for an item with shared sprite art', () => {
-  const difficulty = difficultyLevels.find((level) =>
+  const level = gameLevels.find((level) =>
     getQuestionVariant('itemIdentification', level),
   )!;
   const catalog = {
@@ -36,7 +36,7 @@ test('item identification never asks for an item with shared sprite art', () => 
   const question = buildQuestionType(
     {
       catalog,
-      difficulty,
+      level,
       generations: ['II'],
       pool: [],
       random: () => 0.999,
@@ -48,7 +48,7 @@ test('item identification never asks for an item with shared sprite art', () => 
 });
 
 test('item identification searches item names when using a search response', () => {
-  const difficulty = difficultyLevels.find(
+  const level = gameLevels.find(
     (level) =>
       getQuestionVariant('itemIdentification', level)?.variant.response.kind ===
       'search',
@@ -73,7 +73,7 @@ test('item identification searches item names when using a search response', () 
   const question = buildQuestionType(
     {
       catalog,
-      difficulty,
+      level,
       pool: [],
       random: () => 0,
       used: new Set(),

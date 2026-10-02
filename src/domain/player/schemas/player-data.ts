@@ -10,7 +10,7 @@ import { questionHistorySchema } from '../../quiz/history.ts';
 import { questionTypes } from '../../quiz/questions/definitions.ts';
 import { savedRoundRulesSchema } from '../../quiz/round-rules.ts';
 import { scoreMultipliersSchema } from '../../quiz/score-multipliers.ts';
-import { difficultySchema } from '../../quiz/difficulty.ts';
+import { levelSchema } from '../../quiz/level.ts';
 import { questionCategories } from '../../quiz/types.ts';
 import { SaveError } from '../save-schema.ts';
 import type { PlayerData } from '../player-save.ts';
@@ -101,7 +101,7 @@ const results = z
       ) && streak.creditedDates.every((date) => Object.hasOwn(daily, date)),
   );
 export const savedSettingsSchema = z.object({
-  difficulty: difficultySchema,
+  level: levelSchema,
   questionSelection: z.enum(['automatic', 'custom']),
   answerFlow: z.enum(answerFlows),
   timerDisplay: z.enum(timerDisplays),

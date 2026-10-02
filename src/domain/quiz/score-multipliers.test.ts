@@ -4,13 +4,13 @@ import {
   scoreMultipliersSchema,
 } from './score-multipliers';
 import type { ScoreMultipliers } from './types';
-import { difficultyLevels } from './difficulty';
+import { gameLevels } from './level';
 import { questionTypes } from './questions/definitions';
 import { calculateScore } from './scoring';
 import { getQuestionVariant } from './variants';
 
 const multipliers: ScoreMultipliers = {
-  difficulty: 5,
+  level: 5,
   generations: 9,
   questionTypes: [{ questionType: 'evYields', multiplier: 1.25 }],
 };
@@ -43,16 +43,16 @@ it('adds hard types and penalizes easy types in the combined multiplier', () => 
 });
 
 it('scores the drawn question mix without rewarding unused selected types', () => {
-  const difficulty = difficultyLevels.find(
+  const level = gameLevels.find(
     (level) =>
       questionTypes.filter((type) => getQuestionVariant(type, level)).length >=
       3,
   )!;
   const [first, second, unused] = questionTypes.filter((type) =>
-    getQuestionVariant(type, difficulty),
+    getQuestionVariant(type, level),
   );
   const settings = {
-    difficulty,
+    level,
     generations: ['I' as const],
     formGroups: ['standard' as const],
     questionTypes: [first!, second!, unused!],
@@ -81,7 +81,7 @@ it('scores the drawn question mix without rewarding unused selected types', () =
 });
 
 it.each([
-  { difficulty: 6 },
+  { level: 6 },
   { generations: 0 },
   { generations: 10 },
   { generations: 1.5 },
@@ -104,11 +104,11 @@ it.each([
 });
 
 it('counts unique generations, eligible form groups, and selected types once', () => {
-  const difficulty = difficultyLevels.find((level) =>
+  const level = gameLevels.find((level) =>
     getQuestionVariant('spriteForPokemon', level),
   )!;
   const settings = {
-    difficulty,
+    level,
     formGroups: ['standard', 'regional', 'mega', 'gigantamax'],
     generations: ['I', 'II', 'II'],
     questionTypes: ['spriteForPokemon', 'spriteForPokemon', 'hiddenAbilities'],
@@ -129,7 +129,7 @@ it('counts unique generations, eligible form groups, and selected types once', (
   expect(result?.generations).toBe(2);
   expect(
     getTrainingScoreMultipliers({
-      difficulty,
+      level,
       generations: [],
       questionTypes: ['spriteForPokemon'],
     }),

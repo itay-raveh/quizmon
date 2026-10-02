@@ -57,7 +57,7 @@ export const MultipliedScore = ({
 
   const time = reducedMotion || score === 0 ? duration : elapsed;
   const stages = [
-    { label: 'Difficulty', factor: multipliers.difficulty, start: 900 },
+    { label: 'Level', factor: multipliers.level, start: 900 },
     { label: 'Generations', factor: multipliers.generations, start: 1400 },
     ...(multipliers.formGroupCount === undefined
       ? []
@@ -83,13 +83,13 @@ export const MultipliedScore = ({
   ];
   const targets = [
     baseScore,
-    baseScore * multipliers.difficulty,
-    baseScore * multipliers.difficulty * multipliers.generations,
+    baseScore * multipliers.level,
+    baseScore * multipliers.level * multipliers.generations,
     ...(multipliers.formGroupCount === undefined
       ? []
       : [
           baseScore *
-            multipliers.difficulty *
+            multipliers.level *
             multipliers.generations *
             1.25 ** multipliers.formGroupCount,
         ]),

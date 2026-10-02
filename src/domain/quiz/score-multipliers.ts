@@ -1,18 +1,18 @@
 import { z } from 'zod';
 import type { GameSettings } from '../settings/types.ts';
-import { type Difficulty } from './difficulty.ts';
+import { type Level } from './level.ts';
 import type { QuestionData, QuestionType } from './types.ts';
 import { generations } from '../pokemon/types.ts';
 import { formGroups } from '../pokemon/types.ts';
 import { getFormGroup } from '../pokemon/forms.ts';
 import pokemonGenerations from '../pokemon/data/pokemon-generations.json' with { type: 'json' };
-import { difficultySchema } from './difficulty.ts';
+import { levelSchema } from './level.ts';
 import { questionTypes } from './questions/definitions.ts';
 import { getQuestionVariant } from './variants.ts';
 
 export const scoreMultipliersSchema = z
   .object({
-    difficulty: difficultySchema,
+    level: levelSchema,
     generations: z.int().min(1).max(generations.length),
     formGroupCount: z.int().min(0).max(formGroups.length).optional(),
     questionMix: z.number().min(0.75).max(1.25).optional(),
@@ -51,7 +51,7 @@ export const getQuestionTypesMultiplier = (
     1.25 ** factors.filter(({ multiplier }) => multiplier === 1.25).length;
 
 export const getScoreMultiplier = (multipliers: ScoreMultipliers): number =>
-  multipliers.difficulty *
+  multipliers.level *
   multipliers.generations *
   1.25 ** (multipliers.formGroupCount ?? 0) *
   getQuestionTypesMultiplier(
@@ -61,23 +61,23 @@ export const getScoreMultiplier = (multipliers: ScoreMultipliers): number =>
 
 export const getQuestionTypeMultiplier = (
   type: QuestionType,
-  difficulty: Difficulty,
+  level: Level,
 ): 0.75 | 1 | 1.25 | undefined => {
-  const level = getQuestionVariant(type, difficulty)?.level;
-  if (level === undefined) return undefined;
-  return level <= 2 ? 0.75 : level === 3 ? 1 : 1.25;
+  const variantLevel = getQuestionVariant(type, level)?.level;
+  if (variantLevel === undefined) return undefined;
+  return variantLevel <= 2 ? 0.75 : variantLevel === 3 ? 1 : 1.25;
 };
 
 export const getTrainingScoreMultipliers = (
-  settings: Pick<GameSettings, 'difficulty' | 'generations' | 'questionTypes'> &
+  settings: Pick<GameSettings, 'level' | 'generations' | 'questionTypes'> &
     Partial<Pick<GameSettings, 'formGroups'>>,
   questions?: readonly Pick<QuestionData, 'questionType'>[],
 ): ScoreMultipliers | undefined => {
-  if (!settings.difficulty || !settings.generations.length) return undefined;
-  const difficulty = settings.difficulty;
+  if (!settings.level || !settings.generations.length) return undefined;
+  const level = settings.level;
   const factors = [...new Set(settings.questionTypes)].flatMap(
     (questionType) => {
-      const multiplier = getQuestionTypeMultiplier(questionType, difficulty);
+      const multiplier = getQuestionTypeMultiplier(questionType, level);
       return multiplier === undefined ? [] : [{ questionType, multiplier }];
     },
   );
@@ -101,7 +101,7 @@ export const getTrainingScoreMultipliers = (
   ).length;
   return factors.length
     ? {
-        difficulty,
+        level,
         generations: selectedGenerations.size,
         formGroupCount,
         ...(actualFactors ? { perQuestion: true as const } : {}),

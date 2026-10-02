@@ -3,11 +3,11 @@ import type { GameSettings } from '../settings/types.ts';
 
 export type TrainingConfig = Pick<
   GameSettings,
-  'difficulty' | 'generations' | 'formGroups'
+  'level' | 'generations' | 'formGroups'
 >;
 
 export const trainingConfig = (settings: GameSettings): TrainingConfig => ({
-  difficulty: settings.difficulty,
+  level: settings.level,
   generations: [...settings.generations],
   formGroups: [...settings.formGroups],
 });

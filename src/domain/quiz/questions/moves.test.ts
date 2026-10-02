@@ -1,7 +1,7 @@
 import type { PokemonCatalog } from '../../pokemon/types.ts';
 import { expect, test } from 'vitest';
 import type { QuestionContext } from './context.ts';
-import { difficultyLevels } from '../difficulty.ts';
+import { gameLevels } from '../level.ts';
 import { getQuestionVariant } from '../variants.ts';
 import { buildQuestionType } from './registry.ts';
 
@@ -23,12 +23,12 @@ const move = (name: string, label: string, type: string) => ({
 });
 
 test('Move types excludes names that reveal their type when the hint filter is enabled', () => {
-  const relaxed = difficultyLevels.find(
+  const relaxed = gameLevels.find(
     (level) =>
       getQuestionVariant('moveTypes', level)?.variant.excludeTypeHintNames ===
       false,
   )!;
-  const strict = difficultyLevels.find(
+  const strict = gameLevels.find(
     (level) =>
       getQuestionVariant('moveTypes', level)?.variant.excludeTypeHintNames ===
       true,
@@ -45,11 +45,9 @@ test('Move types excludes names that reveal their type when the hint filter is e
       games: { silver: { label: 'Silver', generation: 'II' } },
     },
   } as unknown as PokemonCatalog;
-  const context = (
-    difficulty: QuestionContext['difficulty'],
-  ): QuestionContext => ({
+  const context = (level: QuestionContext['level']): QuestionContext => ({
     catalog,
-    difficulty,
+    level,
     generations: ['II'],
     pool: [],
     random: () => 0.999,

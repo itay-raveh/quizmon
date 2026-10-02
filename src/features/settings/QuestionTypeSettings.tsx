@@ -156,11 +156,8 @@ export const QuestionTypeSettings = ({
                 >
                   {group.types.map((questionType) => {
                     const label = questionDefinitions[questionType].label;
-                    const factor = draft.difficulty
-                      ? getQuestionTypeMultiplier(
-                          questionType,
-                          draft.difficulty,
-                        )
+                    const factor = draft.level
+                      ? getQuestionTypeMultiplier(questionType, draft.level)
                       : undefined;
                     const selectable = available.has(questionType);
                     const checked =

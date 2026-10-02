@@ -249,7 +249,7 @@ const AppScreen = ({
           dailyForfeited={daily.forfeited}
           dailyError={daily.error}
           dailyStreak={daily.date === getUtcDate() ? daily.streak : 0}
-          level={settings.difficulty ?? 1}
+          level={settings.level ?? 1}
           badges={leagueBadges}
           leagueCompleted={trainer.stats.leagueCompleted}
           onCustomizeTraining={settingsDialog.openTraining}

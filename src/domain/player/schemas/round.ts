@@ -7,7 +7,7 @@ import { savedQuestionSchema } from '../../quiz/lineup.ts';
 import { questionTypes } from '../../quiz/questions/definitions.ts';
 import { questionCategories } from '../../quiz/types.ts';
 import { scoreMultipliersSchema } from '../../quiz/score-multipliers.ts';
-import { difficultySchema } from '../../quiz/difficulty.ts';
+import { levelSchema } from '../../quiz/level.ts';
 import {
   answerFlows,
   timerDisplays,
@@ -51,7 +51,7 @@ const settings = z.looseObject({
   timerDisplay: z.enum(timerDisplays),
   reduceMotion: z.boolean(),
   soundVolume: finiteNonnegative.max(1),
-  difficulty: difficultySchema.optional(),
+  level: levelSchema.optional(),
   questionSelection: z.enum(['custom', 'automatic']).optional(),
   automaticQuestionTypes: z.array(z.enum(questionTypes)).optional(),
 });

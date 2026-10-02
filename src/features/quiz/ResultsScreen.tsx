@@ -24,7 +24,7 @@ import { AnimatedScore } from './AnimatedScore';
 import { CatchCombo } from '@/features/daily/CatchCombo';
 import { markStayedAtLevel, suggestedLevel } from './level-advancement';
 import { MultipliedScore } from './MultipliedScore';
-import type { Difficulty } from '@/domain/quiz/difficulty';
+import type { Level } from '@/domain/quiz/level';
 
 const LevelAdvancementOffer = ({
   currentLevel,
@@ -33,11 +33,11 @@ const LevelAdvancementOffer = ({
   onTrainAgain,
   onTryLevel,
 }: {
-  currentLevel: Difficulty;
-  nextLevel: Difficulty;
+  currentLevel: Level;
+  nextLevel: Level;
   roundSeed: string;
   onTrainAgain: () => void;
-  onTryLevel: (level: Difficulty) => void;
+  onTryLevel: (level: Level) => void;
 }) => {
   return (
     <aside
@@ -79,7 +79,7 @@ interface ResultsScreenProps {
   settings: GameSettings;
   onNewGame: () => void;
   onTrainAgain: () => void;
-  onTryLevel: (level: Difficulty) => void;
+  onTryLevel: (level: Level) => void;
   onStartTraining: () => void;
   onRetryLeague: () => void;
   trainingError?: string;
@@ -114,9 +114,7 @@ export const ResultsScreen = ({
   const isTraining = mode.kind === 'training';
   const perfectTraining =
     isTraining && result.correctCount === result.questionCount;
-  const nextLevel = isTraining
-    ? suggestedLevel(result, settings.difficulty)
-    : null;
+  const nextLevel = isTraining ? suggestedLevel(result, settings.level) : null;
   const leagueVictory = isLeague && isLeagueVictory(result);
   const score = getScoreBreakdown(result.answers);
   const resultStats: ResultStat[] = [
@@ -206,7 +204,7 @@ export const ResultsScreen = ({
             <details className="results__settings">
               <summary>
                 <span>
-                  <LevelLabel level={result.rules.difficulty} /> ·{' '}
+                  <LevelLabel level={result.rules.level} /> ·{' '}
                   {generations.every((generation) =>
                     result.rules?.generations.includes(generation),
                   )
@@ -329,7 +327,7 @@ export const ResultsScreen = ({
       </div>
       {nextLevel && result.rules ? (
         <LevelAdvancementOffer
-          currentLevel={result.rules.difficulty}
+          currentLevel={result.rules.level}
           nextLevel={nextLevel}
           roundSeed={roundSeed}
           onTrainAgain={onTrainAgain}

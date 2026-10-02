@@ -13,7 +13,7 @@ export const getTrainingSettingsValidation = (
   catalog: PokemonCatalog,
   settings: Pick<
     GameSettings,
-    | 'difficulty'
+    | 'level'
     | 'questionSelection'
     | 'trainingMode'
     | 'generations'
@@ -31,7 +31,7 @@ export const getTrainingSettingsValidation = (
     availableFormGroups.includes(group),
   );
   const generationsAreValid = settings.generations.length > 0;
-  const resolved = settings.difficulty
+  const resolved = settings.level
     ? resolveTrainingSettings(catalog, { ...defaultGameSettings, ...settings })
     : null;
   const eligibleQuestionTypes =
@@ -39,7 +39,7 @@ export const getTrainingSettingsValidation = (
   const availableQuestionTypes =
     resolved?.automaticQuestionTypes ?? settings.questionTypes;
   const questionTypesAreValid = Boolean(
-    settings.difficulty && eligibleQuestionTypes.length > 0,
+    settings.level && eligibleQuestionTypes.length > 0,
   );
   const matchingCount = filterPokemon(catalog, settings).length;
   return {

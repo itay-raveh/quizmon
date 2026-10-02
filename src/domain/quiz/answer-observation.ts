@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { generations } from '../pokemon/types.ts';
-import { difficultySchema } from './difficulty.ts';
+import { levelSchema } from './level.ts';
 import type { QuestionData } from './types.ts';
 
 const text = z.string().max(4000);
@@ -55,7 +55,7 @@ export const answerObservationSchema = z
       .optional(),
     suppliedClues: choices.optional(),
     context: text.optional(),
-    difficulty: difficultySchema.optional(),
+    level: levelSchema.optional(),
     interaction: z.enum(['single-choice', 'multi-select', 'search']),
     options: choices,
     expected: choices.refine((values) => values.length > 0),
@@ -81,7 +81,7 @@ export function observeAnswer(
       : {}),
     prompt: structuredClone(question.prompt),
     ...(question.context ? { context: question.context } : {}),
-    ...(question.variantLevel ? { difficulty: question.variantLevel } : {}),
+    ...(question.variantLevel ? { level: question.variantLevel } : {}),
     interaction: question.answer.interaction,
     options: [...question.options],
     expected: [...question.answer.correctOptions],

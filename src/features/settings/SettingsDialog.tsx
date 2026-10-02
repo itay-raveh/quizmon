@@ -47,7 +47,7 @@ export const SettingsDialog = ({
   const questionTypesHeading = useRef<HTMLHeadingElement>(null);
 
   const {
-    difficulty,
+    level,
     questionSelection,
     trainingMode,
     generations,
@@ -58,7 +58,7 @@ export const SettingsDialog = ({
     () =>
       section === 'training'
         ? getTrainingSettingsValidation(catalog, {
-            difficulty,
+            level,
             questionSelection,
             trainingMode,
             generations,
@@ -69,7 +69,7 @@ export const SettingsDialog = ({
     [
       section,
       catalog,
-      difficulty,
+      level,
       questionSelection,
       trainingMode,
       generations,

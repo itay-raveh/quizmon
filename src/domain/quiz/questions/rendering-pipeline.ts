@@ -1,7 +1,7 @@
 import { spriteState } from '../rendering.ts';
 import { choosePokemonSprite, getOptionVisuals } from './assembly.ts';
 import { applyResponseStrategy } from './response-strategies.ts';
-import type { Difficulty } from '../difficulty.ts';
+import type { Level } from '../level.ts';
 import type { QuestionContext, QuestionDraft } from './context.ts';
 import type { FamilyRules } from './family-rules.ts';
 
@@ -186,7 +186,7 @@ export const assembleQuestion = (
   draft: QuestionDraft,
   context: QuestionContext,
   rules: FamilyRules[keyof FamilyRules],
-  level?: Difficulty,
+  level?: Level,
 ): QuestionDraft => {
   const question: QuestionDraft = {
     ...draft,

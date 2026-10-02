@@ -2,7 +2,7 @@ import { questionViewSchema } from './presentation.ts';
 import { z } from 'zod';
 import { questionRenderingSchema } from './rendering.ts';
 import { questionSubjectSchema } from './subject.ts';
-import { difficultySchema } from './difficulty.ts';
+import { levelSchema } from './level.ts';
 import { generations, statNames } from '../pokemon/types.ts';
 import { questionTypes } from './questions/definitions.ts';
 import { questionCategories, type QuestionData } from './types.ts';
@@ -127,7 +127,7 @@ const question = z
     optionReveals: z.record(z.string(), text).optional(),
     explanation: text.optional(),
     context: text.optional(),
-    variantLevel: difficultySchema.optional(),
+    variantLevel: levelSchema.optional(),
     rendering: questionRenderingSchema.optional(),
     view: questionViewSchema.optional(),
     namesOnly: z.boolean().optional(),

@@ -10,7 +10,7 @@ import {
   questionDefinitions,
   questionTypes,
 } from '../quiz/questions/definitions.ts';
-import { difficultySchema } from '../quiz/difficulty.ts';
+import { levelSchema } from '../quiz/level.ts';
 import { formGroups, generations, type Generation } from '../pokemon/types.ts';
 import pokemonGenerations from '../pokemon/data/pokemon-generations.json' with { type: 'json' };
 import {
@@ -37,7 +37,7 @@ const compactAnswerSchema = z.object({
 });
 
 const training = z.object({
-  difficulty: difficultySchema.optional(),
+  level: levelSchema,
   generations: z.array(z.enum(generations)).min(1),
   formGroups: z.array(z.enum(formGroups)).min(1),
 });
@@ -101,9 +101,7 @@ export function compactCompletion(completion: RoundCompletion): CompactRound {
           ...common,
           mode: 'training',
           training: {
-            ...(completion.training.difficulty === undefined
-              ? {}
-              : { difficulty: completion.training.difficulty }),
+            level: completion.training.level,
             generations: completion.training.generations,
             formGroups: completion.training.formGroups,
           },
@@ -148,7 +146,7 @@ export function scoreCompactRound(round: CompactRound): GameResult {
     round.mode === 'training'
       ? getTrainingScoreMultipliers(
           {
-            difficulty: round.training.difficulty,
+            level: round.training.level,
             generations: round.training.generations,
             formGroups: round.training.formGroups,
             questionTypes: questionTypes.filter((type) =>
@@ -165,10 +163,10 @@ export function scoreCompactRound(round: CompactRound): GameResult {
       round.mode === 'training' ? 10 : round.mode === 'daily' ? 5 : 15,
     ...getResponseTime(answers),
     score: calculateScore(answers, multipliers),
-    ...(round.mode === 'training' && round.training.difficulty
+    ...(round.mode === 'training'
       ? {
           rules: {
-            difficulty: round.training.difficulty,
+            level: round.training.level,
             generations: round.training.generations,
             formGroups: round.training.formGroups,
             questionTypes: questionTypes.filter((type) =>

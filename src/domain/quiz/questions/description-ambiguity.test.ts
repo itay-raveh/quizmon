@@ -1,7 +1,7 @@
 import catalog from '../../pokemon/data/pokemon.json' with { type: 'json' };
 import type { PokemonCatalog } from '../../pokemon/types.ts';
 import { createSeededRandom } from '../../../lib/random.ts';
-import { difficultyLevels } from '../difficulty.ts';
+import { gameLevels } from '../level.ts';
 import { leagueStages } from '../league.ts';
 import { getQuestionVariant } from '../variants.ts';
 import { buildQuestionType } from './registry.ts';
@@ -32,31 +32,31 @@ it('keeps duplicate catalog clues out of Field Notes and the League finale', () 
   expect(new Set(clues).size).toBe(1);
 
   const cases = [
-    ...difficultyLevels
+    ...gameLevels
       .filter((level) => getQuestionVariant('pokedexEntryMatch', level))
-      .map((difficulty) => ({
+      .map((level) => ({
         questionType: 'pokedexEntryMatch' as const,
-        difficulty,
+        level,
       })),
     {
       questionType: 'champion' as const,
-      difficulty: leagueStages.at(-1)!.level,
+      level: leagueStages.at(-1)!.level,
     },
   ];
-  for (const { questionType, difficulty } of cases) {
+  for (const { questionType, level } of cases) {
     const question = buildQuestionType(
       {
         catalog: catalog as unknown as PokemonCatalog,
         pool,
         random: createSeededRandom(
-          `duplicate-description:${questionType}:${difficulty}`,
+          `duplicate-description:${questionType}:${level}`,
         ),
         used: new Set(),
-        difficulty,
+        level,
       },
       questionType,
     );
-    expect(question, `${questionType} level ${difficulty}`).toBeDefined();
+    expect(question, `${questionType} level ${level}`).toBeDefined();
     for (const name of ambiguous) {
       expect(question!.subject.name).not.toBe(name);
       expect(question!.options).not.toContain(name);

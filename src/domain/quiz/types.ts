@@ -1,7 +1,7 @@
 import type { QuestionRendering } from './rendering.ts';
 import type { QuestionView } from './presentation.ts';
 import type { Generation, StatName } from '../pokemon/types.ts';
-import type { Difficulty } from './difficulty.ts';
+import type { Level } from './level.ts';
 import type { QuestionType } from './questions/definitions.ts';
 export type { QuestionType } from './questions/definitions.ts';
 
@@ -156,8 +156,8 @@ export interface QuestionData {
   optionReveals?: Record<string, string>;
   explanation?: string;
   context?: string;
-  /** Level of the selected rule, which can be below the requested difficulty. */
-  variantLevel?: Difficulty;
+  /** Level of the selected rule, which can be below the requested level. */
+  variantLevel?: Level;
   /** Resolved visibility snapshot saved when this question was generated. */
   rendering?: QuestionRendering;
   /** Resolved answer and subject presentation saved with this question. */

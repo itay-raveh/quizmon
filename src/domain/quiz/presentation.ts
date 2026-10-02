@@ -1,9 +1,6 @@
 import { z } from 'zod';
 import { questionRules } from './question-rules/registry.ts';
-import {
-  resolveDifficultyVariant,
-  type DifficultyVariants,
-} from './difficulty.ts';
+import { resolveLevelVariant, type LevelVariants } from './level.ts';
 import type { QuestionData } from './types.ts';
 
 const answerViewSchema = z.discriminatedUnion('kind', [
@@ -41,13 +38,13 @@ export type QuestionView = z.infer<typeof questionViewSchema>;
 export const getQuestionView = (question: QuestionData): QuestionView => {
   if (question.view) return question.view;
   const row = questionRules[question.questionType] as {
-    levels: DifficultyVariants<{ view: QuestionView } | null>;
+    levels: LevelVariants<{ view: QuestionView } | null>;
   };
   const level = question.variantLevel;
   const resolved =
     level === undefined
       ? undefined
-      : resolveDifficultyVariant(row.levels, level)?.variant;
+      : resolveLevelVariant(row.levels, level)?.variant;
   const view =
     resolved?.view ?? Object.values(row.levels).find((entry) => entry)?.view;
   if (!view) throw new Error(`No view for ${question.questionType}`);

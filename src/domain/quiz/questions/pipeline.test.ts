@@ -7,7 +7,7 @@ import { createSeededRandom } from '../../../lib/random.ts';
 import { savedQuestionSchema } from '../lineup.ts';
 import { buildLeagueQuestions } from '../question-generation.ts';
 import { leagueStages } from '../league.ts';
-import { difficultyLevels } from '../difficulty.ts';
+import { gameLevels } from '../level.ts';
 import { getQuestionVariant } from '../variants.ts';
 import type { QuestionData } from '../types.ts';
 import { defaultGameSettings } from '../../settings/game-settings.ts';
@@ -81,32 +81,32 @@ it('builds every configured family with a visible saved question', () => {
   for (const type of Object.keys(questionRules) as (
     QuestionType | 'champion'
   )[]) {
-    const levels = difficultyLevels.filter((level) =>
+    const levels = gameLevels.filter((level) =>
       getQuestionVariant(type, level),
     );
-    for (const difficulty of levels) {
+    for (const level of levels) {
       const question = Array.from({ length: 5 }, (_, attempt) =>
         buildQuestionType(
           {
             catalog,
             pool,
-            random: createSeededRandom(`${type}:${difficulty}:${attempt}`),
+            random: createSeededRandom(`${type}:${level}:${attempt}`),
             used: new Set(),
-            difficulty,
+            level,
           },
           type,
         ),
       ).find(Boolean);
-      expect(question, `${type}:${difficulty}`).toBeDefined();
+      expect(question, `${type}:${level}`).toBeDefined();
       const saved = savedQuestionSchema.parse(question);
-      expect(hasVisibleChoices(saved), `${type}:${difficulty}`).toBe(true);
-      expect(hasVisibleSubject(saved), `${type}:${difficulty}`).toBe(true);
+      expect(hasVisibleChoices(saved), `${type}:${level}`).toBe(true);
+      expect(hasVisibleSubject(saved), `${type}:${level}`).toBe(true);
     }
   }
 });
 
 it('rejects image-only choices when a catalog sprite is missing', () => {
-  const difficulty = difficultyLevels.find((level) =>
+  const level = gameLevels.find((level) =>
     getQuestionVariant('spriteForPokemon', level),
   )!;
   const question = buildQuestionType(
@@ -115,7 +115,7 @@ it('rejects image-only choices when a catalog sprite is missing', () => {
       pool,
       random: createSeededRandom('sprite-only-choice'),
       used: new Set(),
-      difficulty,
+      level,
     },
     'spriteForPokemon',
   )!;
@@ -177,7 +177,7 @@ it('uses the configured source for choice sprites', () => {
     ]),
   ].filter(Boolean);
   const backIndex = sprites.indexOf(back);
-  const spriteLevel = difficultyLevels.find((level) =>
+  const spriteLevel = gameLevels.find((level) =>
     getQuestionVariant('spriteForPokemon', level),
   )!;
   const rules = getQuestionVariant('spriteForPokemon', spriteLevel)!.variant;
@@ -224,7 +224,7 @@ it('uses the configured source for choice sprites', () => {
   expect(result.optionVisuals?.[name]?.src).toBe(back);
   expect(result.optionVisuals?.[name]?.src).not.toBe(pokemon.sprite);
 
-  const searchLevel = difficultyLevels.find(
+  const searchLevel = gameLevels.find(
     (level) =>
       getQuestionVariant('pokedexEntryMatch', level)?.variant.response.kind ===
       'search',
