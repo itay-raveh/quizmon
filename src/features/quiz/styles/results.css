@@ -202,58 +202,6 @@
   font-weight: 700;
 }
 
-.score--multiplied {
-  container-type: inline-size;
-}
-
-.score.score--multiplied strong {
-  font-size: min(2.35rem, calc(130cqw / var(--score-digits)));
-  white-space: nowrap;
-}
-
-.score-factors {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 0.25rem;
-  margin: 0.75rem 0;
-  padding: 0;
-  list-style: none;
-  color: var(--navy);
-}
-
-.score-factors li {
-  display: grid;
-  flex: 1;
-  min-width: 0;
-  gap: 0.125rem;
-  padding: 0.2rem 0;
-  transition:
-    color 150ms,
-    transform 150ms;
-}
-
-.score-factors span {
-  font-size: clamp(0.65rem, 3cqw, var(--text-label));
-  overflow-wrap: anywhere;
-}
-
-.score-factors strong {
-  font: 800 1rem / 1.2 var(--font-data);
-}
-
-.score-factors .score-factors__active {
-  color: var(--navy);
-  background: var(--yellow);
-  transform: scale(1.08);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .score-factors li {
-    transition: none;
-    transform: none;
-  }
-}
-
 .personal-best--warning {
   color: var(--error-ink);
 }

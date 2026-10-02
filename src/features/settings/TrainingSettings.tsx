@@ -43,7 +43,6 @@ export const TrainingSettings = ({
   questionTypesHeading,
   submitted,
   trainingChangesApplyNextGame,
-  scoreMultipliers,
 }: TrainingSettingsProps) => {
   const allGenerationsSelected =
     draft.generations.length === generations.length;
@@ -52,13 +51,11 @@ export const TrainingSettings = ({
 
   return (
     <>
-      {scoreMultipliers ? (
+      {draft.level && matchingCount > 0 && formGroupsAreValid ? (
         <p className="training-multiplier" role="status">
           <span>Base multiplier</span>
           <strong>
-            {formatScoreMultiplier(
-              getTrainingLevelFactor(scoreMultipliers.level),
-            )}
+            {formatScoreMultiplier(getTrainingLevelFactor(draft.level))}
           </strong>
         </p>
       ) : null}

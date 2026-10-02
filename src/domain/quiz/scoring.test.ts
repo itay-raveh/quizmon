@@ -4,105 +4,10 @@ import {
   getResponseTime,
   getScoreBreakdown,
   getSpeedBonusPoints,
+  getTrainingScoreBreakdown,
 } from './scoring';
-import type { ScoreMultipliers } from './types';
-import type { TrainingScoreMultipliers } from './score-multipliers';
 
 describe('scoring', () => {
-  it('multiplies the whole base score and rounds only the final total', () => {
-    const answers = [
-      {
-        category: 'identity' as const,
-        correct: true,
-        points: 1000,
-        speedBonus: 250,
-      },
-    ];
-    const multipliers: ScoreMultipliers = {
-      level: 4,
-      generations: 3,
-      questionTypes: [
-        { questionType: 'spriteForPokemon', multiplier: 0.75 },
-        { questionType: 'pokemonTypes', multiplier: 1 },
-        { questionType: 'evYields', multiplier: 1.25 },
-      ],
-    };
-    expect(calculateScore(answers, multipliers)).toBe(25313);
-    expect(calculateScore(answers)).toBe(2250);
-    expect(calculateScore([], multipliers)).toBe(0);
-    expect(
-      calculateScore(answers, {
-        ...multipliers,
-        questionTypes: [...multipliers.questionTypes].reverse(),
-      }),
-    ).toBe(25313);
-  });
-  it('compounds drawn question factors and retains the earlier award rule', () => {
-    const answers = [
-      {
-        category: 'identity' as const,
-        questionType: 'spriteForPokemon' as const,
-        correct: true,
-        points: 1_000,
-        speedBonus: 2_000,
-      },
-      {
-        category: 'identity' as const,
-        questionType: 'evYields' as const,
-        correct: true,
-        points: 1_000,
-        speedBonus: 0,
-      },
-    ];
-    const multipliers: ScoreMultipliers = {
-      level: 2,
-      generations: 1,
-      perQuestion: true,
-      questionTypes: [
-        { questionType: 'spriteForPokemon', multiplier: 0.75 },
-        { questionType: 'evYields', multiplier: 1.25 },
-      ],
-    };
-    expect(getScoreBreakdown(answers)).toEqual({
-      knowledge: 2_000,
-      speed: 2_000,
-      mastery: 2_000,
-    });
-    expect(calculateScore(answers, multipliers)).toBe(11_250);
-    expect(
-      calculateScore(answers, { ...multipliers, perQuestion: undefined }),
-    ).toBe(11_250);
-    expect(
-      calculateScore(answers, {
-        ...multipliers,
-        perQuestion: undefined,
-        questionMix: 1,
-      }),
-    ).toBe(12_000);
-    expect(
-      calculateScore(
-        [answers[0]!, { ...answers[1]!, correct: false, points: 0 }],
-        multipliers,
-      ),
-    ).toBe(6_563);
-  });
-
-  it('applies every drawn factor even when only one of ten answers earns points', () => {
-    const answers = Array.from({ length: 10 }, (_, index) => ({
-      category: 'identity' as const,
-      questionType: 'evYields' as const,
-      correct: index === 0,
-      points: index === 0 ? 1_000 : 0,
-    }));
-    const multipliers: ScoreMultipliers = {
-      level: 1,
-      generations: 1,
-      perQuestion: true,
-      questionTypes: [{ questionType: 'evYields', multiplier: 1.25 }],
-    };
-    expect(calculateScore(answers, multipliers)).toBe(10_245);
-  });
-
   it('reduces Champion awards for help without dropping below the final clue', () => {
     expect(getAnswerPoints({ category: 'champion' }, true, 0)).toBeGreaterThan(
       getAnswerPoints({ category: 'champion' }, true, 1),
@@ -178,65 +83,49 @@ describe('scoring', () => {
   });
 
   it('rewards a deliberate level increase only when accuracy holds up', () => {
-    const answers = (correct: number) =>
+    const answers = (
+      correct: number,
+      questionType: 'evYields' | 'evolutionChain' = 'evYields',
+    ) =>
       Array.from({ length: 10 }, (_, index) => ({
         category: 'identity' as const,
-        questionType: 'pokemonTypes' as const,
+        questionType,
         correct: index < correct,
         points: index < correct ? 1000 : 0,
         responseMilliseconds: 5000,
       }));
-    const factors = (
+    const score = (
+      correct: number,
       level: 4 | 5,
-      ruleLevel: 4 | 5,
-    ): TrainingScoreMultipliers => ({
-      version: 2,
-      level,
-      questionTypes: [{ questionType: 'pokemonTypes', ruleLevel }],
-    });
-    const level4 = factors(4, 4);
-    const level5 = factors(5, 5);
-    const carried = factors(5, 4);
-    expect(calculateScore(answers(5), level5)).toBeLessThan(
-      calculateScore(answers(9), level4),
-    );
-    expect(calculateScore(answers(7), level5)).toBeGreaterThan(
-      calculateScore(answers(10), level4),
-    );
-    expect(calculateScore(answers(7), carried)).toBeLessThan(
-      calculateScore(answers(10), level4),
-    );
+      type?: 'evYields' | 'evolutionChain',
+    ) => getTrainingScoreBreakdown(answers(correct, type), level).score;
+
+    expect(score(5, 5)).toBeLessThan(score(9, 4));
+    expect(score(7, 5)).toBeGreaterThan(score(10, 4));
+    expect(score(7, 5, 'evolutionChain')).toBeLessThan(score(10, 4));
+    expect(score(5, 5)).toBe(Math.round(score(10, 5) / 2));
     expect(
-      calculateScore(
-        [
-          { ...answers(1)[0]!, questionType: 'pokemonTypes' },
-          {
-            ...answers(0)[0]!,
-            questionType: 'evYields',
-            responseMilliseconds: 0,
-          },
-        ],
-        {
-          ...level5,
-          questionTypes: [
-            ...level5.questionTypes,
-            { questionType: 'evYields', ruleLevel: 4 },
-          ],
-        },
-      ),
-    ).toBe(calculateScore(answers(1).slice(0, 1), level5));
-    expect(calculateScore(answers(5), level5)).toBe(
-      Math.round(calculateScore(answers(10), level5) / 2),
-    );
-    expect(
-      calculateScore(
-        answers(10).map((answer) => ({
-          ...answer,
-          responseMilliseconds: 0,
-        })),
-        level5,
-      ),
+      getTrainingScoreBreakdown(
+        answers(10).map((answer) => ({ ...answer, responseMilliseconds: 0 })),
+        5,
+      ).score,
     ).toBe(98_304);
+  });
+
+  it('scores a saved answer even if its family is no longer offered at that level', () => {
+    const oldAnswer = {
+      category: 'type' as const,
+      questionType: 'pokemonTypes' as const,
+      correct: true,
+      points: 1000,
+      responseMilliseconds: 5000,
+    };
+    const score = getTrainingScoreBreakdown([oldAnswer], 5).score;
+    expect(score).toBeGreaterThan(0);
+    expect(score).toBeLessThan(
+      getTrainingScoreBreakdown([{ ...oldAnswer, questionType: 'evYields' }], 5)
+        .score,
+    );
   });
 
   it('totals only active answer time', () => {

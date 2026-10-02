@@ -57,14 +57,7 @@ export const applyResult = (
     };
   }
 
-  const previous =
-    results.training.score?.scoreMultipliers?.version === 2
-      ? results.training.score
-      : undefined;
-  if (result.scoreMultipliers?.version !== 2) {
-    recordProgress();
-    return { best: previous ?? result, isNewBest: false };
-  }
+  const previous = results.training.score;
   const isNewBest = !previous || isBetterResult(result, previous);
   recordProgress();
   if (isNewBest) results.training.score = result;

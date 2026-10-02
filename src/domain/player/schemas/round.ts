@@ -6,7 +6,6 @@ import { formGroups, generations } from '../../pokemon/types.ts';
 import { savedQuestionSchema } from '../../quiz/lineup.ts';
 import { questionTypes } from '../../quiz/questions/definitions.ts';
 import { questionCategories } from '../../quiz/types.ts';
-import { scoreMultipliersSchema } from '../../quiz/score-multipliers.ts';
 import { levelSchema } from '../../quiz/level.ts';
 import {
   answerFlows,
@@ -59,7 +58,6 @@ const round = z
   .object({
     completedAt: utcTimestampSchema.optional(),
     startedOn: dailyDateSchema.optional(),
-    scoreMultipliers: scoreMultipliersSchema.optional(),
     elapsedMilliseconds: finiteNonnegative,
     questionCount: nonnegativeInteger.min(1),
     seed: z.string().min(1).max(200),

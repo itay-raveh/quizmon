@@ -12,7 +12,6 @@ import { generations } from '@/domain/pokemon/types';
 import { isLeagueVictory } from '@/domain/quiz/league';
 import { getCategoryLabel } from '@/domain/quiz/questions/definitions';
 import {
-  calculateScore,
   getScoreBreakdown,
   getTrainingScoreBreakdown,
 } from '@/domain/quiz/scoring';
@@ -27,7 +26,6 @@ import { useEffect, useRef } from 'react';
 import { AnimatedScore } from './AnimatedScore';
 import { CatchCombo } from '@/features/daily/CatchCombo';
 import { markStayedAtLevel, suggestedLevel } from './level-advancement';
-import { MultipliedScore } from './MultipliedScore';
 import type { Level } from '@/domain/quiz/level';
 
 const LevelAdvancementOffer = ({
@@ -122,8 +120,8 @@ export const ResultsScreen = ({
   const leagueVictory = isLeague && isLeagueVictory(result);
   const score = getScoreBreakdown(result.answers);
   const trainingScore =
-    result.scoreMultipliers?.version === 2
-      ? getTrainingScoreBreakdown(result.answers, result.scoreMultipliers)
+    isTraining && result.rules?.level
+      ? getTrainingScoreBreakdown(result.answers, result.rules.level)
       : null;
   const resultStats: ResultStat[] = [
     ...(!isLeague && result.questionCount > 10
@@ -262,41 +260,19 @@ export const ResultsScreen = ({
             <strong>Perfect round</strong>
           </div>
         ) : null}
-        {result.scoreMultipliers?.version === 2 ? (
-          <div
-            className="score"
-            aria-label={`Score ${formatScore(result.score)}`}
-          >
-            <span>Score</span>
-            <strong>
-              <AnimatedScore
-                playSound={playScoreCount}
-                format={formatScore}
-                value={result.score}
-              />
-            </strong>
-          </div>
-        ) : result.scoreMultipliers ? (
-          <MultipliedScore
-            baseScore={calculateScore(result.answers)}
-            multipliers={result.scoreMultipliers}
-            score={result.score}
-          />
-        ) : (
-          <div
-            className="score"
-            aria-label={`Score ${formatScore(result.score)}`}
-          >
-            <span>Score</span>
-            <strong>
-              <AnimatedScore
-                playSound={playScoreCount}
-                format={formatScore}
-                value={result.score}
-              />
-            </strong>
-          </div>
-        )}
+        <div
+          className="score"
+          aria-label={`Score ${formatScore(result.score)}`}
+        >
+          <span>Score</span>
+          <strong>
+            <AnimatedScore
+              playSound={playScoreCount}
+              format={formatScore}
+              value={result.score}
+            />
+          </strong>
+        </div>
 
         {!resultSaved ? (
           <p className="personal-best personal-best--warning" role="alert">

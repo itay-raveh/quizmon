@@ -1,15 +1,11 @@
-import { getScoreMultiplier } from './score-multipliers.ts';
+import type { Level } from './level.ts';
 import {
   getTrainingLevelFactor,
   getTrainingRuleFactor,
+  getScoringRuleLevel,
   trainingScoring,
 } from './training-scoring.ts';
-import type {
-  QuestionData,
-  SavedAnswerResult,
-  ScoreMultipliers,
-} from './types.ts';
-import type { TrainingScoreMultipliers } from './score-multipliers.ts';
+import type { QuestionData, SavedAnswerResult } from './types.ts';
 
 export interface ScoringRules {
   baseQuestionPoints: number;
@@ -74,25 +70,19 @@ export const getScoreBreakdown = (
 
 export const getTrainingScoreBreakdown = (
   answers: readonly SavedAnswerResult[],
-  multipliers: TrainingScoreMultipliers,
+  level: Level,
 ) => {
-  const ruleLevels = new Map<string, number>(
-    multipliers.questionTypes.map(({ questionType, ruleLevel }) => [
-      questionType,
-      ruleLevel,
-    ]),
-  );
   let earned = 0;
   let total = 0;
   for (const answer of answers) {
     if (!answer.correct) continue;
-    const ruleLevel = ruleLevels.get(answer.questionType ?? '');
-    if (ruleLevel === undefined)
+    if (!answer.questionType || answer.questionType === 'champion')
       throw new Error('Missing question score factor');
+    const ruleLevel = getScoringRuleLevel(answer.questionType, level);
     const base =
       trainingScoring.basePoints *
-      getTrainingLevelFactor(multipliers.level) *
-      getTrainingRuleFactor(multipliers.level, ruleLevel);
+      getTrainingLevelFactor(level) *
+      getTrainingRuleFactor(level, ruleLevel);
     const speed =
       base *
       trainingScoring.speedBonusRate *
@@ -109,35 +99,10 @@ export const getTrainingScoreBreakdown = (
 
 export const calculateScore = (
   answers: readonly SavedAnswerResult[],
-  multipliers?: ScoreMultipliers,
   rules: ScoringRules = scoringRules,
 ): number => {
-  if (multipliers?.version === 2)
-    return getTrainingScoreBreakdown(answers, multipliers).score;
   const { knowledge, speed, mastery } = getScoreBreakdown(answers, rules);
-  if (multipliers?.perQuestion) {
-    const factors = new Map<string, number>(
-      multipliers.questionTypes.map(({ questionType, multiplier }) => [
-        questionType,
-        multiplier,
-      ]),
-    );
-    const questionFactor = answers.reduce((total, answer) => {
-      const factor = factors.get(answer.questionType ?? '');
-      if (factor === undefined)
-        throw new Error('Missing question score factor');
-      return total * factor;
-    }, 1);
-    return Math.round(
-      (knowledge + speed + mastery) *
-        questionFactor *
-        getScoreMultiplier(multipliers),
-    );
-  }
-  return Math.round(
-    (knowledge + speed + mastery) *
-      (multipliers ? getScoreMultiplier(multipliers) : 1),
-  );
+  return knowledge + speed + mastery;
 };
 
 export const isQuestionAnswerCorrect = (

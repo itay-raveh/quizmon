@@ -1,12 +1,7 @@
 import type { QuestionLineup } from '../quiz/lineup.ts';
-import type {
-  AnswerResult,
-  GameMode,
-  ScoreMultipliers,
-} from '../quiz/types.ts';
+import type { AnswerResult, GameMode } from '../quiz/types.ts';
 import type { GameSettings } from '../settings/types.ts';
 export interface ActiveGameSnapshot extends QuestionLineup {
-  scoreMultipliers?: ScoreMultipliers;
   roundId: string;
   completedAt?: string;
   startedOn?: string;

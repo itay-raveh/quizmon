@@ -1,4 +1,4 @@
-import { getQuestionTypeMultiplier } from '@/domain/quiz/score-multipliers';
+import { getQuestionTypeMultiplier } from '@/domain/quiz/training-scoring';
 import { CaretDownIcon, QuestionIcon, XIcon } from '@/components/icons';
 import { SelectionTile } from './SelectionTile';
 import { SoundButton } from '@/components/SoundButton';

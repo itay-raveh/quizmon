@@ -5,7 +5,6 @@ import type {
   GameMode,
   GameResult,
   QuestionData,
-  ScoreMultipliers,
 } from '@/domain/quiz/types';
 import { getExperienceSettings } from '@/domain/settings/game-settings';
 import type { GameSettings } from '@/domain/settings/types';
@@ -21,7 +20,6 @@ export type GameSession =
   | { phase: 'landing' }
   | {
       answers: AnswerResult[];
-      scoreMultipliers?: ScoreMultipliers;
       mode: GameMode;
       settings: GameSettings;
       phase: 'questions';
@@ -88,7 +86,6 @@ export const gameSessionReducer = (
         answers: [],
         mode: action.mode,
         settings: action.settings,
-        scoreMultipliers: action.scoreMultipliers,
         phase: 'questions',
         roundId: action.roundId,
         startedOn: action.startedOn,

@@ -53,10 +53,10 @@ it('credits the earliest completed Daily while retaining discoveries from both a
   ]);
 });
 
-it('keeps legacy Training progress without comparing its score to the new version', () => {
+it('compares older Training rounds using the current scoring rules', () => {
   const current = compactCompletion(completion());
   if (current.mode !== 'training') throw new Error('Expected Training round');
-  const legacy = compactRoundSchema.parse({
+  const older = compactRoundSchema.parse({
     ...current,
     id: crypto.randomUUID(),
     completedAt: '2026-09-12T10:00:00.000Z',
@@ -65,17 +65,15 @@ it('keeps legacy Training progress without comparing its score to the new versio
       generations: current.training.generations,
       formGroups: current.training.formGroups,
     },
-    answers: current.answers.map((answer) => {
-      const copy = { ...answer };
-      Reflect.deleteProperty(copy, 'ruleLevel');
-      return copy;
-    }),
+    answers: current.answers.map((answer) => ({ ...answer, responseMs: 0 })),
   });
-  const oldOnly = projectCompactRoundHistory([legacy], 'Trainer');
-  expect(oldOnly.results.training.score).toBeUndefined();
+  const oldOnly = projectCompactRoundHistory([older], 'Trainer');
+  expect(oldOnly.results.training.score?.score).toBe(
+    scoreCompactRound(older).score,
+  );
   expect(oldOnly.results.progress.masteryRounds).toBeGreaterThan(0);
-  const combined = projectCompactRoundHistory([current, legacy], 'Trainer');
+  const combined = projectCompactRoundHistory([current, older], 'Trainer');
   expect(combined.results.training.score?.score).toBe(
-    scoreCompactRound(current).score,
+    scoreCompactRound(older).score,
   );
 });

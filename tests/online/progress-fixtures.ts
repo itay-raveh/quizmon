@@ -1,4 +1,3 @@
-import { getTrainingScoreMultipliers } from '../../src/domain/quiz/score-multipliers.ts';
 import { generations } from '../../src/domain/pokemon/types.ts';
 import { questionTypes as coreQuestionTypes } from '../../src/domain/quiz/questions/definitions.ts';
 import {
@@ -6,6 +5,7 @@ import {
   getAnswerPoints,
   getResponseTime,
   getSpeedBonusPoints,
+  getTrainingScoreBreakdown,
 } from '../../src/domain/quiz/scoring.ts';
 import { type AnswerResult } from '../../src/domain/quiz/types.ts';
 import { type RoundCompletion } from '../../src/domain/sync/progress.ts';
@@ -49,18 +49,6 @@ export function completion(
       };
     },
   );
-  const scoreMultipliers =
-    mode === 'training'
-      ? getTrainingScoreMultipliers(
-          {
-            level: 3,
-            formGroups: ['standard', 'regional', 'mega', 'gigantamax'],
-            generations: [...generations],
-            questionTypes: [...coreQuestionTypes],
-          },
-          answers,
-        )
-      : undefined;
   return {
     completionId: crypto.randomUUID(),
     mode,
@@ -82,8 +70,10 @@ export function completion(
       questionCount: count,
       correctCount: answers.filter((a) => a.correct).length,
       ...getResponseTime(answers),
-      ...(scoreMultipliers ? { scoreMultipliers } : {}),
-      score: calculateScore(answers, scoreMultipliers),
+      score:
+        mode === 'training'
+          ? getTrainingScoreBreakdown(answers, 3).score
+          : calculateScore(answers),
     },
   };
 }

@@ -25,8 +25,8 @@ it('retains the scoring inputs without archiving question presentation', () => {
 
   expect(round.mode).toBe('training');
   if (round.mode !== 'training') throw new Error('Expected Training round');
-  expect(round.training.scoreVersion).toBe(2);
-  expect(round.answers.every((answer) => 'ruleLevel' in answer)).toBe(true);
+  expect(JSON.stringify(round)).not.toContain('scoreVersion');
+  expect(JSON.stringify(round)).not.toContain('ruleLevel');
   expect(scoreCompactRound(round).score).toBe(completed.result.score);
   expect(scoreCompactRound(round).rules?.level).toBe(completed.training.level);
   expect(round.answers[0]?.options).toEqual(
@@ -39,16 +39,14 @@ it('retains the scoring inputs without archiving question presentation', () => {
   expect(() => compactCompletion(completed)).toThrow();
 });
 
-it('rejects a current Training round without its saved rule levels', () => {
+it('rescored rounds ignore old scoring fields', () => {
   const round = compactCompletion(completion());
   if (round.mode !== 'training') throw new Error('Expected Training round');
-  expect(
-    compactRoundSchema.safeParse({
-      ...round,
-      answers: round.answers.map(({ ...answer }) => {
-        Reflect.deleteProperty(answer, 'ruleLevel');
-        return answer;
-      }),
-    }).success,
-  ).toBe(false);
+  const saved = compactRoundSchema.parse({
+    ...round,
+    training: { ...round.training, scoreVersion: 2 },
+    answers: round.answers.map((answer) => ({ ...answer, ruleLevel: 1 })),
+  });
+  expect(saved).toEqual(round);
+  expect(scoreCompactRound(saved).score).toBe(scoreCompactRound(round).score);
 });

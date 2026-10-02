@@ -30,7 +30,7 @@ try {
   );
   const first = compactCompletion(completion('training'));
   assert(first.mode === 'training');
-  const legacy = compactRoundSchema.parse({
+  const older = compactRoundSchema.parse({
     ...first,
     id: crypto.randomUUID(),
     training: {
@@ -38,26 +38,35 @@ try {
       generations: first.training.generations,
       formGroups: first.training.formGroups,
     },
-    answers: first.answers.map((answer) => {
-      const copy = { ...answer };
-      Reflect.deleteProperty(copy, 'ruleLevel');
-      return copy;
-    }),
+    answers: first.answers.map((answer, index) => ({
+      ...answer,
+      responseMs: index === 0 ? 0 : answer.responseMs,
+    })),
   });
   const daily = compactCompletion(completion('daily'));
   assert(daily.mode === 'daily');
   await db.rounds.insert({ ...first, ownerId: 'alpha' });
-  await db.rounds.insert({ ...legacy, ownerId: 'legacy' });
+  await db.rounds.insert({ ...older, ownerId: 'legacy' });
   await db.rounds.insert({ ...daily, ownerId: 'alpha' });
+  await collection.insertOne({
+    _id: 'training/legacy',
+    mode: 'training',
+    ownerId: 'legacy',
+    roundId: older.id,
+    completedAt: older.completedAt,
+    score: 1,
+    elapsedMilliseconds: 0,
+  });
   standings = await startStandings(db, collection);
   assert.equal(
     (await boardRows(standings, 'training', null))[0]?.roundId,
-    first.id,
+    older.id,
   );
-  assert(
-    !(await boardRows(standings, 'training', null)).some(
+  assert.equal(
+    (await boardRows(standings, 'training', null)).find(
       (row) => row.playerId === 'legacy',
-    ),
+    )?.score,
+    scoreCompactRound(older).score,
   );
   assert.equal(
     (await boardRows(standings, 'daily', null, daily.day))[0]?.roundId,
@@ -66,13 +75,14 @@ try {
 
   const faster = compactCompletion(completion('training'));
   faster.answers[0]!.responseMs = 0;
+  faster.answers[1]!.responseMs = 0;
   await db.rounds.insert({ ...faster, ownerId: 'alpha' });
   assert.equal(
     (await boardRows(standings, 'training', null))[0]?.roundId,
     faster.id,
   );
   assert(
-    !(await boardRows(standings, 'training', null)).some(
+    (await boardRows(standings, 'training', null)).some(
       (row) => row.playerId === 'legacy',
     ),
   );

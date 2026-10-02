@@ -9,7 +9,6 @@ import { isLeagueVictory } from '../../quiz/league.ts';
 import { questionHistorySchema } from '../../quiz/history.ts';
 import { questionTypes } from '../../quiz/questions/definitions.ts';
 import { savedRoundRulesSchema } from '../../quiz/round-rules.ts';
-import { scoreMultipliersSchema } from '../../quiz/score-multipliers.ts';
 import { levelSchema } from '../../quiz/level.ts';
 import { questionCategories } from '../../quiz/types.ts';
 import { SaveError } from '../save-schema.ts';
@@ -32,7 +31,6 @@ const counts = (keys: readonly string[]) =>
 const savedQuestionType = z.enum([...questionTypes, 'champion']);
 const savedResult = z
   .object({
-    scoreMultipliers: scoreMultipliersSchema.optional(),
     rules: savedRoundRulesSchema.optional(),
     answers: z.array(
       z.object({

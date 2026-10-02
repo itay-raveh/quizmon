@@ -1,4 +1,3 @@
-import { getTrainingScoreMultipliers } from '@/domain/quiz/score-multipliers';
 import { useDailyChallenge } from '@/features/daily/useDailyChallenge';
 import { AutomaticUpdate } from '@/features/installation/AutomaticUpdate';
 import { useCallback, useEffect, useReducer, useRef } from 'react';
@@ -49,12 +48,6 @@ export const App = () => {
       const roundId = crypto.randomUUID();
       const startedOn = new Date().toISOString().slice(0, 10);
       try {
-        const scoreMultipliers =
-          nextMode.kind === 'training'
-            ? getTrainingScoreMultipliers(nextSettings, nextQuestions)
-            : undefined;
-        if (nextMode.kind === 'training' && !scoreMultipliers)
-          throw new Error('Training score rules are unavailable.');
         if (
           nextMode.kind === 'daily' &&
           !(await claimDailyAttempt(nextMode.date))
@@ -69,7 +62,6 @@ export const App = () => {
           startedOn,
           seed,
           type: 'started',
-          scoreMultipliers,
         });
         reset();
         start();

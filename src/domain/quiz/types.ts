@@ -215,7 +215,6 @@ export interface AnswerResult extends SavedAnswerResult {
 }
 
 export interface GameResult {
-  scoreMultipliers?: ScoreMultipliers;
   rules?: RoundRules;
   answers: SavedAnswerResult[];
   correctCount: number;
@@ -225,6 +224,4 @@ export interface GameResult {
   score: number;
 }
 
-export type { ScoreMultipliers } from './score-multipliers.ts';
-import type { ScoreMultipliers } from './score-multipliers.ts';
 import type { RoundRules } from './round-rules.ts';

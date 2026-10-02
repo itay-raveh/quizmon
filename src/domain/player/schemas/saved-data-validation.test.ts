@@ -135,11 +135,6 @@ it('rejects saved results and settings that use retired question IDs', () => {
   const result = structuredClone(completion().result);
   Reflect.set(result.answers[0]!, 'questionType', 'missing-type');
   Reflect.set(result.rules!, 'questionTypes', ['missing-type']);
-  Reflect.set(
-    result.scoreMultipliers!.questionTypes[0]!,
-    'questionType',
-    'missing-type',
-  );
   const saved = {
     ...base,
     settings: {
