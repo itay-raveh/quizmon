@@ -20,25 +20,6 @@ const destinations = [
   ['rankings', 'Rankings', ChartBarIcon],
 ] as const;
 
-export const AppNavigationLoading = () => (
-  <header className="app-header">
-    <SettingsButton disabled onClick={() => {}} />
-    <nav className="app-navigation" aria-label="Main" inert>
-      {destinations.map(([destination, label, Icon]) => (
-        <GameButton key={destination} disabled tone="quiet">
-          <Icon aria-hidden="true" weight="bold" />
-          {label}
-        </GameButton>
-      ))}
-      <GameButton disabled tone="quiet" className="app-navigation__account">
-        <UserCircleIcon aria-hidden="true" weight="bold" />
-        Sign in
-      </GameButton>
-    </nav>
-    <FeedbackButton />
-  </header>
-);
-
 export function AppNavigation({
   active,
   accountOpen,

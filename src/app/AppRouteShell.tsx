@@ -17,7 +17,7 @@ export const AppRouteShell = () => (
       }
     >
       {getSaveIssue() ? null : (
-        <Suspense fallback={<p role="status">Loading Quizmon…</p>}>
+        <Suspense fallback={null}>
           <LocalGame />
         </Suspense>
       )}

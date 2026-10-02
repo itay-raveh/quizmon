@@ -13,8 +13,6 @@ void import('./app/initialize-game')
   .then(showGame)
   .catch((error) => {
     captureUnexpectedError('app.initialization', error);
-    const status = root.querySelector<HTMLElement>('.daily-action__detail');
-    if (status)
-      status.textContent =
-        'Quizmon could not be loaded. Please reload to try again.';
+    root.textContent =
+      'Quizmon could not be loaded. Please reload to try again.';
   });
