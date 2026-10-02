@@ -1,4 +1,5 @@
 import { Trophy } from '@/components/Trophy';
+import './league-trophy.css';
 
 export const LeagueTrophy = ({ locked = false }: { locked?: boolean }) => (
   <div
