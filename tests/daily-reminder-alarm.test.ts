@@ -89,7 +89,7 @@ it.each([
     nextAlarm: '2026-09-08T18:00:00.000Z',
   },
 ])(
-  'links and suppresses the UTC Daily in $timeZone while scheduling locally',
+  'suppresses the UTC Daily in $timeZone while scheduling locally',
   async ({ timeZone, now, utcDate, localDate, nextAlarm }) => {
     vi.setSystemTime(new Date(now));
     const completed = makeReminder(utcDate, timeZone);
@@ -106,9 +106,7 @@ it.each([
       JSON.parse(
         vi.mocked(webpush.sendNotification).mock.calls[0]![1] as string,
       ),
-    ).toMatchObject({
-      url: `/daily/${utcDate}?play=1`,
-    });
+    ).toEqual(DAILY_REMINDER_MESSAGE);
     expect(otherDate.storage.setAlarm).toHaveBeenCalledExactlyOnceWith(
       Date.parse(nextAlarm),
     );
@@ -124,10 +122,7 @@ it.each([undefined, '2026-09-07'])(
 
     expect(webpush.sendNotification).toHaveBeenCalledExactlyOnceWith(
       subscription,
-      JSON.stringify({
-        ...DAILY_REMINDER_MESSAGE,
-        url: '/daily/2026-09-08?play=1',
-      }),
+      JSON.stringify(DAILY_REMINDER_MESSAGE),
       {
         TTL: 43_200,
         topic: 'quizmon-daily',

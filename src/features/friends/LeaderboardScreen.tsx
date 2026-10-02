@@ -331,11 +331,10 @@ function Standings({
               {noFriends && (
                 <span>Share your link to bring a friend here.</span>
               )}
-              {!noFriends && (
+              {!noFriends && !pastDaily && (
                 <Link
                   className="game-button leaderboard-empty__action"
-                  to={pastDaily ? '/daily/$date' : '/'}
-                  params={pastDaily ? { date } : {}}
+                  to="/"
                   onClick={(event) => {
                     if (
                       event.metaKey ||
@@ -345,12 +344,10 @@ function Standings({
                     )
                       return;
                     playSound('tap');
-                    if (!pastDaily) onOpenPlay();
+                    onOpenPlay();
                   }}
                 >
-                  {pastDaily
-                    ? 'Open this Daily Challenge'
-                    : `Open ${mode === 'daily' ? 'today’s Daily Challenge' : 'Training'}`}
+                  {`Open ${mode === 'daily' ? 'today’s Daily Challenge' : 'Training'}`}
                 </Link>
               )}
             </div>

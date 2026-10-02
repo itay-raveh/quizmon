@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useMatchRoute, useSearch } from '@tanstack/react-router';
 import type { StartGame } from '../../app/game-session';
 import { getDailyStreak } from '../../domain/player/progress';
 import {
@@ -17,7 +16,6 @@ import type { GameSettings } from '../../domain/settings/types';
 import { subscribeToPlayerChanges } from '../../lib/storage/player-storage';
 import { canPersistResults } from '../../lib/storage/results-storage';
 import { readDailyState } from './daily-state';
-import { isDailyDate } from '../../lib/validation';
 
 interface DailyChallengeOptions {
   catalog?: PokemonCatalog;
@@ -32,17 +30,8 @@ export const useDailyChallenge = ({
   refreshSavedData,
   startGame,
 }: DailyChallengeOptions) => {
-  const matchRoute = useMatchRoute();
-  const dailyMatch = matchRoute({ to: '/daily/$date' });
-  const search = useSearch({ strict: false });
-  const linkedDate =
-    dailyMatch && isDailyDate(dailyMatch.date) ? dailyMatch.date : null;
-  const route = {
-    autoStart: Boolean(linkedDate && 'play' in search && search.play === 1),
-    date: linkedDate,
-  };
   const [today, setToday] = useState(getUtcDate);
-  const date = route.date ?? today;
+  const date = today;
   const [error, setError] = useState('');
   const [completion, setCompletion] = useState<{
     date: string;
@@ -61,7 +50,7 @@ export const useDailyChallenge = ({
   const [storageAvailable, setStorageAvailable] = useState(canPersistResults);
   const refresh = useCallback(() => {
     const currentDate = getUtcDate();
-    const nextDate = route.date ?? currentDate;
+    const nextDate = currentDate;
     const next = readDailyState(nextDate);
     setSnapshot({ date: nextDate, data: next });
     setCompletion((current) => {
@@ -74,7 +63,7 @@ export const useDailyChallenge = ({
     });
     setToday(currentDate);
     refreshSavedData();
-  }, [route.date, refreshSavedData]);
+  }, [refreshSavedData]);
   useEffect(() => {
     const timer = window.setInterval(() => {
       if (getUtcDate() !== today) refresh();
@@ -93,7 +82,7 @@ export const useDailyChallenge = ({
   const choose = async () => {
     setError('');
     const currentDate = getUtcDate();
-    const selectedDate = route.date ?? currentDate;
+    const selectedDate = currentDate;
     setToday(currentDate);
     const saved = readDailyState(selectedDate);
     setSnapshot({ date: selectedDate, data: saved });
@@ -144,15 +133,13 @@ export const useDailyChallenge = ({
       const currentDate = getUtcDate();
       setCompletion({ date: completedDate, result, resultSaved: true });
       setToday(currentDate);
-      const date = route.date ?? currentDate;
+      const date = currentDate;
       setSnapshot({ date, data: readDailyState(date) });
     },
-    [route.date],
+    [],
   );
   const savedResult = savedState.results.daily[date];
   return {
-    autoStart: route.autoStart,
-    linkedDate: route.date,
     date,
     result:
       savedResult ?? (completion.date === date ? completion.result : null),

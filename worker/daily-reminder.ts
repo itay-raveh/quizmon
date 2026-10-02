@@ -172,10 +172,7 @@ export class DailyReminder extends DurableObject<DailyReminderEnv> {
       try {
         await webpush.sendNotification(
           registration.subscription,
-          JSON.stringify({
-            ...DAILY_REMINDER_MESSAGE,
-            url: `/daily/${dailyDate}?play=1`,
-          }),
+          JSON.stringify(DAILY_REMINDER_MESSAGE),
           {
             TTL: 43_200,
             topic: 'quizmon-daily',

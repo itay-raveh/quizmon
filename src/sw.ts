@@ -23,7 +23,6 @@ interface DailyPushPayload {
   body?: string;
   tag?: string;
   title?: string;
-  url?: string;
 }
 
 const readPushPayload = (event: PushEvent): DailyPushPayload => {
@@ -34,7 +33,6 @@ const readPushPayload = (event: PushEvent): DailyPushPayload => {
       body: typeof candidate.body === 'string' ? candidate.body : undefined,
       tag: typeof candidate.tag === 'string' ? candidate.tag : undefined,
       title: typeof candidate.title === 'string' ? candidate.title : undefined,
-      url: typeof candidate.url === 'string' ? candidate.url : undefined,
     };
   } catch {
     return {};
@@ -137,7 +135,6 @@ self.addEventListener('push', (event) => {
       payload.title ?? DAILY_REMINDER_MESSAGE.title,
       {
         body: payload.body ?? DAILY_REMINDER_MESSAGE.body,
-        data: { url: payload.url ?? '/' },
         icon: '/pwa-192x192.png',
         tag: payload.tag ?? DAILY_REMINDER_MESSAGE.tag,
       },
@@ -147,10 +144,7 @@ self.addEventListener('push', (event) => {
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  const target = new URL(
-    (event.notification.data as { url?: string } | undefined)?.url ?? '/',
-    self.location.origin,
-  ).href;
+  const target = new URL('/', self.location.origin).href;
 
   event.waitUntil(
     self.clients

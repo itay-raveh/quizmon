@@ -125,17 +125,6 @@ export const App = () => {
     startTimer: start,
   });
 
-  const autoStartedDaily = useRef<string | null>(null);
-  useEffect(() => {
-    if (!daily.autoStart) {
-      autoStartedDaily.current = null;
-      return;
-    }
-    if (!catalog || session.phase !== 'landing') return;
-    if (autoStartedDaily.current === daily.date) return;
-    autoStartedDaily.current = daily.date;
-    void daily.start();
-  }, [catalog, daily, session.phase]);
   useEffect(() => {
     if (session.phase !== 'questions') return;
     const confirmReload = (event: BeforeUnloadEvent) => {
@@ -145,21 +134,6 @@ export const App = () => {
     window.addEventListener('beforeunload', confirmReload);
     return () => window.removeEventListener('beforeunload', confirmReload);
   }, [session.phase]);
-  const promptedDailyLink = useRef<string | null>(null);
-  useEffect(() => {
-    if (!daily.linkedDate) {
-      promptedDailyLink.current = null;
-      return;
-    }
-    if (session.phase !== 'questions') return;
-    if (session.mode.kind === 'daily' && session.mode.date === daily.linkedDate)
-      return;
-    const key = `${daily.linkedDate}:${session.roundId}`;
-    if (promptedDailyLink.current === key) return;
-    promptedDailyLink.current = key;
-    navigation.requestLeave(true);
-  }, [daily.linkedDate, navigation, session]);
-
   return (
     <>
       <AutomaticUpdate

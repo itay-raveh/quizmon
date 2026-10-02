@@ -15,7 +15,6 @@ import { Route as LeagueRouteImport } from './routes/league'
 import { Route as RankingsRouteImport } from './routes/rankings'
 import { Route as TrainerRouteImport } from './routes/trainer'
 import { Route as AccountFriendsRouteImport } from './routes/account.friends'
-import { Route as DailyDateRouteImport } from './routes/daily.$date'
 import { Route as PlayersIdRouteImport } from './routes/players.$id'
 import { Route as TrainerBadgesRouteImport } from './routes/trainer.badges'
 import { Route as TrainerEditRouteImport } from './routes/trainer.edit'
@@ -52,11 +51,6 @@ const AccountFriendsRoute = AccountFriendsRouteImport.update({
   path: '/friends',
   getParentRoute: () => AccountRoute,
 } as any)
-const DailyDateRoute = DailyDateRouteImport.update({
-  id: '/daily/$date',
-  path: '/daily/$date',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const PlayersIdRoute = PlayersIdRouteImport.update({
   id: '/players/$id',
   path: '/players/$id',
@@ -90,7 +84,6 @@ export interface FileRoutesByFullPath {
   '/rankings': typeof RankingsRoute
   '/trainer': typeof TrainerRouteWithChildren
   '/account/friends': typeof AccountFriendsRoute
-  '/daily/$date': typeof DailyDateRoute
   '/players/$id': typeof PlayersIdRoute
   '/trainer/badges': typeof TrainerBadgesRoute
   '/trainer/edit': typeof TrainerEditRoute
@@ -104,7 +97,6 @@ export interface FileRoutesByTo {
   '/rankings': typeof RankingsRoute
   '/trainer': typeof TrainerRouteWithChildren
   '/account/friends': typeof AccountFriendsRoute
-  '/daily/$date': typeof DailyDateRoute
   '/players/$id': typeof PlayersIdRoute
   '/trainer/badges': typeof TrainerBadgesRoute
   '/trainer/edit': typeof TrainerEditRoute
@@ -119,7 +111,6 @@ export interface FileRoutesById {
   '/rankings': typeof RankingsRoute
   '/trainer': typeof TrainerRouteWithChildren
   '/account/friends': typeof AccountFriendsRoute
-  '/daily/$date': typeof DailyDateRoute
   '/players/$id': typeof PlayersIdRoute
   '/trainer/badges': typeof TrainerBadgesRoute
   '/trainer/edit': typeof TrainerEditRoute
@@ -135,7 +126,6 @@ export interface FileRouteTypes {
     | '/rankings'
     | '/trainer'
     | '/account/friends'
-    | '/daily/$date'
     | '/players/$id'
     | '/trainer/badges'
     | '/trainer/edit'
@@ -149,7 +139,6 @@ export interface FileRouteTypes {
     | '/rankings'
     | '/trainer'
     | '/account/friends'
-    | '/daily/$date'
     | '/players/$id'
     | '/trainer/badges'
     | '/trainer/edit'
@@ -163,7 +152,6 @@ export interface FileRouteTypes {
     | '/rankings'
     | '/trainer'
     | '/account/friends'
-    | '/daily/$date'
     | '/players/$id'
     | '/trainer/badges'
     | '/trainer/edit'
@@ -177,7 +165,6 @@ export interface RootRouteChildren {
   LeagueRoute: typeof LeagueRoute
   RankingsRoute: typeof RankingsRoute
   TrainerRoute: typeof TrainerRouteWithChildren
-  DailyDateRoute: typeof DailyDateRoute
   PlayersIdRoute: typeof PlayersIdRoute
 }
 
@@ -224,13 +211,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/account/friends'
       preLoaderRoute: typeof AccountFriendsRouteImport
       parentRoute: typeof AccountRoute
-    }
-    '/daily/$date': {
-      id: '/daily/$date'
-      path: '/daily/$date'
-      fullPath: '/daily/$date'
-      preLoaderRoute: typeof DailyDateRouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/players/$id': {
       id: '/players/$id'
@@ -304,7 +284,6 @@ const rootRouteChildren: RootRouteChildren = {
   LeagueRoute: LeagueRoute,
   RankingsRoute: RankingsRoute,
   TrainerRoute: TrainerRouteWithChildren,
-  DailyDateRoute: DailyDateRoute,
   PlayersIdRoute: PlayersIdRoute,
 }
 export const routeTree = rootRouteImport

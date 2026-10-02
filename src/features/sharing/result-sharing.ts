@@ -33,10 +33,7 @@ export const buildShareContent = (
     title: `${site.name} · ${
       mode.kind === 'daily' ? formatDailyDate(mode.date) : getModeLabel(mode)
     }`,
-    url:
-      mode.kind === 'daily'
-        ? new URL(`/daily/${mode.date}`, site.url).toString()
-        : site.url,
+    url: site.url,
   };
 };
 

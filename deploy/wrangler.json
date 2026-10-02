@@ -77,8 +77,7 @@
       "/account",
       "/account/friends",
       "/rankings",
-      "/players/*",
-      "/daily/*"
+      "/players/*"
     ]
   }
 }
