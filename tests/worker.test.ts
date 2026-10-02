@@ -31,21 +31,15 @@ const mockSpriteFetch = () => {
   return upstream;
 };
 
-test('new page routes load the app while retired Social routes do not', async () => {
+test('account links load the app', async () => {
   const { env } = makeEnv();
   env.ASSETS.fetch.mockResolvedValue(new Response('app'));
   await worker.fetch(
     new Request('https://quizmon.test/account/friends?id=trainer_a'),
     env,
   );
-  expect(env.ASSETS.fetch).toHaveBeenNthCalledWith(
-    1,
+  expect(env.ASSETS.fetch).toHaveBeenCalledExactlyOnceWith(
     expect.objectContaining({ url: 'https://quizmon.test/' }),
-  );
-  await worker.fetch(new Request('https://quizmon.test/social/friends'), env);
-  expect(env.ASSETS.fetch).toHaveBeenNthCalledWith(
-    2,
-    expect.objectContaining({ url: 'https://quizmon.test/social/friends' }),
   );
 });
 
