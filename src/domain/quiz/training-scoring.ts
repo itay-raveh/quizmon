@@ -35,6 +35,13 @@ export const getScoringRuleLevel = (
   return level;
 };
 
+export const getTrainingAnswerFactor = (
+  type: QuestionType,
+  level: Level,
+): number =>
+  getTrainingLevelFactor(level) *
+  getTrainingRuleFactor(level, getScoringRuleLevel(type, level));
+
 export const getQuestionTypeMultiplier = (
   type: QuestionType,
   level: Level,

@@ -276,6 +276,60 @@
   background: var(--blue);
 }
 
+.answer-trail--training {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  width: min(100%, 18rem);
+  margin-inline: auto;
+}
+
+.answer-trail--training li,
+.answer-trail--training .answer-trail--correct {
+  aspect-ratio: auto;
+  background: none;
+  border: 0;
+  color: var(--navy);
+  gap: 2px;
+  justify-items: center;
+}
+
+.answer-trail--training li > span:first-child {
+  display: grid;
+  width: 25px;
+  height: 25px;
+  color: white;
+  background: var(--wrong);
+  border: 2px solid var(--navy);
+  border-radius: 0.2rem;
+  place-items: center;
+}
+
+.answer-trail--training .answer-trail--correct > span:first-child {
+  background: var(--blue);
+}
+
+.answer-trail__factor {
+  min-height: 0.7rem;
+  font: 800 0.6rem / 1.1 var(--font-data);
+}
+
+.answer-trail--training .answer-trail--active > span:first-child {
+  animation: answer-credit 180ms ease-out;
+}
+
+@keyframes answer-credit {
+  50% {
+    box-shadow: 0 0 0 3px var(--metal-gold);
+    transform: scale(1.12);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .answer-trail--training .answer-trail--active > span:first-child {
+    animation: none;
+  }
+}
+
 .reward-case {
   margin-bottom: 12px;
 }

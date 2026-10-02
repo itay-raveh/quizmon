@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-23T15:22:35Z",
+  "generatedAt": "2026-10-02T19:14:19.524Z",
   "title": "Design System: Quizmon",
   "extensions": {
     "colorMeta": {
@@ -469,6 +469,16 @@
         "purpose": "One transform-and-opacity entrance for the first question and results."
       },
       {
+        "name": "score-count",
+        "value": "1600ms fallback; sound-synced when available",
+        "purpose": "One final score count-up; Training advances through earned answer totals in question order."
+      },
+      {
+        "name": "training-answer-credit",
+        "value": "180ms ease-out",
+        "purpose": "A brief gold pulse marks each correct Training answer as its points are credited."
+      },
+      {
         "name": "dialog-in",
         "value": "160ms ease-out",
         "purpose": "The single entrance used when a dialog opens."
@@ -678,6 +688,11 @@
         "name": "The Compact-Corner Rule",
         "body": "Corners should feel friendly but controlled. Avoid pills, circles for rectangular actions, and broad soft cards.",
         "section": "shapes"
+      },
+      {
+        "name": "The Earned-Score Rule",
+        "body": "Animate the points each Training answer actually earned; never present retired whole-round factors as if they contributed to the score.",
+        "section": "components"
       }
     ],
     "dos": [

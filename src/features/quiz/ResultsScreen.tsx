@@ -7,6 +7,7 @@ import {
   formatDuration,
   formatDurationMilliseconds,
   formatScore,
+  formatScoreMultiplier,
 } from '@/domain/quiz/format';
 import { generations } from '@/domain/pokemon/types';
 import { isLeagueVictory } from '@/domain/quiz/league';
@@ -15,6 +16,7 @@ import {
   getScoreBreakdown,
   getTrainingScoreBreakdown,
 } from '@/domain/quiz/scoring';
+import { getTrainingAnswerFactor } from '@/domain/quiz/training-scoring';
 import type { GameMode, GameResult } from '@/domain/quiz/types';
 import type { GameSettings } from '@/domain/settings/types';
 import { LeagueProgress } from '@/features/league/LeagueProgress';
@@ -22,7 +24,7 @@ import { DailyReminderPrompt } from '@/features/reminders/DailyReminderPrompt';
 import { ShareResultButton } from '@/features/sharing/ShareResultButton';
 import { TrainerProgressSummary } from '@/features/trainer/TrainerProgressSummary';
 import { useGameSounds } from '@/lib/audio/sound-context';
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatedScore } from './AnimatedScore';
 import { CatchCombo } from '@/features/daily/CatchCombo';
 import { markStayedAtLevel, suggestedLevel } from './level-advancement';
@@ -111,6 +113,7 @@ export const ResultsScreen = ({
   const { playPerfect, playResults, playScoreCount, stopCelebration } =
     useGameSounds();
   const heading = useRef<HTMLHeadingElement>(null);
+  const [activeAnswerIndex, setActiveAnswerIndex] = useState(-1);
   const isDaily = mode.kind === 'daily';
   const isLeague = mode.kind === 'league';
   const isTraining = mode.kind === 'training';
@@ -119,10 +122,26 @@ export const ResultsScreen = ({
   const nextLevel = isTraining ? suggestedLevel(result, settings.level) : null;
   const leagueVictory = isLeague && isLeagueVictory(result);
   const score = getScoreBreakdown(result.answers);
-  const trainingScore =
-    isTraining && result.rules?.level
-      ? getTrainingScoreBreakdown(result.answers, result.rules.level)
-      : null;
+  const trainingLevel = isTraining ? result.rules?.level : undefined;
+  const trainingScore = trainingLevel
+    ? getTrainingScoreBreakdown(result.answers, trainingLevel)
+    : null;
+  const scoreCheckpoints = useMemo(
+    () =>
+      trainingLevel
+        ? [
+            0,
+            ...result.answers.map(
+              (_, index) =>
+                getTrainingScoreBreakdown(
+                  result.answers.slice(0, index + 1),
+                  trainingLevel,
+                ).score,
+            ),
+          ]
+        : undefined,
+    [result.answers, trainingLevel],
+  );
   const resultStats: ResultStat[] = [
     ...(!isLeague && result.questionCount > 10
       ? [
@@ -143,10 +162,6 @@ export const ResultsScreen = ({
     },
     ...(trainingScore
       ? [
-          {
-            label: 'Correct',
-            value: `${result.correctCount} / ${result.questionCount}`,
-          },
           { label: 'Answers', value: formatScore(trainingScore.answers) },
           { label: 'Speed', value: formatScore(trainingScore.speed) },
         ]
@@ -260,18 +275,20 @@ export const ResultsScreen = ({
             <strong>Perfect round</strong>
           </div>
         ) : null}
-        <div
-          className="score"
-          aria-label={`Score ${formatScore(result.score)}`}
-        >
-          <span>Score</span>
-          <strong>
+        <div className="score">
+          <span aria-hidden="true">Score</span>
+          <strong aria-hidden="true">
             <AnimatedScore
+              checkpoints={scoreCheckpoints}
+              onCheckpoint={scoreCheckpoints ? setActiveAnswerIndex : undefined}
               playSound={playScoreCount}
               format={formatScore}
               value={result.score}
             />
           </strong>
+          <span className="visually-hidden">
+            Score {formatScore(result.score)}
+          </span>
         </div>
 
         {!resultSaved ? (
@@ -308,15 +325,35 @@ export const ResultsScreen = ({
             completed={leagueVictory}
           />
         ) : result.questionCount <= 10 ? (
-          <ol className="answer-trail" aria-label="Question results">
+          <ol
+            className={`answer-trail${isTraining ? ' answer-trail--training' : ''}`}
+            aria-label={
+              isTraining
+                ? 'Question results and score factors'
+                : 'Question results'
+            }
+          >
             {result.answers.map((answer, index) => {
               const categoryLabel = getCategoryLabel(answer.category);
               const outcome = answer.correct ? 'correct' : 'incorrect';
+              const factor =
+                trainingLevel &&
+                answer.correct &&
+                answer.questionType &&
+                answer.questionType !== 'champion'
+                  ? formatScoreMultiplier(
+                      getTrainingAnswerFactor(
+                        answer.questionType,
+                        trainingLevel,
+                      ),
+                    )
+                  : undefined;
+              const description = `${categoryLabel}: ${outcome}${factor ? `, ${factor} question factor` : ''}`;
               return (
                 <li
-                  className={answer.correct ? 'answer-trail--correct' : ''}
+                  className={`${answer.correct ? 'answer-trail--correct' : ''}${answer.correct && index === activeAnswerIndex ? ' answer-trail--active' : ''}`.trim()}
                   key={`${answer.category}-${index}`}
-                  title={`${categoryLabel}: ${outcome}`}
+                  title={description}
                 >
                   <span aria-hidden="true">
                     {answer.correct ? (
@@ -325,9 +362,12 @@ export const ResultsScreen = ({
                       <XIcon weight="bold" />
                     )}
                   </span>
-                  <span className="visually-hidden">
-                    {categoryLabel}: {outcome}
-                  </span>
+                  {isTraining ? (
+                    <span className="answer-trail__factor" aria-hidden="true">
+                      {factor}
+                    </span>
+                  ) : null}
+                  <span className="visually-hidden">{description}</span>
                 </li>
               );
             })}
