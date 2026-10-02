@@ -1,4 +1,3 @@
-import * as styles from './classes.css.ts';
 import { ChatTextIcon } from '@phosphor-icons/react/ssr';
 import { useEffect, useRef, type RefObject } from 'react';
 import { attachFeedback, feedbackLabel, sentryEnabled } from '../lib/sentry.ts';
@@ -34,7 +33,7 @@ export const FeedbackButton = ({
   return (
     <button
       ref={button}
-      className={`game-button game-button--quiet ${styles.feedbackButton}`}
+      className="game-button game-button--quiet feedback-button"
       type="button"
       aria-label={showLabel ? undefined : feedbackLabel}
       title={showLabel ? undefined : feedbackLabel}

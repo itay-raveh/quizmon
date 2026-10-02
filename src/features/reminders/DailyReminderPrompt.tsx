@@ -10,8 +10,6 @@ import {
 } from '@/features/reminders/daily-reminder-storage';
 import { readCompletedDailyCount } from '@/lib/storage/results-storage';
 import { useEffect, useState } from 'react';
-import * as styles from './DailyReminderPrompt.css.ts';
-import { resultsOffer } from '../../components/classes.css.ts';
 
 export const DailyReminderPrompt = ({ dailyDate }: { dailyDate: string }) => {
   const { busy, enable, error, time, recordDailyCompletion, status } =
@@ -50,7 +48,7 @@ export const DailyReminderPrompt = ({ dailyDate }: { dailyDate: string }) => {
       return null;
     return (
       <aside
-        className={`${resultsOffer} ${styles.dailyInstallOffer}`}
+        className="results-offer daily-install-offer"
         aria-labelledby="daily-install-title"
       >
         <strong id="daily-install-title">Ready for tomorrow’s Daily?</strong>
@@ -66,39 +64,24 @@ export const DailyReminderPrompt = ({ dailyDate }: { dailyDate: string }) => {
   }
   if (!canOffer) return null;
   return (
-    <aside className={styles.root} aria-labelledby="daily-reminder-title">
-      <BellSimpleRingingIcon
-        aria-hidden="true"
-        className={styles.icon}
-        weight="bold"
-      />
-      <span className={styles.copy}>
-        <strong className={styles.title} id="daily-reminder-title">
-          Daily reminder?
-        </strong>
-        <span className={styles.detail}>
+    <aside
+      className="daily-reminder-offer"
+      aria-labelledby="daily-reminder-title"
+    >
+      <BellSimpleRingingIcon aria-hidden="true" weight="bold" />
+      <span className="daily-reminder-offer__copy">
+        <strong id="daily-reminder-title">Daily reminder?</strong>
+        <span>
           Get a reminder for the Daily at {formatReminderTime(time)} in your
           time zone. Change the time in Settings.
         </span>
-        {error ? (
-          <span className={styles.error} role="alert">
-            {error}
-          </span>
-        ) : null}
+        {error ? <span role="alert">{error}</span> : null}
       </span>
-      <span className={styles.actions}>
-        <GameButton
-          className={styles.actionButton}
-          disabled={busy}
-          onClick={() => void enable()}
-        >
+      <span className="daily-reminder-offer__actions">
+        <GameButton disabled={busy} onClick={() => void enable()}>
           {busy ? 'Turning on…' : 'Remind me'}
         </GameButton>
-        <GameButton
-          className={styles.actionButton}
-          tone="quiet"
-          onClick={() => setVisible(false)}
-        >
+        <GameButton tone="quiet" onClick={() => setVisible(false)}>
           Not now
         </GameButton>
       </span>

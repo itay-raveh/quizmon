@@ -1,4 +1,3 @@
-import * as styles from './styles/classes.css.ts';
 import type { TrainerBadge } from '@/domain/player/trainer-progression';
 
 interface TrainerTierProgressProps {
@@ -10,15 +9,15 @@ export const TrainerTierProgress = ({
 }: TrainerTierProgressProps) => {
   if (tier === 3) {
     return (
-      <strong className={styles.trainerProgressTotal}>
+      <strong className="trainer-progress-total">
         {current.toLocaleString()}
       </strong>
     );
   }
 
   return (
-    <div className={styles.trainerProgress}>
-      <div className={styles.trainerProgressNumbers}>
+    <div className="trainer-progress">
+      <div className="trainer-progress__numbers">
         <strong>{current.toLocaleString()}</strong>{' '}
         <span>/ {goal.toLocaleString()}</span>
       </div>

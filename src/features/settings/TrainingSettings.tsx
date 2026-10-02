@@ -1,4 +1,3 @@
-import * as styles from '../../styles/classes.css.ts';
 import { GenerationLabel } from '@/components/GenerationLabel';
 import { LevelNumber } from '@/components/LevelLabel';
 import { SelectionTile } from './SelectionTile';
@@ -54,7 +53,7 @@ export const TrainingSettings = ({
   return (
     <>
       {scoreMultipliers ? (
-        <p className={styles.trainingMultiplier} role="status">
+        <p className="training-multiplier" role="status">
           <span>Base multiplier</span>
           <strong>
             {formatScoreMultiplier(
@@ -64,14 +63,14 @@ export const TrainingSettings = ({
         </p>
       ) : null}
       {trainingChangesApplyNextGame ? (
-        <p className={styles.settingsNote}>
+        <p className="settings-note">
           Training changes apply to your next game.
         </p>
       ) : null}
 
-      <fieldset className={styles.levelSettings}>
+      <fieldset className="level-settings">
         <legend>Level</legend>
-        <div className={styles.levelControl}>
+        <div className="level-control">
           {gameLevels.map((level) => (
             <SelectionTile
               key={level}
@@ -93,14 +92,14 @@ export const TrainingSettings = ({
         </div>
       </fieldset>
 
-      <section className={styles.settingsSection}>
-        <div className={styles.settingsSectionHeading}>
+      <section className="settings-section">
+        <div className="settings-section__heading">
           <h3 id="generations-title" ref={generationsHeading} tabIndex={-1}>
             Generations
           </h3>
           <SoundButton
             aria-label={`${allGenerationsSelected ? 'Deselect' : 'Select'} all generations`}
-            className={styles.selectionToggle}
+            className="selection-toggle"
             onClick={() =>
               onChange((current) => ({
                 ...current,
@@ -118,7 +117,7 @@ export const TrainingSettings = ({
           }
           aria-invalid={hasGenerationError}
           aria-labelledby="generations-title"
-          className={`${styles.selectionGrid} ${styles.selectionGridGenerations}`}
+          className="selection-grid selection-grid--generations"
           role="group"
         >
           {generations.map((generation) => (
@@ -143,20 +142,20 @@ export const TrainingSettings = ({
           ))}
         </div>
         {hasGenerationError ? (
-          <p className={styles.formError} id="generations-error" role="alert">
+          <p className="form-error" id="generations-error" role="alert">
             Choose at least one generation.
           </p>
         ) : null}
       </section>
 
-      <section className={styles.settingsSection}>
-        <div className={styles.settingsSectionHeading}>
+      <section className="settings-section">
+        <div className="settings-section__heading">
           <h3 id="form-groups-title" ref={formGroupsHeading} tabIndex={-1}>
             Forms
           </h3>
         </div>
         <div
-          className={`${styles.selectionGrid} ${styles.selectionGridForms}`}
+          className="selection-grid selection-grid--forms"
           role="group"
           aria-labelledby="form-groups-title"
           aria-invalid={submitted && !formGroupsAreValid}
@@ -201,13 +200,13 @@ export const TrainingSettings = ({
           })}
         </div>
         {submitted && !formGroupsAreValid ? (
-          <p className={styles.formError} id="form-groups-error" role="alert">
+          <p className="form-error" id="form-groups-error" role="alert">
             Choose at least one available form group.
           </p>
         ) : null}
       </section>
 
-      <section className={styles.settingsSection}>
+      <section className="settings-section">
         <SelectionTile
           checked={customized}
           label="Customize questions"
@@ -219,7 +218,7 @@ export const TrainingSettings = ({
           }
         />
         {customized ? (
-          <p className={styles.settingsNote} role="status">
+          <p className="settings-note" role="status">
             Custom questions count toward Quick Attack and Perfect Form badges
             only when they match the automatic question types for this level and
             generations.

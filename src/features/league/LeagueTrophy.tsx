@@ -1,13 +1,12 @@
-import * as styles from './classes.css.ts';
 import { Trophy } from '@/components/Trophy';
 
 export const LeagueTrophy = ({ locked = false }: { locked?: boolean }) => (
   <div
-    className={`${styles.leagueTrophy}${locked ? ` ${styles.leagueTrophyLocked}` : ''}`}
+    className={`league-trophy${locked ? ' league-trophy--locked' : ''}`}
     aria-hidden="true"
   >
     <svg
-      className={styles.leagueTrophyRays}
+      className="league-trophy__rays"
       viewBox="0 0 400 300"
       fill="currentColor"
     >
@@ -24,6 +23,6 @@ export const LeagueTrophy = ({ locked = false }: { locked?: boolean }) => (
         />
       ))}
     </svg>
-    <Trophy className={styles.leagueTrophyImage} />
+    <Trophy className="league-trophy__image" />
   </div>
 );

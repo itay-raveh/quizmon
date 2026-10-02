@@ -1,4 +1,3 @@
-import * as styles from '../../styles/classes.css.ts';
 import { QuestionIcon, XIcon } from '@/components/icons';
 import { TypeEffectArrow } from './RelationArrow';
 import { SoundButton } from '@/components/SoundButton';
@@ -38,7 +37,7 @@ export const AnswerEffectiveness = ({
   return (
     <>
       <SoundButton
-        className={styles.answerMatchupHelp}
+        className="answer-matchup__help"
         aria-label={`${formatPokemonName(option)}: ×${formatTypeMultiplier(total)} damage. Explain type effectiveness`}
         popoverTarget={id}
       >
@@ -46,13 +45,13 @@ export const AnswerEffectiveness = ({
         <QuestionIcon aria-hidden="true" weight="bold" />
       </SoundButton>
       <div
-        className={`${styles.questionTypeHelp} ${styles.matchupHelp}`}
+        className="question-type-help matchup-help"
         id={id}
         popover="auto"
         role="note"
       >
         <SoundButton
-          className={styles.questionTypeHelpClose}
+          className="question-type-help__close"
           aria-label="Close type effectiveness explanation"
           popoverTarget={id}
           popoverTargetAction="hide"
@@ -60,9 +59,9 @@ export const AnswerEffectiveness = ({
           <XIcon aria-hidden="true" weight="bold" />
         </SoundButton>
         {calculations.map(({ type, factors, total: multiplier }) => (
-          <div className={styles.matchupHelpCalculation} key={type}>
+          <div className="matchup-help__calculation" key={type}>
             {!isTypeOption && calculations.length > 1 ? (
-              <div className={styles.matchupHelpAttack}>
+              <div className="matchup-help__attack">
                 {multiplier === total ? (
                   <b>
                     <TypeBadges
@@ -76,13 +75,13 @@ export const AnswerEffectiveness = ({
               </div>
             ) : null}
             <div
-              className={styles.matchupHelpFormula}
+              className="matchup-help__formula"
               aria-label={`${formatPokemonName(type)}: ${factors.map((factor, index) => `${formatTypeMultiplier(factor)} against ${formatPokemonName(defenderTypes[index]!)}`).join(' times ')} equals ${formatTypeMultiplier(multiplier)}`}
               role="math"
             >
               {factors.map((factor, index) => (
                 <div
-                  className={styles.matchupHelpFactor}
+                  className="matchup-help__factor"
                   key={defenderTypes[index]}
                   aria-hidden="true"
                 >
@@ -92,7 +91,7 @@ export const AnswerEffectiveness = ({
                 </div>
               ))}
               {factors.length > 1 ? (
-                <div className={styles.matchupHelpTotal} aria-hidden="true">
+                <div className="matchup-help__total" aria-hidden="true">
                   {factors.map(formatTypeMultiplier).join(' × ')} = ×
                   {formatTypeMultiplier(multiplier)}
                 </div>

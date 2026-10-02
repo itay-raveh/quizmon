@@ -1,4 +1,3 @@
-import * as styles from './styles/classes.css.ts';
 import { GenerationLabel } from '@/components/GenerationLabel';
 import { formatPokemonName } from '@/domain/pokemon/format';
 import type { QuestionData } from '@/domain/quiz/types';
@@ -14,7 +13,7 @@ export const QuestionClues = ({
   const visibleCount = Math.max(0, cluesShown - 1);
   return (
     <div
-      className={`${styles.clueBoard} ${visibleCount === 0 ? styles.clueBoardConcealed : ''}`}
+      className={`clue-board ${visibleCount === 0 ? 'clue-board--concealed' : ''}`}
     >
       <ol aria-live="polite">
         {question.clues.map((clue, index) => (

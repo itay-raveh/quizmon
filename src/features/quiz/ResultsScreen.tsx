@@ -1,4 +1,3 @@
-import * as styles from '../../styles/classes.css.ts';
 import { GameButton } from '@/components/GameButton';
 import { LevelLabel } from '@/components/LevelLabel';
 import { CaretDownIcon, CheckIcon, XIcon } from '@/components/icons';
@@ -42,13 +41,13 @@ const LevelAdvancementOffer = ({
 }) => {
   return (
     <aside
-      className={`${styles.resultsOffer} ${styles.levelAdvancementOffer}`}
+      className="results-offer level-advancement-offer"
       aria-label="Training suggestion"
     >
       <strong>
         Ready to try <LevelLabel level={nextLevel} />?
       </strong>
-      <div className={styles.levelAdvancementOfferActions}>
+      <div className="level-advancement-offer__actions">
         <GameButton onClick={() => onTryLevel(nextLevel)}>
           Try <LevelLabel level={nextLevel} />
         </GameButton>
@@ -129,7 +128,7 @@ export const ResultsScreen = ({
       : []),
     {
       label: 'Time',
-      className: styles.resultsListTime,
+      className: 'results-list__time',
       value:
         settings.timerDisplay === 'milliseconds' &&
         result.elapsedMilliseconds !== undefined
@@ -181,31 +180,28 @@ export const ResultsScreen = ({
   ]);
 
   return (
-    <section
-      className={`game-panel ${styles.results}`}
-      aria-labelledby="results-title"
-    >
+    <section className="game-panel results" aria-labelledby="results-title">
       <div
-        className={`${styles.resultsHeader} ${isDaily && dailyStreak > 0 ? styles.resultsHeaderWithCombo : ''}`.trim()}
+        className={`results__header ${isDaily && dailyStreak > 0 ? 'results__header--with-combo' : ''}`.trim()}
       >
         <GameButton
           aria-label="Back to start"
-          className={styles.resultsClose}
+          className="results__close"
           onClick={onNewGame}
           title="Back to start"
           tone="quiet"
         >
           <XIcon aria-hidden="true" weight="bold" />
         </GameButton>
-        <div className={styles.resultsHeading}>
+        <div className="results__heading">
           <h1 id="results-title" ref={heading} tabIndex={-1}>
             {resultTitle}
           </h1>
           {isDaily ? (
-            <p className={styles.resultsDate}>{formatDailyDate(mode.date)}</p>
+            <p className="results__date">{formatDailyDate(mode.date)}</p>
           ) : null}
           {result.rules ? (
-            <details className={styles.resultsSettings}>
+            <details className="results__settings">
               <summary>
                 <span>
                   <LevelLabel level={result.rules.level} /> ·{' '}
@@ -234,16 +230,16 @@ export const ResultsScreen = ({
         </div>
         {isDaily && dailyStreak > 0 ? (
           <CatchCombo
-            className={styles.resultsCombo}
+            className="results__combo"
             celebrate
             count={dailyStreak}
           />
         ) : null}
       </div>
 
-      <div className={styles.resultScore}>
+      <div className="result-score">
         {perfectTraining ? (
-          <div className={styles.resultScorePerfect}>
+          <div className="result-score__perfect">
             <strong>Perfect round</strong>
           </div>
         ) : null}
@@ -255,7 +251,7 @@ export const ResultsScreen = ({
           />
         ) : (
           <div
-            className={styles.score}
+            className="score"
             aria-label={`Score ${formatScore(result.score)}`}
           >
             <span>Score</span>
@@ -270,15 +266,12 @@ export const ResultsScreen = ({
         )}
 
         {!resultSaved ? (
-          <p
-            className={`${styles.personalBest} ${styles.personalBestWarning}`}
-            role="alert"
-          >
+          <p className="personal-best personal-best--warning" role="alert">
             This result could not be saved. Keep this tab open or enable browser
             storage.
           </p>
         ) : highScoreLabel ? (
-          <p className={styles.personalBest}>
+          <p className="personal-best">
             {isNewBest ? (
               <strong>{`New ${highScoreLabel} best!`}</strong>
             ) : (
@@ -288,9 +281,9 @@ export const ResultsScreen = ({
           </p>
         ) : null}
       </div>
-      <div className={styles.resultDetails}>
+      <div className="result-details">
         <dl
-          className={`${styles.resultsList} ${settings.timerDisplay === 'milliseconds' ? styles.resultsListPrecise : ''}`.trim()}
+          className={`results-list ${settings.timerDisplay === 'milliseconds' ? 'results-list--precise' : ''}`.trim()}
         >
           {resultStats.map(({ label, value, className }) => (
             <div className={className} key={label}>
@@ -306,13 +299,13 @@ export const ResultsScreen = ({
             completed={leagueVictory}
           />
         ) : result.questionCount <= 10 ? (
-          <ol className={styles.answerTrail} aria-label="Question results">
+          <ol className="answer-trail" aria-label="Question results">
             {result.answers.map((answer, index) => {
               const categoryLabel = getCategoryLabel(answer.category);
               const outcome = answer.correct ? 'correct' : 'incorrect';
               return (
                 <li
-                  className={answer.correct ? styles.answerTrailCorrect : ''}
+                  className={answer.correct ? 'answer-trail--correct' : ''}
                   key={`${answer.category}-${index}`}
                   title={`${categoryLabel}: ${outcome}`}
                 >
@@ -344,7 +337,7 @@ export const ResultsScreen = ({
       {trainingError ? <p role="alert">{trainingError}</p> : null}
       {!isLeague ? (
         <div
-          className={`${styles.resultsActions} ${nextLevel ? '' : styles.resultsActionsPaired}`.trim()}
+          className={`results__actions ${nextLevel ? '' : 'results__actions--paired'}`.trim()}
         >
           {!nextLevel ? (
             <GameButton onClick={isTraining ? onTrainAgain : onStartTraining}>
@@ -361,7 +354,7 @@ export const ResultsScreen = ({
           </ShareResultButton>
         </div>
       ) : (
-        <div className={styles.resultsActions}>
+        <div className="results__actions">
           <GameButton onClick={onRetryLeague}>
             {leagueVictory ? 'League rematch' : 'Retry League'}
           </GameButton>

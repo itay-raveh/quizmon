@@ -3,7 +3,6 @@ import { getTrainerStats } from '@/domain/player/progress';
 import { emptyResults } from '@/domain/player/results';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { TrainerCard } from './TrainerCard';
-import { trainerCardPartnerSpriteBehind } from './styles/classes.css.ts';
 
 const renderPartner = (partnerHeight: number, avatar: string) =>
   renderToStaticMarkup(
@@ -28,12 +27,12 @@ const renderPartner = (partnerHeight: number, avatar: string) =>
 
 test('places partners behind trainers when their visible height is within 15%', () => {
   expect(renderPartner(8, 'twins-gen2')).toContain(
-    trainerCardPartnerSpriteBehind,
+    'trainer-card__partner-sprite trainer-card__partner-sprite--behind',
   );
   expect(renderPartner(8, 'teamrocket')).not.toContain(
-    trainerCardPartnerSpriteBehind,
+    'trainer-card__partner-sprite--behind',
   );
   expect(renderPartner(16, 'teamrocket')).toContain(
-    trainerCardPartnerSpriteBehind,
+    'trainer-card__partner-sprite trainer-card__partner-sprite--behind',
   );
 });

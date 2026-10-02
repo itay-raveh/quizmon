@@ -1,4 +1,3 @@
-import * as styles from './styles/classes.css.ts';
 import { DialogCloseButton } from '@/components/DialogCloseButton';
 import type { TrainerBadge } from '@/domain/player/trainer-progression';
 import { useModalDialog } from '@/hooks/useModalDialog';
@@ -22,7 +21,7 @@ export const TrainerBadgeDialog = ({
     <dialog
       {...dialogProps}
       aria-labelledby="trainer-badge-title"
-      className={styles.trainerBadgeDialog}
+      className="trainer-badge-dialog"
     >
       <header>
         <h2 id="trainer-badge-title">{badge.label}</h2>
@@ -32,9 +31,9 @@ export const TrainerBadgeDialog = ({
           onClick={closeDialog}
         />
       </header>
-      <div className={styles.trainerBadgeDialogBody}>
+      <div className="trainer-badge-dialog__body">
         <TrainerBadgeMark tier={badge.tier} id={badge.id} />
-        <div className={styles.trainerBadgeDialogDetails}>
+        <div className="trainer-badge-dialog__details">
           <p>{badge.requirement}</p>
           <TrainerTierProgress progress={badge} />
         </div>

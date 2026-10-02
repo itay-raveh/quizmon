@@ -1,4 +1,3 @@
-import * as styles from './classes.css.ts';
 import { GameButton } from '@/components/GameButton';
 import { GearSixIcon } from '@/components/icons';
 
@@ -11,7 +10,7 @@ export const SettingsButton = ({ disabled, onClick }: SettingsButtonProps) => (
   <GameButton
     aria-label="Settings"
     title="Settings"
-    className={styles.settingsLink}
+    className="settings-link"
     disabled={disabled}
     onClick={onClick}
     tone="quiet"

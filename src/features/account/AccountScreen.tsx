@@ -1,4 +1,3 @@
-import * as styles from '../../styles/classes.css.ts';
 import {
   useEffect,
   useRef,
@@ -6,7 +5,7 @@ import {
   useSyncExternalStore,
   type SubmitEvent,
 } from 'react';
-import { useNavigate } from '@tanstack/react-router';
+import { useNavigate } from 'react-router';
 import { GameButton } from '../../components/GameButton';
 import { PlayerName } from '../../components/PlayerName';
 import { PencilSimpleIcon } from '../../components/icons';
@@ -42,14 +41,14 @@ const WelcomeTrainerDialog = ({
       {...dialogProps}
       aria-describedby="welcome-trainer-description"
       aria-labelledby="welcome-trainer-title"
-      className={styles.confirmDialog}
+      className="confirm-dialog"
     >
-      <div className={styles.confirmDialogBody}>
+      <div className="confirm-dialog__body">
         <h2 id="welcome-trainer-title">Welcome, Trainer!</h2>
         <p id="welcome-trainer-description">
           Other players can see your Trainer Card. Give it a name.
         </p>
-        <div className={styles.confirmDialogActions}>
+        <div className="confirm-dialog__actions">
           <GameButton
             autoFocus
             onClick={() => {
@@ -109,7 +108,7 @@ export function AccountScreen({
     if (!account.owner || welcomeFor !== account.owner) return;
     removeStoredValue('sessionStorage', accountWelcomeKey);
     if (hasTrainerName) {
-      void navigate({ href: returnPath, replace: true });
+      void navigate(returnPath, { replace: true });
     }
   }, [account.owner, hasTrainerName, navigate, returnPath, welcomeFor]);
   const closeNameEditor = () => {
@@ -134,11 +133,11 @@ export function AccountScreen({
   return (
     <>
       <section
-        className={`game-panel ${styles.accountScreen}`}
+        className="game-panel account-screen"
         aria-labelledby="account-title"
       >
         <header className="game-panel__header">
-          <div className={styles.accountScreenNameRow}>
+          <div className="account-screen__name-row">
             <h1
               className="game-panel__title"
               id="account-title"
@@ -178,7 +177,7 @@ export function AccountScreen({
           </div>
           {editingName && !signingIn && !account.mergeRequired && (
             <form
-              className={styles.accountScreenNameForm}
+              className="account-screen__name-form"
               onKeyDown={(event) => {
                 if (event.key === 'Escape' && !savingName) {
                   event.preventDefault();
@@ -199,7 +198,7 @@ export function AccountScreen({
                 type="text"
                 value={nameDraft}
               />
-              <div className={styles.accountScreenNameActions}>
+              <div className="account-screen__name-actions">
                 <GameButton disabled={savingName} type="submit">
                   Save
                 </GameButton>
@@ -224,15 +223,15 @@ export function AccountScreen({
         {signingIn || account.mergeRequired ? (
           <AccountSettings />
         ) : (
-          <div className={styles.accountScreenSections}>
+          <div className="account-screen__sections">
             <details
-              className={styles.accountScreenSection}
+              className="account-screen__section"
               open={Boolean(account.error)}
             >
               <summary>
                 Settings, backup & sign out
                 {(account.error || account.offline) && (
-                  <small className={styles.accountScreenSyncStatus}>
+                  <small className="account-screen__sync-status">
                     {account.error
                       ? 'Sync needs attention'
                       : 'Waiting for connection'}
@@ -241,7 +240,7 @@ export function AccountScreen({
               </summary>
               <AccountSettings />
             </details>
-            <details className={styles.accountScreenSection} open>
+            <details className="account-screen__section" open>
               <summary>Friends</summary>
               <FriendsPanel
                 key={`${account.owner}:${friendId}`}
@@ -249,7 +248,7 @@ export function AccountScreen({
                 initialInput={friendId}
                 adding={Boolean(friendId)}
                 onToggleAdding={() =>
-                  void navigate({ to: '/account', replace: true })
+                  void navigate('/account', { replace: true })
                 }
                 onViewPlayer={onViewPlayer}
               />
@@ -261,7 +260,9 @@ export function AccountScreen({
         <WelcomeTrainerDialog
           onEditCard={onEditCard}
           onContinue={() => {
-            void navigate({ href: returnPath, replace: true });
+            void navigate(returnPath, {
+              replace: true,
+            });
           }}
         />
       ) : null}

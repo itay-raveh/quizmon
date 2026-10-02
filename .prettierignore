@@ -4,5 +4,4 @@ dist
 node_modules
 playwright-report
 test-results
-src/routeTree.gen.ts
 charts/quizmon/templates/*.yaml

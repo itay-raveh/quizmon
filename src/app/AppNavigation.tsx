@@ -1,6 +1,5 @@
-import * as styles from './classes.css.ts';
 import { useSyncExternalStore } from 'react';
-import { Link, useLocation } from '@tanstack/react-router';
+import { Link, useLocation } from 'react-router';
 import { GameButton } from '../components/GameButton';
 import { useInteractionSound } from '../lib/audio/sound-context';
 import {
@@ -27,7 +26,7 @@ export function AppNavigation({
   loading = false,
   onNavigate,
   onSettings,
-  rankingsDate,
+  rankingsPath = '/rankings',
   showNavigation = true,
   trainerAvailable,
 }: {
@@ -36,24 +35,23 @@ export function AppNavigation({
   loading?: boolean;
   onNavigate: (destination: MainDestination) => void;
   onSettings: () => void;
-  rankingsDate?: string;
+  rankingsPath?: string;
   showNavigation?: boolean;
   trainerAvailable: boolean;
 }) {
   const account = useSyncExternalStore(subscribeAccount, accountSnapshot);
   const location = useLocation();
   const playSound = useInteractionSound();
-  const paths = {
-    play: '/',
-    trainer: '/trainer',
-    rankings: '/rankings',
-  } as const;
-  const accountOrigin = `${location.pathname}${location.searchStr}${location.hash}`;
+  const paths = { play: '/', trainer: '/trainer', rankings: rankingsPath };
+  const accountPath =
+    accountOpen && location.pathname === '/account'
+      ? `${location.pathname}${location.search}${location.hash}`
+      : `/account?returnTo=${encodeURIComponent(`${location.pathname}${location.search}${location.hash}`)}`;
   return (
-    <header className={styles.appHeader}>
+    <header className="app-header">
       <SettingsButton disabled={!trainerAvailable} onClick={onSettings} />
       {showNavigation ? (
-        <nav className={styles.appNavigation} aria-label="Main" inert={loading}>
+        <nav className="app-navigation" aria-label="Main" inert={loading}>
           {destinations.map(([destination, label, Icon]) =>
             destination === 'trainer' && !trainerAvailable ? (
               <GameButton key={destination} disabled tone="quiet">
@@ -64,11 +62,6 @@ export function AppNavigation({
               <Link
                 key={destination}
                 to={paths[destination]}
-                search={
-                  destination === 'rankings' && rankingsDate
-                    ? { date: rankingsDate }
-                    : {}
-                }
                 aria-current={active === destination ? 'page' : undefined}
                 className={`game-button game-button--${active === destination ? 'primary' : 'quiet'}`}
                 onClick={(event) => {
@@ -80,8 +73,8 @@ export function AppNavigation({
                   )
                     return;
                   if (
-                    `${paths[destination]}${destination === 'rankings' && rankingsDate ? `?date=${rankingsDate}` : ''}` ===
-                    `${location.pathname}${location.searchStr}`
+                    paths[destination] ===
+                    `${location.pathname}${location.search}`
                   ) {
                     event.preventDefault();
                     if (destination === 'play') onNavigate(destination);
@@ -97,20 +90,14 @@ export function AppNavigation({
             ),
           )}
           <Link
-            to="/account"
-            search={{
-              returnTo:
-                accountOpen && location.pathname === '/account'
-                  ? undefined
-                  : accountOrigin,
-            }}
+            to={accountPath}
             aria-label={
               account.owner && account.error
                 ? 'Account, sync needs attention'
                 : undefined
             }
             aria-current={accountOpen ? 'page' : undefined}
-            className={`game-button game-button--${accountOpen ? 'primary' : 'quiet'} ${styles.appNavigationAccount}`}
+            className={`game-button game-button--${accountOpen ? 'primary' : 'quiet'} app-navigation__account`}
             onClick={(event) => {
               if (
                 event.metaKey ||
@@ -127,7 +114,7 @@ export function AppNavigation({
             <UserCircleIcon aria-hidden="true" weight="bold" />
             {account.owner ? 'Account' : 'Sign in'}
             {account.owner && account.error ? (
-              <span className={styles.appNavigationAlert} aria-hidden="true">
+              <span className="app-navigation__alert" aria-hidden="true">
                 !
               </span>
             ) : null}

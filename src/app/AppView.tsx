@@ -1,4 +1,3 @@
-import * as styles from './classes.css.ts';
 import {
   getTrainerBadges,
   trainerViewLabels,
@@ -34,7 +33,7 @@ import { PublicTrainerScreen } from '../features/friends/PublicTrainerScreen';
 import { AppNavigation } from './AppNavigation';
 import { useAppDestination } from './useAppDestination';
 import { useLayoutEffect, useRef } from 'react';
-import { Navigate } from '@tanstack/react-router';
+import { Navigate, NavigationType, useNavigationType } from 'react-router';
 import { site } from './site';
 import { GameButton } from '../components/GameButton';
 type CatalogState = ReturnType<typeof usePokemonCatalog>;
@@ -47,7 +46,7 @@ const CatalogRouteState = ({
   status: 'loading' | 'error';
   onRetry: () => void;
 }) => (
-  <section className={styles.catalogRouteState}>
+  <section className="catalog-route-state">
     <h1>{title}</h1>
     {status === 'loading' ? (
       <p role="status">Loading Pokémon data…</p>
@@ -116,7 +115,7 @@ const AppScreen = ({
     return (
       <>
         <div
-          className={styles.destinationRoute}
+          className="destination-route"
           hidden={Boolean(destination.playerId)}
         >
           <AccountScreen
@@ -149,7 +148,7 @@ const AppScreen = ({
     return (
       <>
         <div
-          className={styles.destinationRoute}
+          className="destination-route"
           hidden={Boolean(destination.playerId)}
         >
           <LeaderboardScreen
@@ -361,6 +360,7 @@ const AppOverlays = ({
 );
 export const AppView = (props: AppViewProps) => {
   const destination = useAppDestination();
+  const navigationType = useNavigationType();
   const main = useRef<HTMLElement>(null);
   const profileTrigger = useRef<HTMLElement | null>(null);
   const sourceScroll = useRef(0);
@@ -425,7 +425,13 @@ export const AppView = (props: AppViewProps) => {
       heading.tabIndex = -1;
       heading.focus({ preventScroll: true });
     }
-  }, [props.catalogState.status, props.trainer.view, screenKey]);
+    if (navigationType !== NavigationType.Pop) window.scrollTo(0, 0);
+  }, [
+    navigationType,
+    props.catalogState.status,
+    props.trainer.view,
+    screenKey,
+  ]);
   const onViewPlayer = (id: string) => {
     profileTrigger.current = document.activeElement as HTMLElement;
     destination.viewPlayer(id);
@@ -453,7 +459,7 @@ export const AppView = (props: AppViewProps) => {
         <InstallProvider>
           <DailyReminderProvider>
             <div
-              className={`app app--${props.trainer.isOpen && showNavigation ? 'trainer' : props.session.phase}${showNavigation ? ` ${styles.appWithNavigation}` : ''}${destination.destination && showNavigation ? ` ${styles.appDestination}` : ''}`}
+              className={`app app--${props.trainer.isOpen && showNavigation ? 'trainer' : props.session.phase}${showNavigation ? ' app--with-navigation' : ''}${destination.destination && showNavigation ? ' app--destination' : ''}`}
             >
               <div className="background" aria-hidden="true" />
               <div className="app__screen">
@@ -465,10 +471,10 @@ export const AppView = (props: AppViewProps) => {
                       destination.destination === 'friends'
                     }
                     onSettings={props.settingsDialog.open}
-                    rankingsDate={
+                    rankingsPath={
                       props.session.phase === 'results' &&
                       props.session.mode.kind === 'daily'
-                        ? props.session.mode.date
+                        ? `/rankings?date=${props.session.mode.date}`
                         : undefined
                     }
                     trainerAvailable={props.catalogState.status === 'ready'}

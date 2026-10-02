@@ -1,6 +1,6 @@
 import type { LeagueView } from '@/domain/quiz/league';
 import { useUpdateState } from '@/lib/storage/update-reload-state';
-import { useNavigate, useLocation } from '@tanstack/react-router';
+import { useNavigate, useLocation } from 'react-router';
 
 export const useLeagueDestination = () => {
   const location = useLocation();
@@ -14,11 +14,14 @@ export const useLeagueDestination = () => {
   const [showResults, setShowResults] = useUpdateState('league-results', false);
 
   const open = (next: LeagueView) => {
-    void navigate({ to: '/league', state: { view: next }, replace: isOpen });
+    void navigate('/league', {
+      state: { view: next },
+      replace: isOpen,
+    });
   };
 
   const close = () => {
-    void navigate({ to: '/', replace: true });
+    void navigate('/', { replace: true });
     setShowResults(false);
   };
 

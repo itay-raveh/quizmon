@@ -1,4 +1,3 @@
-import * as styles from '../../styles/classes.css.ts';
 import { SelectionTile } from './SelectionTile';
 import {
   answerFlowDelays,
@@ -38,15 +37,15 @@ export const ExperienceSettings = ({
   const installForReminders = useDailyReminder().status === 'install-required';
 
   return (
-    <div className={styles.experienceSettings}>
-      <fieldset className={styles.experienceSetting}>
+    <div className="experience-settings">
+      <fieldset className="experience-setting">
         <legend>Daily Challenge reminder</legend>
         <DailyReminderSetting />
       </fieldset>
       {installForReminders && <InstallSetting />}
-      <fieldset className={styles.experienceSetting}>
+      <fieldset className="experience-setting">
         <legend>Answer flow</legend>
-        <div className={`${styles.experienceOptions} experience-options--flow`}>
+        <div className="experience-options experience-options--flow">
           {answerFlows.map((value) => (
             <SelectionTile
               checked={draft.answerFlow === value}
@@ -69,9 +68,9 @@ export const ExperienceSettings = ({
         </div>
       </fieldset>
 
-      <fieldset className={styles.experienceSetting}>
+      <fieldset className="experience-setting">
         <legend>Sound</legend>
-        <label className={styles.volumeControl}>
+        <label className="volume-control">
           <span>Sound effects</span>
           <output>{volumePercent}%</output>
           <input
@@ -90,11 +89,9 @@ export const ExperienceSettings = ({
         </label>
       </fieldset>
 
-      <fieldset className={styles.experienceSetting}>
+      <fieldset className="experience-setting">
         <legend>Timer</legend>
-        <div
-          className={`${styles.experienceOptions} ${styles.experienceOptionsTimer}`}
-        >
+        <div className="experience-options experience-options--timer">
           {timerDisplays.map((value) => (
             <SelectionTile
               checked={draft.timerDisplay === value}

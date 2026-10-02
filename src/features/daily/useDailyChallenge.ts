@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useMatchRoute, useSearch } from '@tanstack/react-router';
+import { useLocation } from 'react-router';
 import type { StartGame } from '../../app/game-session';
 import { getDailyStreak } from '../../domain/player/progress';
 import {
@@ -7,7 +7,11 @@ import {
   generations,
   type PokemonCatalog,
 } from '../../domain/pokemon/types';
-import { getUtcDate } from '../../domain/quiz/daily';
+import {
+  getUtcDate,
+  parseDailyDate,
+  shouldAutoStartDaily,
+} from '../../domain/quiz/daily';
 import {
   buildDailyQuestions,
   resolveTrainingSettings,
@@ -31,13 +35,13 @@ export const useDailyChallenge = ({
   refreshSavedData,
   startGame,
 }: DailyChallengeOptions) => {
-  const matchRoute = useMatchRoute();
-  const dailyMatch = matchRoute({ to: '/daily/$date' });
-  const search = useSearch({ strict: false });
-  const route = {
-    autoStart: Boolean(dailyMatch && 'play' in search && search.play === '1'),
-    date: dailyMatch ? dailyMatch.date : null,
-  };
+  const location = useLocation();
+  const route = useMemo(() => {
+    return {
+      autoStart: shouldAutoStartDaily(location.pathname, location.search),
+      date: parseDailyDate(location.pathname),
+    };
+  }, [location.pathname, location.search]);
   const [today, setToday] = useState(getUtcDate);
   const date = route.date ?? today;
   const [error, setError] = useState('');

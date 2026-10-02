@@ -1,4 +1,3 @@
-import * as styles from './styles/classes.css.ts';
 import { PokemonIdentity } from '@/components/PokemonIdentity';
 import { TypeBadges } from '@/components/TypeBadge';
 import {
@@ -25,12 +24,12 @@ export const QuestionSprite = ({
   if (rule === null) return null;
   const { visible, silhouette } = spriteState(rule, state);
   const className =
-    `${props.className ?? ''} ${silhouette ? styles.answerSpriteSilhouette : ''}`.trim();
+    `${props.className ?? ''} ${silhouette ? 'answer__sprite--silhouette' : ''}`.trim();
   return (
     <img
       src={props.src}
       alt={props.alt ?? ''}
-      className={`${styles.pixelSprite} ${className}`.trim()}
+      className={`pixel-sprite ${className}`.trim()}
       style={{ ...props.style, visibility: visible ? undefined : 'hidden' }}
       decoding="async"
       fetchPriority={props.fetchPriority ?? 'auto'}

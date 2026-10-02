@@ -1,4 +1,3 @@
-import * as styles from './styles/classes.css.ts';
 interface SpriteProps {
   silhouette: boolean;
   src: string | null;
@@ -6,7 +5,9 @@ interface SpriteProps {
 
 export const Sprite = ({ silhouette, src }: SpriteProps) => {
   if (!src) {
-    return <p>No image is available for this Pokémon.</p>;
+    return (
+      <p className="sprite-error">No image is available for this Pokémon.</p>
+    );
   }
 
   const isSmoothArtwork =
@@ -15,16 +16,16 @@ export const Sprite = ({ silhouette, src }: SpriteProps) => {
     /\/versions\/generation-(?:i|ii)\//.test(src) &&
     !src.includes('/transparent/');
   const className = [
-    styles.sprite,
-    silhouette ? styles.spriteSilhouette : '',
-    isSmoothArtwork ? styles.spriteSmooth : '',
-    hasOpaqueCanvas ? styles.spriteOpaqueCanvas : '',
+    'sprite',
+    silhouette ? 'sprite--silhouette' : '',
+    isSmoothArtwork ? 'sprite--smooth' : '',
+    hasOpaqueCanvas ? 'sprite--opaque-canvas' : '',
   ]
     .filter(Boolean)
     .join(' ');
 
   return (
-    <div className={styles.spriteFrame}>
+    <div className="sprite-frame">
       <img
         className={className}
         src={src}

@@ -1,4 +1,3 @@
-import * as styles from './styles/classes.css.ts';
 import { TypeBadges } from '@/components/TypeBadge';
 import { CheckIcon, MinusIcon, XIcon } from '@/components/icons';
 import { formatPokemonName } from '@/domain/pokemon/format';
@@ -49,7 +48,7 @@ export const TypeAnswerPicker = ({
     );
     return (
       <div
-        className={styles.typePickerResults}
+        className="type-picker__results"
         role="list"
         aria-label="Type answers"
       >
@@ -68,7 +67,7 @@ export const TypeAnswerPicker = ({
                 : 'Correct';
           return (
             <div
-              className={`${styles.typePickerResult} ${outcome === 'correct' ? styles.typePickerResultCorrect : outcome === 'wrong' ? styles.typePickerResultWrong : outcome === 'missed' ? styles.typePickerResultMissed : ''}`.trim()}
+              className={`type-picker__result type-picker__result--${outcome}`}
               role="listitem"
               key={type}
             >
@@ -97,15 +96,15 @@ export const TypeAnswerPicker = ({
     );
   }
   return (
-    <div className={`${styles.typePicker} ${styles.championSearch}`}>
+    <div className="type-picker champion-search">
       <label htmlFor={`${id}-input`}>
         {multiSelect ? 'Your types' : 'Your type'}
       </label>
       <SearchCombobox
         id={id}
         inputRef={input}
-        className={styles.typePickerField}
-        emptyClassName={styles.championSearchEmpty}
+        className="type-picker__field"
+        emptyClassName="champion-search__empty"
         query={query}
         onQueryChange={setQuery}
         suggestions={suggestions}
@@ -131,14 +130,14 @@ export const TypeAnswerPicker = ({
       />
       {multiSelect ? (
         <div
-          className={styles.typePickerSelected}
+          className="type-picker__selected"
           role="group"
           aria-label="Selected types"
         >
           {selectedOptions.map((type) => (
             <button
               type="button"
-              className={styles.typePickerRemove}
+              className="type-picker__remove"
               key={type}
               aria-label={`Remove ${formatPokemonName(type)}`}
               onClick={() => {

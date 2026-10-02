@@ -1,4 +1,3 @@
-import * as styles from './classes.css.ts';
 import { useMemo, useRef, useState } from 'react';
 import { DialogCloseButton } from '../../components/DialogCloseButton';
 import { GameButton } from '../../components/GameButton';
@@ -106,10 +105,10 @@ export const SettingsDialog = ({
   return (
     <dialog
       {...dialogProps}
-      className={styles.settingsDialog}
+      className="settings-dialog"
       aria-labelledby="settings-title"
     >
-      <header className={styles.settingsDialogHeader}>
+      <header className="settings-dialog__header">
         <h2 id="settings-title" ref={dialogTitle} tabIndex={-1}>
           {section === 'training' ? 'Customize training' : 'Settings'}
         </h2>
@@ -124,13 +123,13 @@ export const SettingsDialog = ({
       </header>
 
       <form
-        className={styles.settingsForm}
+        className="settings-form"
         onSubmit={(event) => {
           event.preventDefault();
           void submit();
         }}
       >
-        <div className={styles.settingsFormBody} inert={saving}>
+        <div className="settings-form__body" inert={saving}>
           {validation ? (
             <>
               <TrainingSettings
@@ -149,7 +148,7 @@ export const SettingsDialog = ({
               <ExperienceSettings draft={draft} onChange={setDraft} />
               {!selectedAccount() && (
                 <details
-                  className={styles.settingsBackup}
+                  className="settings-backup"
                   onToggle={(event) => setBackupOpen(event.currentTarget.open)}
                 >
                   <summary>Backup &amp; restore</summary>
@@ -160,7 +159,7 @@ export const SettingsDialog = ({
           )}
         </div>
 
-        <div className={styles.settingsFormActions}>
+        <div className="settings-form__actions">
           <GameButton tone="quiet" onClick={closeDialog}>
             Cancel
           </GameButton>

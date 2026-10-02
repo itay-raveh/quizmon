@@ -1,4 +1,3 @@
-import * as styles from './styles/classes.css.ts';
 import {
   isVisible,
   spriteState,
@@ -37,7 +36,7 @@ export const QuestionSubject = ({
     !(types?.length && isVisible(policy.types, state)) &&
     !(src && spriteState(policy.sprite, state).visible);
   return (
-    <div className={styles.questionVisualSubject}>
+    <div className="question-visual__subject">
       <PokemonRenderable
         policy={policy}
         state={state}
@@ -46,20 +45,18 @@ export const QuestionSubject = ({
         src={src}
         types={types}
         spriteSlotClassName={
-          framed
-            ? styles.questionVisualPokemonSlot
-            : styles.questionVisualPortrait
+          framed ? 'question-visual__pokemon-slot' : 'question-visual__portrait'
         }
-        spriteClassName={styles.questionVisualPokemon}
+        spriteClassName="question-visual__pokemon"
         spriteFallback={
           concealed && concealment === 'question-mark' ? (
-            <span className={styles.questionVisualQuestionMark}>?</span>
+            <span className="question-visual__question-mark">?</span>
           ) : undefined
         }
         reserveSpriteSlot={reservePortrait}
-        identityClassName={styles.questionVisualSubjectName}
-        numberClassName={styles.questionVisualSubjectNumber}
-        typesClassName={styles.questionVisualSubjectTypes}
+        identityClassName="question-visual__subject-name"
+        numberClassName="question-visual__subject-number"
+        typesClassName="question-visual__subject-types"
       />
       {children}
     </div>

@@ -1,4 +1,3 @@
-import * as styles from './classes.css.ts';
 import {
   formatPokedexNumber,
   formatPokemonName,
@@ -37,7 +36,7 @@ export const PokemonIdentity = ({
       <small
         aria-hidden={hideNumberFromAccessibility || concealNumber || undefined}
         style={{ visibility: concealNumber ? 'hidden' : undefined }}
-        className={`${styles.pokemonIdentityNumber} ${numberClassName}`.trim()}
+        className={`pokemon-identity__number ${numberClassName}`.trim()}
       >
         {inline
           ? `(${formatPokedexNumber(dexNumber)})`
@@ -46,7 +45,7 @@ export const PokemonIdentity = ({
     );
   return (
     <span
-      className={`${styles.pokemonIdentity} ${className}`.trim()}
+      className={`pokemon-identity ${className}`.trim()}
       aria-hidden={!revealed || undefined}
       style={{ visibility: revealed ? undefined : 'hidden' }}
     >
@@ -54,7 +53,7 @@ export const PokemonIdentity = ({
       <span
         style={{ visibility: concealName ? 'hidden' : undefined }}
         aria-hidden={concealName || undefined}
-        className={`${styles.pokemonIdentityName} ${nameClassName}`.trim()}
+        className={`pokemon-identity__name ${nameClassName}`.trim()}
       >
         {formatPokemonName(name)}
       </span>

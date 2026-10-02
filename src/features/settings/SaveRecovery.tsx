@@ -1,4 +1,3 @@
-import * as styles from '../../components/classes.css.ts';
 import {
   canRecoverAccountSave,
   canRecoverGuestSave,
@@ -118,7 +117,7 @@ const SaveRecoveryDialog = ({
     <dialog
       {...dialogProps}
       onCancel={(event) => event.preventDefault()}
-      className={styles.saveRecovery}
+      className="save-recovery"
       aria-labelledby="save-recovery-title"
       aria-describedby="save-recovery-message"
     >
@@ -138,7 +137,7 @@ const SaveRecoveryDialog = ({
           Recovery may not be possible.
         </p>
       )}
-      <div className={styles.saveRecoveryActions}>
+      <div className="save-recovery__actions">
         {issue.kind !== 'unavailable' && (
           <GameButton
             disabled={busy}
@@ -183,11 +182,15 @@ const SaveRecoveryDialog = ({
         }}
       />
       {notice && <p role="status">{notice}</p>}
-      {error && <p role="alert">{error}</p>}
+      {error && (
+        <p className="settings-error" role="alert">
+          {error}
+        </p>
+      )}
       {needsSignIn && <AccountSettings recoverySignIn />}
       {preview && (
         <section
-          className={styles.saveRecoveryConfirmation}
+          className="save-recovery__confirmation"
           aria-label="Restore preview"
         >
           <h2>Restore this backup?</h2>
@@ -199,7 +202,7 @@ const SaveRecoveryDialog = ({
               ? 'This merges missing account rounds and device data.'
               : 'This merges completed rounds and device data, and applies the backup profile and settings.'}
           </p>
-          <div className={styles.saveRecoveryActions}>
+          <div className="save-recovery__actions">
             <GameButton
               onClick={() =>
                 void act(async () => {
@@ -220,7 +223,7 @@ const SaveRecoveryDialog = ({
         issue.kind !== 'newer' &&
         canRecoverGuestSave() &&
         !preview && (
-          <section className={styles.saveRecoveryConfirmation}>
+          <section className="save-recovery__confirmation">
             {confirmReset ? (
               <>
                 <h2>Delete saved progress and start fresh?</h2>
@@ -229,7 +232,7 @@ const SaveRecoveryDialog = ({
                   rounds on this device. Download your saved data first if you
                   want to keep a copy.
                 </p>
-                <div className={styles.saveRecoveryActions}>
+                <div className="save-recovery__actions">
                   <GameButton
                     tone="quiet"
                     onClick={() => setConfirmReset(false)}

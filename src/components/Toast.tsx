@@ -1,4 +1,3 @@
-import * as styles from './classes.css.ts';
 import { useEffect, useRef, useState } from 'react';
 import { CheckIcon, XIcon } from './icons';
 import { SoundButton } from './SoundButton';
@@ -28,7 +27,7 @@ export const Toast = ({
 
   return (
     <div
-      className={styles.toast}
+      className="toast"
       popover="manual"
       ref={popup}
       onPointerDown={(event) => event.stopPropagation()}
@@ -37,13 +36,13 @@ export const Toast = ({
       onFocusCapture={() => setFocused(true)}
       onBlurCapture={() => setFocused(false)}
     >
-      <span className={styles.toastMessage} role="status">
+      <span className="toast__message" role="status">
         <CheckIcon aria-hidden="true" weight="bold" />
         <span>{message}</span>
       </span>
       <SoundButton
         aria-label="Dismiss notification"
-        className={styles.toastDismiss}
+        className="toast__dismiss"
         onClick={onDismiss}
       >
         <XIcon aria-hidden="true" weight="bold" />

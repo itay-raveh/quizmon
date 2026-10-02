@@ -1,4 +1,3 @@
-import * as styles from './classes.css.ts';
 import { XIcon } from './icons';
 import { SoundButton } from './SoundButton';
 
@@ -16,7 +15,7 @@ export const DialogCloseButton = ({
   <SoundButton
     aria-label={label}
     autoFocus={autoFocus}
-    className={styles.dialogClose}
+    className="dialog-close"
     onClick={onClick}
   >
     <XIcon aria-hidden="true" weight="bold" />

@@ -1,4 +1,3 @@
-import * as styles from './styles/classes.css.ts';
 import { DialogCloseButton } from '@/components/DialogCloseButton';
 import { GameButton } from '@/components/GameButton';
 import type { TrainerTitle } from '@/domain/player/trainer-progression';
@@ -32,7 +31,7 @@ export const TrainerTitleDialog = ({
     <dialog
       {...dialogProps}
       aria-labelledby="trainer-title-dialog-heading"
-      className={styles.trainerTitleDialog}
+      className="trainer-title-dialog"
     >
       <header>
         <h2 id="trainer-title-dialog-heading">{title.label}</h2>
@@ -42,9 +41,9 @@ export const TrainerTitleDialog = ({
           onClick={closeDialog}
         />
       </header>
-      <div className={styles.trainerTitleDialogBody}>
+      <div className="trainer-title-dialog__body">
         <TrainerTitleMark tier={title.tier} specialty={title.specialty} />
-        <div className={styles.trainerTitleDialogDetails}>
+        <div className="trainer-title-dialog__details">
           <p>{title.description}</p>
           <TrainerTierProgress progress={title} />
           {onEquip && onUnequip && (title.equipped || title.earned) ? (

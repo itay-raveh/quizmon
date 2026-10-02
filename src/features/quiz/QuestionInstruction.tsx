@@ -1,4 +1,3 @@
-import * as styles from './styles/classes.css.ts';
 import { formatTypeMultiplier } from '@/domain/pokemon/format';
 import { PokemonIdentity } from '@/components/PokemonIdentity';
 import type { QuestionData } from '@/domain/quiz/types';
@@ -29,9 +28,7 @@ export const QuestionInstruction = ({
       <>
         {subjectInstruction}
         {supportingText ? (
-          <span className={styles.questionSupportingText}>
-            {supportingText}
-          </span>
+          <span className="question__supporting-text">{supportingText}</span>
         ) : null}
       </>
     );
@@ -71,7 +68,7 @@ export const QuestionInstruction = ({
       <>
         {prompt.text}
         {prompt.supportingText ? (
-          <span className={styles.questionSupportingText}>
+          <span className="question__supporting-text">
             {prompt.supportingText}
           </span>
         ) : null}
@@ -86,7 +83,7 @@ export const QuestionInstruction = ({
         inline
         name={prompt.name}
         dexNumber={prompt.dexNumber}
-        numberClassName={styles.questionSubjectNumber}
+        numberClassName="question__subject-number"
       />
       {prompt.after}
     </>

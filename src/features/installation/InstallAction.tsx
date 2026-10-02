@@ -1,4 +1,3 @@
-import * as styles from '../../styles/classes.css.ts';
 import { GameButton } from '@/components/GameButton';
 import { XIcon } from '@/components/icons';
 import { SoundButton } from '@/components/SoundButton';
@@ -18,8 +17,8 @@ export const InstallAction = ({
   if (status === 'installed' || (status === 'unavailable' && !error))
     return null;
   return (
-    <div className={styles.installAction}>
-      <div className={styles.installActionButtons}>
+    <div className="install-action">
+      <div className="install-action__buttons">
         {status === 'native' ? (
           <GameButton
             tone={tone}
@@ -39,7 +38,7 @@ export const InstallAction = ({
         ) : null}
         {onDismiss ? (
           <SoundButton
-            className={styles.installDismiss}
+            className="install-dismiss"
             aria-label="Dismiss install offer"
             onClick={onDismiss}
           >
@@ -51,10 +50,7 @@ export const InstallAction = ({
         <InstallDialog guide={guide} onClose={() => setExpanded(false)} />
       ) : null}
       {error ? (
-        <p
-          className={`${styles.experienceStatus} ${styles.experienceStatusError}`}
-          role="alert"
-        >
+        <p className="experience-status experience-status--error" role="alert">
           {error}
         </p>
       ) : null}

@@ -1,0 +1,461 @@
+.results {
+  --results-padding: 1rem;
+  container-type: inline-size;
+  padding: 0.75rem var(--results-padding) 0.875rem;
+  text-align: center;
+}
+
+.results__header {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  align-items: start;
+  gap: 0.625rem;
+  margin-bottom: 0.75rem;
+}
+
+.results .results__header h1 {
+  margin: 0;
+  font-size: 1.35rem;
+  outline: none;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.results__close.game-button {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.results__heading {
+  min-width: 0;
+}
+
+.results__header--with-combo {
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+}
+
+.results__subtitle,
+.results__date {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+  font-size: var(--text-status);
+  line-height: 1.35;
+  text-align: left;
+}
+
+.results__subtitle {
+  font-weight: 700;
+}
+
+.results__combo {
+  align-self: center;
+}
+
+.results__settings {
+  margin: 0;
+  color: var(--navy);
+  font-size: var(--text-status);
+}
+
+.results__settings summary {
+  display: flex;
+  width: fit-content;
+  min-height: 32px;
+  align-items: center;
+  gap: 0.4rem;
+  text-align: left;
+  cursor: pointer;
+  list-style: none;
+}
+
+.results__settings summary::-webkit-details-marker {
+  display: none;
+}
+
+.results__settings summary:hover {
+  color: var(--blue);
+}
+
+.results__settings summary:focus-visible {
+  outline: 2px solid var(--navy);
+  outline-offset: 2px;
+}
+
+.results__settings summary svg {
+  flex-shrink: 0;
+}
+
+.results__settings[open] summary svg {
+  transform: rotate(180deg);
+}
+
+.results__settings dl {
+  display: grid;
+  gap: 0.5rem;
+  max-width: 28rem;
+  margin: 0.5rem 0 0.75rem;
+  text-align: left;
+}
+
+.results__settings dl > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.125rem;
+}
+
+.results__settings dt {
+  font-weight: 700;
+}
+
+.results__settings dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.result-score,
+.result-details {
+  margin-inline: calc(-1 * var(--results-padding));
+  padding-inline: var(--results-padding);
+  background: var(--cream);
+}
+
+.result-score {
+  padding-block: 8px 6px;
+  border-top: 2px solid var(--navy);
+}
+
+.result-score__perfect {
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem var(--results-padding);
+  margin: -8px calc(-1 * var(--results-padding)) 0.65rem;
+  color: var(--metal-gold-light);
+  background: var(--navy);
+  border-bottom: 3px solid var(--metal-gold);
+}
+
+.result-score__perfect strong {
+  font-size: var(--text-headline);
+  line-height: 1.1;
+}
+
+.result-score__perfect::after {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 25%;
+  background: rgba(255, 255, 255, 0.16);
+  content: '';
+  pointer-events: none;
+  animation: perfect-sweep 700ms ease-out both;
+}
+
+@keyframes perfect-sweep {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(500%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .result-score__perfect::after {
+    animation: none;
+    display: none;
+  }
+}
+
+.result-details {
+  padding-block: 6px 10px;
+  border-bottom: 2px solid var(--navy);
+  margin-bottom: 12px;
+}
+
+.score {
+  display: grid;
+  color: var(--navy);
+}
+
+.score > span {
+  font-size: var(--text-micro);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.score strong {
+  min-width: 0;
+  font: 800 clamp(2rem, 10vw, 2.35rem) / 1.05 var(--font-data);
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+
+.personal-best {
+  margin: 2px 0 0;
+  color: var(--navy);
+  font-size: var(--text-label);
+  font-weight: 700;
+}
+
+.score--multiplied {
+  container-type: inline-size;
+}
+
+.score.score--multiplied strong {
+  font-size: min(2.35rem, calc(130cqw / var(--score-digits)));
+  white-space: nowrap;
+}
+
+.score-factors {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.25rem;
+  margin: 0.75rem 0;
+  padding: 0;
+  list-style: none;
+  color: var(--navy);
+}
+
+.score-factors li {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  gap: 0.125rem;
+  padding: 0.2rem 0;
+  transition:
+    color 150ms,
+    transform 150ms;
+}
+
+.score-factors span {
+  font-size: clamp(0.65rem, 3cqw, var(--text-label));
+  overflow-wrap: anywhere;
+}
+
+.score-factors strong {
+  font: 800 1rem / 1.2 var(--font-data);
+}
+
+.score-factors .score-factors__active {
+  color: var(--navy);
+  background: var(--yellow);
+  transform: scale(1.08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .score-factors li {
+    transition: none;
+    transform: none;
+  }
+}
+
+.personal-best--warning {
+  color: var(--error-ink);
+}
+
+.results-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 4.5rem), 1fr));
+  gap: 6px;
+  margin: 0 0 8px;
+}
+
+.results-list > div {
+  min-width: 0;
+}
+
+.results-list dt {
+  color: var(--muted);
+  font-size: var(--text-micro);
+  font-weight: 800;
+}
+
+.results-list dd {
+  margin: 0;
+  color: var(--navy);
+  font: 800 0.85rem / 1.35 var(--font-data);
+  overflow-wrap: anywhere;
+}
+
+.results-list__time dd {
+  white-space: nowrap;
+}
+
+.results-list--precise {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 7rem), 1fr));
+}
+
+.result-details > .league-progress {
+  margin: 1rem auto 0;
+}
+
+.answer-trail {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.answer-trail li {
+  display: grid;
+  flex: 0 0 25px;
+  aspect-ratio: 1;
+  color: white;
+  background: var(--wrong);
+  border: 2px solid var(--navy);
+  border-radius: 0.2rem;
+  place-items: center;
+}
+
+.answer-trail li > span:first-child {
+  display: flex;
+}
+
+.answer-trail svg {
+  width: 100%;
+  height: 100%;
+}
+
+.answer-trail .answer-trail--correct {
+  background: var(--blue);
+}
+
+.reward-case {
+  margin-bottom: 12px;
+}
+
+@media (max-width: 350px) {
+  .results {
+    --results-padding: 0.75rem;
+  }
+
+  .results .results__header h1 {
+    font-size: 1.2rem;
+  }
+
+  .results-list {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 7rem), 1fr));
+  }
+
+  .answer-trail {
+    gap: 4px;
+  }
+
+  .answer-trail li {
+    flex-basis: 22px;
+  }
+}
+
+.daily-reminder-offer {
+  margin: 0 0 1.2rem;
+}
+
+.results-offer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+  margin: 0 calc(-1 * var(--results-padding)) 12px;
+  padding: 0.8rem var(--results-padding);
+  color: var(--navy);
+  background: var(--metal-gold);
+  border-bottom: 2px solid var(--navy);
+  text-align: left;
+}
+
+.level-advancement-offer {
+  margin-top: -12px;
+}
+
+.results-offer > strong {
+  font-size: var(--text-control);
+}
+
+@container (max-width: 28rem) {
+  .daily-install-offer .install-action {
+    width: 100%;
+  }
+
+  .daily-install-offer .install-action__buttons {
+    justify-content: space-between;
+  }
+}
+
+.level-advancement-offer__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+@container (max-width: 20rem) {
+  .level-advancement-offer__actions .game-button {
+    padding-inline: 0.45rem;
+    font-size: var(--text-compact-control);
+  }
+}
+
+.results__actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.7rem;
+  margin-bottom: 12px;
+}
+
+.results__actions--paired {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 7rem), 1fr));
+}
+
+.share-result-button.game-button:not(.daily-action) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+}
+
+.share-result-button__icon {
+  width: 1.2rem;
+  height: 1.2rem;
+  flex: none;
+}
+
+.results__actions .game-button {
+  min-height: 44px;
+  padding: 8px;
+}
+
+@container (max-width: 15rem) {
+  .score strong {
+    font-size: min(2.35rem, 12cqw);
+  }
+
+  .reward__body {
+    display: contents;
+  }
+
+  .reward__name {
+    grid-column: 2 / -1;
+  }
+
+  .reward__art {
+    grid-row: 1 / 3;
+  }
+
+  .reward__progress {
+    grid-column: 2;
+  }
+
+  .reward__gain {
+    grid-column: 3;
+    grid-row: 2;
+  }
+}

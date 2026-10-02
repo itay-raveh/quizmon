@@ -1,4 +1,3 @@
-import * as styles from './styles/classes.css.ts';
 import { getQuestionRendering } from '@/domain/quiz/variants';
 import { getQuestionView } from '@/domain/quiz/presentation';
 import { QuestionAnswerChoice } from './QuestionAnswerChoice';
@@ -41,37 +40,37 @@ export const QuestionAnswers = ({
   return (
     <div
       className={[
-        styles.answers,
+        'answers',
         view.answer.kind === 'text' && view.answer.detail === 'nature'
-          ? styles.answersNature
+          ? 'answers--nature'
           : '',
         (view.answer.kind === 'text' && view.answer.layout === 'statements') ||
         question.options.some(
           (option) => (question.optionLabels?.[option]?.length ?? 0) > 75,
         )
-          ? styles.answersStatements
+          ? 'answers--statements'
           : '',
         question.options.every((option) =>
           /^\d+$/.test(question.optionLabels?.[option] ?? ''),
         )
-          ? styles.answersEvolutionLevels
+          ? 'answers--evolution-levels'
           : '',
         question.options.every(
           (option) => question.optionDetails?.[option]?.length,
         )
-          ? styles.answersEffectDetails
+          ? 'answers--effect-details'
           : '',
         question.optionVisuals &&
         policy.sprite !== null &&
         Object.values(question.optionVisuals).some(({ src }) => src)
-          ? styles.answersPokemon
+          ? 'answers--pokemon'
           : '',
         view.answer.kind === 'pokemon' &&
         view.answer.layout === 'superEffectiveAttacker'
-          ? styles.answersSuperEffectiveAttacker
+          ? 'answers--super-effective-attacker'
           : '',
-        hasTypeOptionBadges ? styles.answersTypeOptions : '',
-        question.options.length > 4 && !multiSelect ? styles.answersMany : '',
+        hasTypeOptionBadges ? 'answers--type-options' : '',
+        question.options.length > 4 && !multiSelect ? 'answers--many' : '',
       ]
         .filter(Boolean)
         .join(' ')}

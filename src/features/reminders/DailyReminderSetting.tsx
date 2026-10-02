@@ -1,4 +1,3 @@
-import * as styles from '../../styles/classes.css.ts';
 import { Checkbox } from '@/components/Checkbox';
 import { useDailyReminder } from '@/features/reminders/daily-reminder-context';
 
@@ -7,13 +6,11 @@ export const DailyReminderSetting = () => {
     useDailyReminder();
 
   if (status === 'unsupported') {
-    return (
-      <p className={styles.experienceStatus}>Not available in this browser.</p>
-    );
+    return <p className="experience-status">Not available in this browser.</p>;
   }
   if (status === 'install-required') {
     return (
-      <p className={styles.experienceStatus}>
+      <p className="experience-status">
         Install Quizmon, then open it from your Home Screen to turn on
         reminders.
       </p>
@@ -21,7 +18,7 @@ export const DailyReminderSetting = () => {
   }
   if (status === 'blocked') {
     return (
-      <p className={styles.experienceStatus}>
+      <p className="experience-status">
         Notifications are blocked. Allow them in your browser settings to turn
         this on.
       </p>
@@ -36,7 +33,7 @@ export const DailyReminderSetting = () => {
         label="Remind me each day"
         onChange={(event) => void (event.target.checked ? enable() : disable())}
       />
-      <label className={styles.reminderTimeControl}>
+      <label className="reminder-time-control">
         <span>Time</span>
         <input
           aria-describedby="reminder-time-hint"
@@ -46,14 +43,14 @@ export const DailyReminderSetting = () => {
           value={time}
         />
       </label>
-      <p className={styles.experienceStatus} id="reminder-time-hint">
+      <p
+        className="experience-status reminder-time-hint"
+        id="reminder-time-hint"
+      >
         Local time · saves automatically
       </p>
       {error ? (
-        <p
-          className={`${styles.experienceStatus} ${styles.experienceStatusError}`}
-          role="alert"
-        >
+        <p className="experience-status experience-status--error" role="alert">
           {error}
         </p>
       ) : null}

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useLocation } from '@tanstack/react-router';
+import { useLocation } from 'react-router';
 import { subscribeToPlayerChanges } from '../../lib/storage/player-storage';
 import { readTrainerStats } from '../../lib/storage/results-storage';
 import {

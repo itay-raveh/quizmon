@@ -1,4 +1,3 @@
-import * as styles from './classes.css.ts';
 import { getLeagueStage, leagueStages } from '@/domain/quiz/league';
 
 interface LeagueProgressProps {
@@ -23,7 +22,7 @@ export const LeagueProgress = ({
             ? `Quizmon League progress. ${currentStage.heading}, Level ${currentStage.level}, ${currentStage.title}.`
             : 'Five League trials'
       }
-      className={styles.leagueProgress}
+      className="league-progress"
     >
       {leagueStages.map((stage, index) => (
         <li
@@ -32,10 +31,10 @@ export const LeagueProgress = ({
           }
           className={
             completed || index < currentIndex
-              ? `${styles.leagueProgressStage} ${styles.leagueProgressStageComplete}`
+              ? 'league-progress__stage league-progress__stage--complete'
               : index === currentIndex
-                ? `${styles.leagueProgressStage} ${styles.leagueProgressStageCurrent}`
-                : styles.leagueProgressStage
+                ? 'league-progress__stage league-progress__stage--current'
+                : 'league-progress__stage'
           }
           key={stage.id}
         >

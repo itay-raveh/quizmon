@@ -1,4 +1,3 @@
-import * as styles from '../../styles/classes.css.ts';
 import { getQuestionTypeMultiplier } from '@/domain/quiz/score-multipliers';
 import { CaretDownIcon, QuestionIcon, XIcon } from '@/components/icons';
 import { SelectionTile } from './SelectionTile';
@@ -79,18 +78,18 @@ export const QuestionTypeSettings = ({
   return (
     <>
       <section
-        className={styles.questionTypeSettings}
+        className="question-type-settings"
         aria-labelledby="question-types-title"
         aria-describedby={hasError ? 'question-types-error' : undefined}
         aria-invalid={hasError}
       >
-        <div className={styles.settingsSectionHeading}>
+        <div className="settings-section__heading">
           <h3 id="question-types-title" ref={heading} tabIndex={-1}>
             Question types
           </h3>
           <SoundButton
             aria-label={`${allSelected ? 'Deselect' : 'Select'} all question types`}
-            className={styles.selectionToggle}
+            className="selection-toggle"
             disabled={availableQuestionTypes.length === 0}
             onClick={() =>
               onChange((current) => ({
@@ -110,11 +109,7 @@ export const QuestionTypeSettings = ({
           </SoundButton>
         </div>
         {hasError ? (
-          <p
-            className={styles.formError}
-            id="question-types-error"
-            role="alert"
-          >
+          <p className="form-error" id="question-types-error" role="alert">
             {selectedQuestionTypes.has('pokemonByGeneration') &&
             draft.generations.length < 2
               ? 'Select at least two generations for Generation roundup.'
@@ -136,27 +131,27 @@ export const QuestionTypeSettings = ({
 
           return (
             <details
-              className={styles.questionTypeGroup}
+              className="question-type-group"
               aria-labelledby={titleId}
               key={group.id}
               name="question-types"
               open={initialExpandedGroup === group.id}
             >
               <summary
-                className={styles.questionTypeGroupDisclosure}
+                className="question-type-group__disclosure"
                 onClick={() => playInteractionSound('tap')}
               >
                 <h4 id={titleId}>{group.label}</h4>
-                <span className={styles.questionTypeGroupCount}>
+                <span className="question-type-group__count">
                   {selectedCount} / {availableCount}
                   <span className="visually-hidden"> selected</span>
                 </span>
                 <CaretDownIcon aria-hidden="true" weight="bold" />
               </summary>
-              <div className={styles.questionTypeGroupPanel}>
+              <div className="question-type-group__panel">
                 <div
                   aria-label={`${group.label} question types`}
-                  className={`${styles.selectionGrid} ${styles.selectionGridQuestionTypes}`}
+                  className="selection-grid selection-grid--question-types"
                   role="group"
                 >
                   {group.types.map((questionType) => {
@@ -169,7 +164,7 @@ export const QuestionTypeSettings = ({
                       selectable && selectedQuestionTypes.has(questionType);
                     return (
                       <div
-                        className={`${styles.questionTypeTile}${checked ? ` ${styles.questionTypeTileSelected}` : ''}${!selectable ? ` ${styles.questionTypeTileUnavailable}` : ''}`}
+                        className={`question-type-tile${checked ? ' question-type-tile--selected' : ''}${!selectable ? ' question-type-tile--unavailable' : ''}`}
                         key={questionType}
                       >
                         <SelectionTile
@@ -194,7 +189,7 @@ export const QuestionTypeSettings = ({
                         />
                         <SoundButton
                           aria-label={`About ${label}`}
-                          className={styles.questionTypeTileHelp}
+                          className="question-type-tile__help"
                           onClick={() => setExplainedQuestionType(questionType)}
                           popoverTarget="question-type-help"
                           popoverTargetAction="show"
@@ -214,14 +209,14 @@ export const QuestionTypeSettings = ({
       </section>
 
       <div
-        className={styles.questionTypeHelp}
+        className="question-type-help"
         id="question-type-help"
         popover="auto"
         role="note"
       >
         <SoundButton
           aria-label="Close question type explanation"
-          className={styles.questionTypeHelpClose}
+          className="question-type-help__close"
           popoverTarget="question-type-help"
           popoverTargetAction="hide"
         >

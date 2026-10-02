@@ -1,4 +1,3 @@
-import * as styles from './styles/classes.css.ts';
 import { site } from '@/app/site';
 import { trainerAvatarOptions } from '@/domain/player/trainer-avatars';
 import type { PackedSpriteMeasurements } from '@/domain/pokemon/types';
@@ -77,25 +76,25 @@ export const TrainerCard = ({
 
   return (
     <article
-      className={`${styles.trainerArtifactFrame} ${styles.trainerCard} ${{ Classic: '', Bronze: styles.trainerCardBronze, Silver: styles.trainerCardSilver, Gold: styles.trainerCardGold }[finish]}${isChampion ? ` ${styles.trainerCardChampion}` : ''}`.trim()}
+      className={`trainer-artifact-frame trainer-card trainer-card--${finish.toLowerCase()}${isChampion ? ' trainer-card--champion' : ''}`}
       aria-label={trainerViewLabels.front}
     >
       <TrainerCardFinishEffects finish={finish} polished={isChampion} />
-      <div className={styles.trainerCardDecoration} aria-hidden="true">
-        <div className={styles.trainerCardWatermark} />
+      <div className="trainer-card__decoration" aria-hidden="true">
+        <div className="trainer-card__watermark" />
       </div>
-      <div className={styles.trainerCardFront}>
-        <header className={styles.trainerCardRank}>
+      <div className="trainer-card__front">
+        <header className="trainer-card__rank">
           {rank}
           {isChampion ? <Trophy /> : null}
         </header>
-        <div className={styles.trainerCardIdentity}>
+        <div className="trainer-card__identity">
           <h2>
             <PlayerName trainer={trainer} fallback={`${site.name} Trainer`} />
           </h2>
           {profile.specialty ? (
             <p
-              className={styles.trainerCardTitle}
+              className="trainer-card__title"
               aria-label={`${trainerSpecialtyDetails[profile.specialty].label}, ${trainerTierLabels[titleTier]} title`}
             >
               <span>{trainerSpecialtyDetails[profile.specialty].label}</span>
@@ -107,11 +106,11 @@ export const TrainerCard = ({
             </p>
           ) : null}
         </div>
-        <div className={styles.trainerCardAvatar}>
-          <div className={styles.trainerCardPortrait}>
+        <div className="trainer-card__avatar">
+          <div className="trainer-card__portrait">
             {avatar ? (
               <img
-                className={styles.trainerCardPortraitImage}
+                className="trainer-card__portrait-image"
                 src={`/trainer-avatars/${avatar.id}.png`}
                 alt={`${avatar.name} trainer avatar`}
                 width="80"
@@ -119,7 +118,7 @@ export const TrainerCard = ({
               />
             ) : (
               <span
-                className={styles.trainerCardAvatarMark}
+                className="trainer-card__avatar-mark"
                 aria-label="No trainer avatar selected"
               >
                 ?
@@ -127,7 +126,7 @@ export const TrainerCard = ({
             )}
             {partnerSprite && (
               <img
-                className={`${styles.trainerCardPartnerSprite}${behindTrainer ? ` ${styles.trainerCardPartnerSpriteBehind}` : ''}`}
+                className={`trainer-card__partner-sprite${behindTrainer ? ' trainer-card__partner-sprite--behind' : ''}`}
                 src={partnerSprite}
                 alt=""
                 width="96"
@@ -142,14 +141,14 @@ export const TrainerCard = ({
             )}
           </div>
           <PokemonIdentity
-            className={styles.trainerCardPartnerCaption}
+            className="trainer-card__partner-caption"
             dexNumber={partnerDexNumber ?? undefined}
             name={partnerName}
           />
         </div>
       </div>
-      <div className={styles.trainerCardDetails}>
-        <dl className={styles.trainerCardRecord}>
+      <div className="trainer-card__details">
+        <dl className="trainer-card__record">
           <div>
             <dt>Pokémon found</dt>
             <dd>
@@ -158,7 +157,7 @@ export const TrainerCard = ({
             </dd>
           </div>
         </dl>
-        <CatchCombo count={record.dayCombo} placement="trainerCard" />
+        <CatchCombo className="trainer-card__combo" count={record.dayCombo} />
       </div>
     </article>
   );

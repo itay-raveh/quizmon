@@ -1,4 +1,3 @@
-import * as styles from '../../styles/classes.css.ts';
 import { Trophy } from '@/components/Trophy';
 import {
   trainerTierLabels,
@@ -25,17 +24,17 @@ export const TrainerProgressSummary = ({
 
   return (
     <section
-      className={styles.rewardCase}
+      className="reward-case"
       aria-label="Trainer progress"
       data-playing={Number.isFinite(elapsed)}
     >
       <ul aria-label="Rewards">
         {leagueVictory ? (
           <li>
-            <div className={`${styles.reward} ${styles.rewardVictory}`}>
-              <Trophy className={styles.rewardHallMark} />
-              <span className={styles.rewardBody}>
-                <strong className={styles.rewardName}>Hall of Fame</strong>
+            <div className="reward reward--victory">
+              <Trophy className="reward__hall-mark" />
+              <span className="reward__body">
+                <strong className="reward__name">Hall of Fame</strong>
                 <small>League Champion</small>
               </span>
             </div>
@@ -74,7 +73,7 @@ export const TrainerProgressSummary = ({
             >
               <div
                 role="group"
-                className={styles.reward}
+                className="reward"
                 data-tier={tier}
                 data-tier-unlock={celebrating}
                 data-unlocked={unlocked}
@@ -83,7 +82,7 @@ export const TrainerProgressSummary = ({
                 }
                 aria-label={`${change.label}: +${change.delta}, ${total}${change.earned ? `, ${unlockLabel}` : ''}`}
               >
-                <span className={styles.rewardArt} aria-hidden="true">
+                <span className="reward__art" aria-hidden="true">
                   {change.kind === 'badge' ? (
                     <TrainerBadgeMark tier={tier} id={change.id} />
                   ) : (
@@ -93,17 +92,17 @@ export const TrainerProgressSummary = ({
                     />
                   )}
                 </span>
-                <span className={styles.rewardBody} aria-hidden="true">
-                  <strong className={styles.rewardName}>{change.label}</strong>
-                  <span className={styles.rewardProgress}>
-                    <span className={styles.rewardTrack}>
+                <span className="reward__body" aria-hidden="true">
+                  <strong className="reward__name">{change.label}</strong>
+                  <span className="reward__progress">
+                    <span className="reward__track">
                       <span
                         style={{
                           transform: `scaleX(${Math.max(0, Math.min(current / change.goal, 1))})`,
                         }}
                       />
                     </span>
-                    <small className={unlocked ? styles.isUnlocked : undefined}>
+                    <small className={unlocked ? 'is-unlocked' : undefined}>
                       {unlocked
                         ? unlockLabel
                         : change.tier === 3
@@ -112,7 +111,7 @@ export const TrainerProgressSummary = ({
                     </small>
                   </span>
                 </span>
-                <b className={styles.rewardGain} aria-hidden="true">
+                <b className="reward__gain" aria-hidden="true">
                   +{format(credited)}
                 </b>
               </div>

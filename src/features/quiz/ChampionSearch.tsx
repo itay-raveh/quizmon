@@ -1,4 +1,3 @@
-import * as styles from '../../styles/classes.css.ts';
 import { ItemRenderable, PokemonRenderable } from './QuestionEntity';
 import {
   isVisible,
@@ -76,7 +75,7 @@ export const ChampionSearch = ({
                   types={pokemon.types}
                   policy={policy}
                   state={{ answered, cluesShown }}
-                  spriteSlotClassName={styles.pokemonPickerSprite}
+                  spriteSlotClassName="pokemon-picker__sprite"
                   typesClassName="pokemon-picker__types"
                   hideNumberFromAccessibility
                 />
@@ -88,8 +87,8 @@ export const ChampionSearch = ({
                     src={item.sprite}
                     policy={policy}
                     state={{ answered, cluesShown }}
-                    className={styles.itemRenderable}
-                    spriteClassName={styles.itemRenderableSprite}
+                    className="item-renderable"
+                    spriteClassName="item-renderable__sprite"
                   />
                 )
               : undefined
@@ -102,7 +101,7 @@ export const ChampionSearch = ({
         result={result}
       />
       {result === 'wrong' && showCorrectAnswerBanner && (
-        <p className={styles.championSearchAnswer}>
+        <p className="champion-search__answer">
           Correct answer: <strong>{correctLabel}</strong>
         </p>
       )}

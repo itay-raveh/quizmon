@@ -1,4 +1,3 @@
-import * as styles from '../../styles/classes.css.ts';
 import { FeedbackButton } from '@/app/FeedbackButton';
 import { getQuestionRendering } from '@/domain/quiz/variants';
 import { getQuestionView } from '@/domain/quiz/presentation';
@@ -68,7 +67,7 @@ const QuestionTimer = ({
       : formatDuration(Math.floor(displayElapsed / 1000));
   return (
     <span
-      className={`${styles.timer} ${hidden ? styles.timerHidden : ''}`.trim()}
+      className={`timer ${hidden ? 'timer--hidden' : ''}`.trim()}
       aria-hidden={hidden}
       aria-label={hidden ? undefined : `Elapsed time ${text}`}
     >
@@ -144,7 +143,7 @@ export const QuestionScreen = ({
   const checkAnswerAction =
     question.answer.interaction === 'multi-select' && !answered ? (
       <GameButton
-        className={styles.checkAnswer}
+        className="check-answer"
         disabled={selectedOptions.length === 0}
         onClick={() => finishAnswer(selectedOptions)}
         sound="none"
@@ -154,10 +153,10 @@ export const QuestionScreen = ({
     ) : null;
   const className = [
     'game-panel',
-    styles.question,
-    isChampion ? styles.questionChampion : '',
-    isLeague ? styles.questionLeague : '',
-    number === 1 ? styles.questionEnter : '',
+    'question',
+    isChampion ? 'question--champion' : '',
+    isLeague ? 'question--league' : '',
+    number === 1 ? 'question--enter' : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -167,10 +166,10 @@ export const QuestionScreen = ({
       aria-describedby="question-prompt"
       aria-labelledby="question-title"
     >
-      <header className={styles.questionTopline}>
+      <header className="question__topline">
         <GameButton
           aria-label="Leave game"
-          className={styles.questionLeave}
+          className="question__leave"
           onClick={onNewGame}
           title="Leave game"
           tone="quiet"
@@ -189,7 +188,7 @@ export const QuestionScreen = ({
       {isLeague ? <LeagueProgress currentQuestion={number} /> : null}
 
       <h1
-        className={styles.questionTitle}
+        className="question__title"
         id="question-title"
         ref={heading}
         tabIndex={-1}
@@ -209,7 +208,7 @@ export const QuestionScreen = ({
       />
 
       <div
-        className={`${styles.questionResponse} ${searchVisible ? styles.questionResponseSearch : ''}`.trim()}
+        className={`question__response ${searchVisible ? 'question__response--search' : ''}`.trim()}
       >
         {searchVisible && question.searchOptions ? (
           <ChampionSearch
@@ -252,10 +251,10 @@ export const QuestionScreen = ({
             : ''}
       </span>
 
-      <div className={styles.questionActionSlot}>
+      <div className="question__action-slot">
         <span
           aria-hidden="true"
-          className={`game-button ${styles.questionActionReserve}`}
+          className="game-button question__action-reserve"
         >
           {isChampion && !isLeague && championChoicesVisible
             ? `Reveal another clue · ${getAnswerPoints(question, true, 3)} points`
@@ -268,11 +267,7 @@ export const QuestionScreen = ({
         !answered &&
         question.clues &&
         cluesShown <= question.clues.length ? (
-          <GameButton
-            className={styles.clueButton}
-            tone="quiet"
-            onClick={revealClue}
-          >
+          <GameButton className="clue-button" tone="quiet" onClick={revealClue}>
             {cluesShown === 0 ? 'Show 4 choices' : 'Reveal another clue'} ·{' '}
             {getAnswerPoints(
               question,
@@ -284,7 +279,7 @@ export const QuestionScreen = ({
         ) : null}
         {answered && answerFlow !== 'instant' ? (
           <GameButton
-            className={styles.newGame}
+            className="new-game"
             onClick={advanceAnswer}
             ref={advanceButton}
           >

@@ -1,4 +1,3 @@
-import * as styles from './styles/classes.css.ts';
 import { useState } from 'react';
 import { BackButton } from '../../components/BackButton';
 import { PlayerName } from '../../components/PlayerName';
@@ -67,14 +66,12 @@ export function PublicTrainerPassport({
 
   return (
     <section
-      className={`game-panel trainer-passport ${{ Classic: '', Bronze: styles.trainerPassportBronze, Silver: styles.trainerPassportSilver, Gold: styles.trainerPassportGold }[getCardFinish(rank)]}`.trim()}
+      className={`game-panel trainer-passport trainer-passport--public trainer-passport--${getCardFinish(rank).toLowerCase()}`}
       aria-labelledby="public-trainer-title"
     >
-      <header
-        className={`game-panel__header ${styles.trainerPassportHeader} ${styles.trainerPassportPublicHeader}`}
-      >
+      <header className="game-panel__header trainer-passport__header trainer-passport__public-header">
         <BackButton label={backLabel} onClick={onBack} />
-        <div className={styles.trainerPassportPublicHeading}>
+        <div className="trainer-passport__public-heading">
           <h1
             className="game-panel__title"
             id="public-trainer-title"
@@ -88,12 +85,12 @@ export function PublicTrainerPassport({
 
       <nav
         aria-label={`${name}'s Trainer profile`}
-        className={styles.trainerPassportViews}
+        className="trainer-passport__views"
       >
         {views.map(([nextView, label, Icon]) => (
           <SoundButton
             aria-pressed={view === nextView}
-            className={styles.trainerPassportView}
+            className="trainer-passport__view"
             key={nextView}
             onClick={() => {
               setSelectedBadgeId(null);
@@ -107,7 +104,7 @@ export function PublicTrainerPassport({
         ))}
       </nav>
 
-      <div className={styles.trainerPassportArtifact}>
+      <div className="trainer-passport__artifact">
         {view === 'pokedex' ? (
           <TrainerPokedex catalog={catalog} foundPokemon={trainer.pokedex} />
         ) : view === 'badges' ? (

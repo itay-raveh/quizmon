@@ -1,4 +1,3 @@
-import * as styles from './classes.css.ts';
 import { GameButton } from '@/components/GameButton';
 import { ShareNetworkIcon } from '@/components/icons';
 import type { GameMode, GameResult } from '@/domain/quiz/types';
@@ -47,12 +46,12 @@ export const ShareResultButton = ({
     <>
       <GameButton
         aria-label={ariaLabel}
-        className={`${styles.shareResultButton} ${className ?? ''}`.trim()}
+        className={`share-result-button ${className ?? ''}`.trim()}
         onClick={() => void share()}
         tone={tone}
       >
         <ShareNetworkIcon
-          className={styles.shareResultButtonIcon}
+          className="share-result-button__icon"
           aria-hidden="true"
           weight="bold"
         />

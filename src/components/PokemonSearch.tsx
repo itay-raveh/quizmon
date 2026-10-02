@@ -1,4 +1,3 @@
-import * as styles from '../styles/classes.css.ts';
 import { formatPokedexNumber } from '@/domain/pokemon/format';
 import {
   createPokemonSearchEntry,
@@ -45,13 +44,7 @@ export const PokemonSearch = ({
   const listboxId = useId();
   const playInteractionSound = useInteractionSound();
   const champion = mode === 'champion';
-  const className = champion ? styles.championSearch : styles.pokemonPicker;
-  const outcomeClass =
-    champion && result
-      ? result === 'correct'
-        ? styles.championSearchCorrect
-        : styles.championSearchWrong
-      : '';
+  const className = champion ? 'champion-search' : 'pokemon-picker';
   const Root = champion ? 'form' : 'div';
   const entries = useMemo(
     () => options.map(createPokemonSearchEntry),
@@ -70,7 +63,7 @@ export const PokemonSearch = ({
 
   return (
     <Root
-      className={`${className} ${outcomeClass}`.trim()}
+      className={`${className} ${result ? `${className}--${result}` : ''}`.trim()}
       onSubmit={
         champion
           ? (event) => {
@@ -83,15 +76,11 @@ export const PokemonSearch = ({
       <label htmlFor={`${listboxId}-input`}>
         {champion ? 'Your answer' : 'Partner Pokémon'}
       </label>
-      <div className={champion ? styles.championSearchControls : undefined}>
+      <div className={`${className}__controls`}>
         <SearchCombobox
           id={listboxId}
-          className={
-            champion ? styles.championSearchCombobox : styles.pokemonPickerField
-          }
-          emptyClassName={
-            champion ? styles.championSearchEmpty : styles.pokemonPickerEmpty
-          }
+          className={`${className}__${champion ? 'combobox' : 'field'}`}
+          emptyClassName={`${className}__empty`}
           query={query}
           suggestions={suggestions}
           disabled={disabled}
@@ -121,10 +110,7 @@ export const PokemonSearch = ({
             ) : (
               <>
                 {!champion || suggestion.sprite ? (
-                  <span
-                    aria-hidden="true"
-                    className={styles.pokemonPickerSprite}
-                  >
+                  <span aria-hidden="true" className="pokemon-picker__sprite">
                     {suggestion.sprite ? (
                       <img
                         alt=""

@@ -1,6 +1,5 @@
-import * as styles from './styles/classes.css.ts';
 import { useMemo, useState, type SubmitEvent } from 'react';
-import { Link, useLocation, useNavigate } from '@tanstack/react-router';
+import { Link, useLocation, useNavigate } from 'react-router';
 import { GameButton } from '../../components/GameButton';
 import { useInteractionSound } from '../../lib/audio/sound-context';
 import {
@@ -131,20 +130,20 @@ export const TrainerPassport = ({ catalog, trainer }: TrainerPassportProps) => {
       }))
     )
       return;
-    void navigate({ to: '/trainer', replace: true });
+    void navigate('/trainer', { replace: true });
     void requestPersistentStorage().catch(() => false);
   };
 
   const toggleEditor = () => {
     if (editing) {
-      void navigate({ to: '/trainer', replace: true });
+      void navigate('/trainer', { replace: true });
       return;
     }
 
     setName(profile.name);
     setAvatar(profile.avatar);
     setPartner(profile.partnerPokemon);
-    void navigate({ to: '/trainer/edit', replace: true });
+    void navigate('/trainer/edit', { replace: true });
   };
 
   const setTitle = async (specialty: TrainerSpecialty | null) => {
@@ -160,10 +159,10 @@ export const TrainerPassport = ({ catalog, trainer }: TrainerPassportProps) => {
 
   return (
     <section
-      className={`game-panel trainer-passport ${{ classic: '', bronze: styles.trainerPassportBronze, silver: styles.trainerPassportSilver, gold: styles.trainerPassportGold }[finish as 'classic' | 'bronze' | 'silver' | 'gold']}`.trim()}
+      className={`game-panel trainer-passport trainer-passport--${finish}`}
       aria-labelledby="trainer-passport-title"
     >
-      <header className={`game-panel__header ${styles.trainerPassportHeader}`}>
+      <header className="game-panel__header trainer-passport__header">
         <h1 className="game-panel__title" id="trainer-passport-title">
           {trainerViewLabels[view]}
         </h1>
@@ -186,14 +185,11 @@ export const TrainerPassport = ({ catalog, trainer }: TrainerPassportProps) => {
       </header>
 
       {!editing ? (
-        <nav
-          aria-label="Trainer profile"
-          className={styles.trainerPassportViews}
-        >
+        <nav aria-label="Trainer profile" className="trainer-passport__views">
           {trainerViews.map(([nextView, label, ViewIcon]) => (
             <Link
               aria-current={view === nextView ? 'page' : undefined}
-              className={styles.trainerPassportView}
+              className="trainer-passport__view"
               key={nextView}
               to={trainerPath(nextView)}
               onClick={(event) => {
@@ -221,12 +217,12 @@ export const TrainerPassport = ({ catalog, trainer }: TrainerPassportProps) => {
 
       {editing ? (
         <form
-          className={styles.trainerCustomizer}
+          className="trainer-customizer"
           onSubmit={(event) => {
             void save(event);
           }}
         >
-          <div className={styles.trainerCustomizerName}>
+          <div className="trainer-customizer__name">
             <label htmlFor="trainer-name">Trainer name</label>
             <input
               autoComplete="nickname"
@@ -243,7 +239,7 @@ export const TrainerPassport = ({ catalog, trainer }: TrainerPassportProps) => {
             options={pokemonOptions}
             value={partner}
           />
-          <fieldset className={styles.trainerAvatarPicker}>
+          <fieldset className="trainer-avatar-picker">
             <legend>Trainer avatar</legend>
             <input
               aria-label="Search trainer avatars"
@@ -252,7 +248,7 @@ export const TrainerPassport = ({ catalog, trainer }: TrainerPassportProps) => {
               type="search"
               value={avatarQuery}
             />
-            <div className={styles.trainerAvatarPickerOptions}>
+            <div className="trainer-avatar-picker__options">
               {matchingAvatars.map(({ id, name }) => (
                 <button
                   aria-label={name}
@@ -288,7 +284,7 @@ export const TrainerPassport = ({ catalog, trainer }: TrainerPassportProps) => {
         </form>
       ) : null}
 
-      <div className={styles.trainerPassportArtifact}>
+      <div className="trainer-passport__artifact">
         {view === 'pokedex' ? (
           <TrainerPokedex catalog={catalog} foundPokemon={record.pokedex} />
         ) : view === 'badges' ? (
@@ -330,7 +326,7 @@ export const TrainerPassport = ({ catalog, trainer }: TrainerPassportProps) => {
         />
       ) : null}
       {notice && (
-        <p className={styles.trainerPassportStatus} aria-live="polite">
+        <p className="trainer-passport__status" aria-live="polite">
           {notice}
         </p>
       )}

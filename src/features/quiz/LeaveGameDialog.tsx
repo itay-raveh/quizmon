@@ -1,4 +1,3 @@
-import * as styles from '../../components/classes.css.ts';
 import { GameButton } from '@/components/GameButton';
 import { useModalDialog } from '@/hooks/useModalDialog';
 
@@ -27,20 +26,20 @@ export const LeaveGameDialog = ({
       {...dialogProps}
       aria-describedby="leave-game-description"
       aria-labelledby="leave-game-title"
-      className={styles.confirmDialog}
+      className="confirm-dialog"
     >
-      <div className={styles.confirmDialogBody}>
+      <div className="confirm-dialog__body">
         <h2 id="leave-game-title">Leave this game?</h2>
         <p id="leave-game-description">
           {daily
             ? 'Your Daily attempt will be forfeited.'
             : 'Your answers from this game will be lost.'}
         </p>
-        <div className={styles.confirmDialogActions}>
+        <div className="confirm-dialog__actions">
           <GameButton autoFocus tone="quiet" onClick={cancel}>
             Keep playing
           </GameButton>
-          <GameButton className={styles.confirmDialogConfirm} onClick={confirm}>
+          <GameButton className="confirm-dialog__confirm" onClick={confirm}>
             {confirmLabel}
           </GameButton>
         </div>

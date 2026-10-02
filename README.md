@@ -6,7 +6,7 @@
   <a href="https://quizmon.raveh.dev/">Play Quizmon</a>
 </p>
 
-Quizmon is a free browser game about Pokémon sprites, descriptions, types, matchups, abilities, moves, evolutions, stats, etc. Optional accounts sync completed progress and add friends.
+Quizmon is a free browser game about Pokémon sprites, descriptions, types, matchups, abilities, moves, evolutions, stats, etc. Optional accounts sync completed progress and add friends. 
 
 ## Run Quizmon locally
 

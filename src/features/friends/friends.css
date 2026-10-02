@@ -1,0 +1,675 @@
+.social-screen {
+  text-align: left;
+}
+
+.social-screen__intro,
+.friends-add {
+  display: grid;
+  gap: 1rem;
+}
+
+.social-screen__intro h2,
+.social-screen__intro p,
+.friends-add h2,
+.friends-add h3 {
+  margin: 0;
+}
+
+.social-screen__intro > .game-button {
+  justify-self: start;
+}
+
+.social-screen__note {
+  color: var(--muted);
+  font-size: var(--text-small);
+}
+
+.friends-player__name {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.friends-icon-button.game-button {
+  display: inline-grid;
+  flex: none;
+  width: 2.75rem;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  padding: 0.55rem;
+  place-items: center;
+  background: transparent;
+  border: 1px solid transparent;
+  box-shadow: none;
+}
+
+.friends-icon-button.game-button:not(button) {
+  cursor: default;
+}
+
+button.friends-icon-button.game-button:hover:not(:disabled) {
+  background: var(--cream);
+  transform: none;
+}
+
+button.friends-icon-button.game-button:active:not(:disabled) {
+  background: var(--sky);
+  box-shadow: none;
+  transform: none;
+}
+
+.friends-icon-button.game-button:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 2px;
+}
+
+.friends-icon-button svg {
+  width: 1.3rem;
+  height: 1.3rem;
+}
+
+.friends-actions .friends-icon-button {
+  color: var(--error-ink);
+}
+
+.leaderboard-player {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.leaderboard-viewer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.35rem 0.7rem;
+  color: var(--navy);
+  background: var(--yellow);
+  border: 2px solid var(--navy);
+  border-radius: var(--button-radius);
+}
+
+.leaderboard-viewer strong {
+  font-family: var(--font-data);
+}
+
+.leaderboard-viewer span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-weight: 800;
+}
+
+.leaderboard-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.social-error-banner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.15rem 0.65rem;
+  padding: 0.55rem 0.75rem;
+  color: var(--error-ink);
+  background: var(--error-surface);
+  border: 1px solid var(--error-ink);
+  border-radius: var(--button-radius);
+  font-size: var(--text-status);
+}
+
+.social-error-banner .game-button {
+  grid-column: 2;
+  grid-row: 1 / 3;
+  margin: 0;
+}
+
+.social-error-banner .friends-field {
+  grid-column: 1 / -1;
+}
+
+.friends-panel {
+  align-content: start;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.friends-panel p,
+.friends-panel h2,
+.friends-panel h3 {
+  margin: 0;
+}
+
+.friends-panel__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid var(--navy);
+}
+
+.friends-panel__heading h2 {
+  font-size: var(--text-headline);
+  line-height: 1.15;
+}
+
+.friends-panel__heading .game-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  width: auto;
+}
+
+.friends-panel__heading svg {
+  width: 1.3rem;
+  height: 1.3rem;
+}
+
+.friends-player__code {
+  color: var(--muted);
+  font-family: var(--font-data);
+  font-size: var(--text-mini);
+  overflow-wrap: anywhere;
+}
+
+.friends-found {
+  display: grid;
+  justify-items: start;
+  gap: 0.55rem;
+  width: 100%;
+  padding: 0.85rem 0.9rem;
+  border-block: 1px solid var(--navy);
+}
+
+.friends-found .friends-player strong {
+  font-size: var(--text-body);
+}
+
+.friends-found > p {
+  color: var(--muted);
+}
+
+.friends-found .friends-actions .game-button:not(.friends-icon-button) {
+  min-height: 2.5rem;
+  padding: 0.45rem 0.7rem;
+  font-size: var(--text-label);
+}
+
+.friends-panel .react-loading-skeleton {
+  --base-color: var(--disabled-surface);
+  --highlight-color: var(--paper);
+}
+
+.friends-section {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.friends-section + .friends-section {
+  padding-top: 1rem;
+  border-top: 1px solid var(--navy);
+}
+
+.friends-empty {
+  color: var(--muted);
+}
+
+.friends-player {
+  display: grid;
+  gap: 0.25rem;
+  overflow-wrap: anywhere;
+}
+
+.friends-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.2rem;
+}
+
+.friends-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.friends-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding-block: 0.75rem;
+  border-top: 1px solid var(--navy);
+}
+
+.friends-list li .friends-actions {
+  margin-top: 0;
+}
+
+.leaderboard-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.5rem 1rem;
+}
+
+.leaderboard-modes {
+  display: flex;
+  width: max-content;
+  max-width: 100%;
+  padding: 2px;
+  background: var(--navy);
+  border-radius: var(--button-radius);
+}
+
+.leaderboard-modes button {
+  flex: 1;
+  min-width: 7rem;
+  min-height: 2.5rem;
+  padding: 0.35rem 0.75rem;
+  color: var(--navy);
+  background: var(--paper);
+  border: 0;
+  border-radius: var(--icon-control-radius);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.leaderboard-modes button + button {
+  margin-left: 2px;
+}
+
+.leaderboard-modes button[aria-pressed='true'] {
+  color: var(--primary-text);
+  background: var(--blue);
+  font-weight: 800;
+}
+
+.leaderboard-filter {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--muted);
+  font-size: var(--text-label);
+  font-weight: 700;
+}
+
+.leaderboard-scopes {
+  display: flex;
+  width: max-content;
+  gap: 0.75rem;
+}
+
+.leaderboard-scopes button {
+  min-height: 2.75rem;
+  padding: 0.4rem 0.2rem;
+  color: var(--muted);
+  background: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  font: inherit;
+  font-size: var(--text-label);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.leaderboard-scopes button[aria-pressed='true'] {
+  color: var(--blue);
+  border-bottom-color: var(--blue);
+  font-weight: 800;
+}
+
+.leaderboard-modes button:hover:not([aria-pressed='true']),
+.leaderboard-scopes button:hover:not([aria-pressed='true']) {
+  color: var(--blue);
+}
+
+.leaderboard-modes button:focus-visible,
+.leaderboard-scopes button:focus-visible,
+.leaderboard-date input:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 2px;
+}
+
+.leaderboard-date {
+  display: grid;
+  grid-template-columns: 2.75rem minmax(0, 1fr) 2.75rem;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  grid-column: 1 / -1;
+  width: 100%;
+}
+
+.leaderboard-date .game-button {
+  display: grid;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  padding: 0.35rem;
+  place-items: center;
+}
+
+.leaderboard-date svg,
+.leaderboard-invite svg {
+  width: 1.3rem;
+  height: 1.3rem;
+}
+
+.leaderboard-invite {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.leaderboard-header .leaderboard-invite {
+  justify-content: flex-end;
+}
+
+.leaderboard-invite .game-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  width: auto;
+}
+
+.leaderboard-invite p {
+  margin: 0;
+  font-size: var(--text-small);
+}
+
+.leaderboard-invite .friends-field {
+  flex-basis: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.leaderboard-date input {
+  width: 100%;
+  min-width: 0;
+  min-height: 2.75rem;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--navy);
+  border-radius: var(--icon-control-radius);
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--text-label);
+}
+
+@container app-shell (max-width: 36rem) {
+  .leaderboard-toolbar {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.6rem;
+  }
+
+  .leaderboard-modes,
+  .leaderboard-scopes {
+    width: 100%;
+  }
+
+  .leaderboard-modes button {
+    min-width: 0;
+  }
+
+  .leaderboard-scopes {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .social-error-banner {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .social-error-banner .game-button {
+    grid-column: 1;
+    grid-row: auto;
+    justify-self: start;
+  }
+}
+
+@container app-shell (max-width: 22.5rem) {
+  .leaderboard-date input {
+    padding-inline: 0.25rem;
+    font-size: var(--text-small);
+  }
+}
+
+.leaderboard-table th[scope='row'] {
+  overflow-wrap: anywhere;
+}
+
+.leaderboard-controls .game-button,
+.leaderboard-standings .game-button {
+  width: auto;
+}
+
+.leaderboard-standings {
+  display: grid;
+  align-content: start;
+  gap: 0.75rem;
+}
+
+.leaderboard-swipe {
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+
+.leaderboard-swipe::-webkit-scrollbar {
+  display: none;
+}
+
+.leaderboard-swipe > .leaderboard-standings {
+  flex: 0 0 100%;
+  min-width: 0;
+  scroll-snap-align: start;
+}
+
+.social-skeleton {
+  display: block;
+  height: 0.85em;
+  background: var(--cream);
+  border-radius: 0.25rem;
+  animation: leaderboard-pulse 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes leaderboard-pulse {
+  to {
+    opacity: 0.45;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .leaderboard-swipe {
+    scroll-behavior: auto;
+  }
+
+  .social-skeleton {
+    animation: none;
+  }
+}
+
+.leaderboard-empty {
+  display: grid;
+  gap: 0.4rem;
+  justify-items: center;
+  padding: 1.25rem 1rem;
+  color: var(--navy);
+  background: var(--sky);
+  border: 2px solid var(--navy);
+  border-radius: var(--button-radius);
+  text-align: center;
+}
+
+.leaderboard-empty p {
+  margin: 0;
+}
+
+.leaderboard-empty__action.game-button {
+  display: inline-flex;
+  width: auto;
+  align-items: center;
+  margin-top: 0.25rem;
+  text-decoration: none;
+}
+
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-status);
+}
+
+.leaderboard-table thead {
+  color: var(--navy);
+  background: var(--sky);
+}
+
+.leaderboard-table th:first-child,
+.leaderboard-table td:first-child {
+  padding-left: 0.7rem;
+}
+
+.leaderboard-table th:last-child,
+.leaderboard-table td:last-child {
+  padding-right: 0.7rem;
+  text-align: right;
+}
+
+.leaderboard-table th,
+.leaderboard-table td {
+  padding: 0.45rem 0.25rem;
+  border-bottom: 1px solid var(--navy);
+  text-align: left;
+}
+
+.leaderboard-table tbody tr {
+  height: 3rem;
+}
+
+.leaderboard-table tbody th,
+.leaderboard-table tbody td {
+  padding-block: 0.1rem;
+}
+
+.leaderboard-table td {
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  white-space: nowrap;
+}
+
+.leaderboard-table small {
+  display: block;
+  font-weight: normal;
+}
+
+.leaderboard-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  color: var(--muted);
+  font-size: var(--text-small);
+}
+
+.leaderboard-pagination span {
+  white-space: nowrap;
+}
+
+.leaderboard-table tr[aria-current='true'] {
+  background: var(--cream);
+}
+
+.leaderboard-table tr[data-comparable='false'] {
+  color: var(--muted);
+  background: var(--disabled-surface);
+}
+
+.leaderboard-version-button,
+.leaderboard-version-help__close {
+  display: inline-grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  color: var(--navy);
+  background: transparent;
+  border: 0;
+  cursor: help;
+  place-items: center;
+}
+
+.leaderboard-version-button svg,
+.leaderboard-version-help__close svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.leaderboard-version-button:focus-visible,
+.leaderboard-version-help__close:focus-visible {
+  outline: 0.2rem solid var(--focus);
+  outline-offset: 0.14rem;
+}
+
+.leaderboard-version-help[popover] {
+  width: min(22rem, calc(100vw - 2rem));
+  padding: 1rem 3.25rem 1rem 1rem;
+  color: var(--ink);
+  background: var(--paper);
+  border: 3px solid var(--navy);
+  border-radius: 0.55rem;
+  box-shadow:
+    0 0.22rem 0 var(--yellow),
+    0 0.48rem 0 var(--navy-shadow);
+}
+
+.leaderboard-version-help strong {
+  color: var(--navy);
+}
+
+.leaderboard-version-help p {
+  margin: 0.3rem 0 0;
+  color: var(--muted);
+  font-size: var(--text-label);
+  line-height: 1.4;
+}
+
+.leaderboard-version-help__close {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+  cursor: pointer;
+}
+
+.leaderboard-table tbody tr[aria-current='true'] th,
+.leaderboard-table tbody tr[aria-current='true'] td:first-child {
+  color: var(--blue);
+  font-weight: 800;
+}
+
+.friends-field {
+  display: grid;
+  gap: 0.35rem;
+  margin-block: 0.7rem;
+}
+
+.friends-field input {
+  min-width: 0;
+  width: 100%;
+  padding: 0.65rem 0.8rem;
+  color: var(--ink);
+  background: white;
+  border: 2px solid var(--navy);
+  border-radius: var(--button-radius);
+  font: inherit;
+}

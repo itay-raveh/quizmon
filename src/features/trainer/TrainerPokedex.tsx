@@ -1,4 +1,3 @@
-import * as styles from './styles/classes.css.ts';
 import { GameButton } from '@/components/GameButton';
 import { QuestionIcon } from '@/components/icons';
 import { PokemonIdentity } from '@/components/PokemonIdentity';
@@ -56,13 +55,13 @@ export const TrainerPokedex = ({
   const visible = matches.slice(pageStart, pageEnd);
 
   return (
-    <section className={styles.trainerPokedex} aria-label="Pokédex collection">
-      <div className={styles.trainerPokedexSummary}>
+    <section className="trainer-pokedex" aria-label="Pokédex collection">
+      <div className="trainer-pokedex__summary">
         <strong>
           {count} / {entries.length} found
         </strong>
       </div>
-      <label className={styles.trainerPokedexSearch}>
+      <label className="trainer-pokedex__search">
         Search Pokédex
         <input
           type="search"
@@ -74,7 +73,7 @@ export const TrainerPokedex = ({
           }}
         />
       </label>
-      <p className={styles.trainerPokedexCount} role="status">
+      <p className="trainer-pokedex__count" role="status">
         {matches.length === 0
           ? search
             ? 'No matching entries. Try another name or Pokédex number.'
@@ -82,13 +81,13 @@ export const TrainerPokedex = ({
           : `${pageStart + 1}–${pageEnd} of ${matches.length} entries`}
       </p>
       {visible.length > 0 && (
-        <ul className={styles.trainerPokedexEntries}>
+        <ul className="trainer-pokedex__entries">
           {visible.map(({ found, name, pokemon }) => (
             <li
-              className={`${styles.trainerPokedexEntry}${found ? ` ${styles.isFound}` : ''}`}
+              className={`trainer-pokedex__entry${found ? ' is-found' : ''}`}
               key={name}
             >
-              <div className={styles.trainerPokedexPortrait} aria-hidden="true">
+              <div className="trainer-pokedex__portrait" aria-hidden="true">
                 {found && pokemon.sprite ? (
                   <img
                     src={pokemon.sprite}
@@ -111,7 +110,7 @@ export const TrainerPokedex = ({
                   />
                 </>
               ) : (
-                <span className={styles.trainerPokedexMissing}>
+                <span className="trainer-pokedex__missing">
                   <small>{formatPokedexNumber(pokemon.speciesId)}</small>
                   <span>Not found</span>
                 </span>
@@ -121,7 +120,7 @@ export const TrainerPokedex = ({
         </ul>
       )}
       {pages > 1 && (
-        <nav className={styles.trainerPokedexPages} aria-label="Pokédex pages">
+        <nav className="trainer-pokedex__pages" aria-label="Pokédex pages">
           <GameButton
             tone="quiet"
             disabled={currentPage === 0}
