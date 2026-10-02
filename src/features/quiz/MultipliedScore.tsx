@@ -4,13 +4,13 @@ import {
   getQuestionTypesMultiplier,
   getScoreMultiplier,
 } from '@/domain/quiz/score-multipliers';
-import type { ScoreMultipliers } from '@/domain/quiz/types';
+import type { LegacyScoreMultipliers } from '@/domain/quiz/score-multipliers';
 import { useGameSounds } from '@/lib/audio/sound-context';
 import { useEffect, useState, type CSSProperties } from 'react';
 
 interface MultipliedScoreProps {
   baseScore: number;
-  multipliers: ScoreMultipliers;
+  multipliers: LegacyScoreMultipliers;
   score: number;
 }
 

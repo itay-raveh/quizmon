@@ -3,6 +3,7 @@ import { MongoClient, type Collection } from 'mongodb';
 import { getRxStorageMongoDB } from 'rxdb/plugins/storage-mongodb';
 import {
   compactCompletion,
+  compactRoundSchema,
   scoreCompactRound,
 } from '../../src/domain/sync/compact-rounds.ts';
 import { openPlayerDatabase } from '../../src/lib/storage/rxdb-database.ts';
@@ -28,14 +29,35 @@ try {
     false,
   );
   const first = compactCompletion(completion('training'));
+  assert(first.mode === 'training');
+  const legacy = compactRoundSchema.parse({
+    ...first,
+    id: crypto.randomUUID(),
+    training: {
+      level: first.training.level,
+      generations: first.training.generations,
+      formGroups: first.training.formGroups,
+    },
+    answers: first.answers.map((answer) => {
+      const copy = { ...answer };
+      Reflect.deleteProperty(copy, 'ruleLevel');
+      return copy;
+    }),
+  });
   const daily = compactCompletion(completion('daily'));
   assert(daily.mode === 'daily');
   await db.rounds.insert({ ...first, ownerId: 'alpha' });
+  await db.rounds.insert({ ...legacy, ownerId: 'legacy' });
   await db.rounds.insert({ ...daily, ownerId: 'alpha' });
   standings = await startStandings(db, collection);
   assert.equal(
     (await boardRows(standings, 'training', null))[0]?.roundId,
     first.id,
+  );
+  assert(
+    !(await boardRows(standings, 'training', null)).some(
+      (row) => row.playerId === 'legacy',
+    ),
   );
   assert.equal(
     (await boardRows(standings, 'daily', null, daily.day))[0]?.roundId,
@@ -48,6 +70,11 @@ try {
   assert.equal(
     (await boardRows(standings, 'training', null))[0]?.roundId,
     faster.id,
+  );
+  assert(
+    !(await boardRows(standings, 'training', null)).some(
+      (row) => row.playerId === 'legacy',
+    ),
   );
   assert.ok(scoreCompactRound(faster).score > scoreCompactRound(first).score);
 

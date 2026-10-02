@@ -5,7 +5,7 @@ import { SoundButton } from '@/components/SoundButton';
 import { formGroups, generations } from '@/domain/pokemon/types';
 import { gameLevels } from '@/domain/quiz/level';
 import { formatScoreMultiplier } from '@/domain/quiz/format';
-import { getScoreMultiplier } from '@/domain/quiz/score-multipliers';
+import { getTrainingLevelFactor } from '@/domain/quiz/training-scoring';
 import { type GameSettings } from '@/domain/settings/types';
 import type { Dispatch, RefObject, SetStateAction } from 'react';
 import { QuestionTypeSettings } from './QuestionTypeSettings';
@@ -57,7 +57,7 @@ export const TrainingSettings = ({
           <span>Base multiplier</span>
           <strong>
             {formatScoreMultiplier(
-              getScoreMultiplier({ ...scoreMultipliers, questionMix: 1 }),
+              getTrainingLevelFactor(scoreMultipliers.level),
             )}
           </strong>
         </p>

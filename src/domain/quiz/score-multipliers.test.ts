@@ -64,7 +64,7 @@ it('scores the drawn question mix without rewarding unused selected types', () =
     { questionType: second! },
   ];
   const actual = getTrainingScoreMultipliers(settings, drawn);
-  expect(actual?.perQuestion).toBe(true);
+  expect(actual?.version).toBe(2);
   const withoutUnused = getTrainingScoreMultipliers(
     { ...settings, questionTypes: [first!, second!] },
     drawn,
@@ -103,7 +103,17 @@ it.each([
   expect(isScoreMultipliers({ ...multipliers, ...overrides })).toBe(false);
 });
 
-it('counts unique generations, eligible form groups, and selected types once', () => {
+it('rejects a saved rule level above the selected level', () => {
+  expect(
+    isScoreMultipliers({
+      version: 2,
+      level: 4,
+      questionTypes: [{ questionType: 'evYields', ruleLevel: 5 }],
+    }),
+  ).toBe(false);
+});
+
+it('uses only drawn families and ignores duplicate settings selections', () => {
   const level = gameLevels.find((level) =>
     getQuestionVariant('spriteForPokemon', level),
   )!;
@@ -126,7 +136,6 @@ it('counts unique generations, eligible form groups, and selected types once', (
     questionTypes: ['spriteForPokemon', 'hiddenAbilities'],
   });
   expect(result).toEqual(unique);
-  expect(result?.generations).toBe(2);
   expect(
     getTrainingScoreMultipliers({
       level,

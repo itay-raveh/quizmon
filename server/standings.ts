@@ -98,6 +98,7 @@ export async function startStandings(
     const ownerId = value.ownerId;
     const candidate = standingFromRound(round.data, ownerId);
     if (round.data.mode === 'training') {
+      if (round.data.training.scoreVersion !== 2) continue;
       const previous = bestTraining.get(ownerId);
       if (!previous || isBetter(candidate, previous))
         bestTraining.set(ownerId, candidate);
@@ -124,6 +125,7 @@ export async function startStandings(
       if (!round.success) return;
       const ownerId = event.documentData.ownerId;
       if (round.data.mode === 'training') {
+        if (round.data.training.scoreVersion !== 2) return;
         const candidate = standingFromRound(round.data, ownerId);
         const previous = await collection.findOne({ _id: candidate._id });
         if (!previous || isBetter(candidate, previous))

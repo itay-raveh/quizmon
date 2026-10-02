@@ -1,9 +1,15 @@
 import { getScoreMultiplier } from './score-multipliers.ts';
+import {
+  getTrainingLevelFactor,
+  getTrainingRuleFactor,
+  trainingScoring,
+} from './training-scoring.ts';
 import type {
   QuestionData,
   SavedAnswerResult,
   ScoreMultipliers,
 } from './types.ts';
+import type { TrainingScoreMultipliers } from './score-multipliers.ts';
 
 export interface ScoringRules {
   baseQuestionPoints: number;
@@ -66,11 +72,48 @@ export const getScoreBreakdown = (
   return { knowledge, speed, mastery };
 };
 
+export const getTrainingScoreBreakdown = (
+  answers: readonly SavedAnswerResult[],
+  multipliers: TrainingScoreMultipliers,
+) => {
+  const ruleLevels = new Map<string, number>(
+    multipliers.questionTypes.map(({ questionType, ruleLevel }) => [
+      questionType,
+      ruleLevel,
+    ]),
+  );
+  let earned = 0;
+  let total = 0;
+  for (const answer of answers) {
+    if (!answer.correct) continue;
+    const ruleLevel = ruleLevels.get(answer.questionType ?? '');
+    if (ruleLevel === undefined)
+      throw new Error('Missing question score factor');
+    const base =
+      trainingScoring.basePoints *
+      getTrainingLevelFactor(multipliers.level) *
+      getTrainingRuleFactor(multipliers.level, ruleLevel);
+    const speed =
+      base *
+      trainingScoring.speedBonusRate *
+      2 **
+        (-Math.max(0, answer.responseMilliseconds ?? Infinity) /
+          trainingScoring.speedBonusHalfLifeMilliseconds);
+    earned += base;
+    total += base + speed;
+  }
+  const answersPoints = Math.round(earned);
+  const score = Math.round(total);
+  return { answers: answersPoints, speed: score - answersPoints, score };
+};
+
 export const calculateScore = (
   answers: readonly SavedAnswerResult[],
   multipliers?: ScoreMultipliers,
   rules: ScoringRules = scoringRules,
 ): number => {
+  if (multipliers?.version === 2)
+    return getTrainingScoreBreakdown(answers, multipliers).score;
   const { knowledge, speed, mastery } = getScoreBreakdown(answers, rules);
   if (multipliers?.perQuestion) {
     const factors = new Map<string, number>(

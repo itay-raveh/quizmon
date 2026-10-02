@@ -1,9 +1,12 @@
 import { expect, it } from 'vitest';
 import { projectCompactRoundHistory } from './compact-history.ts';
 import {
+  compactCompletion,
+  compactRoundSchema,
   scoreCompactRound,
   type CompactRound,
 } from '../sync/compact-rounds.ts';
+import { completion } from '../../../tests/online/progress-fixtures.ts';
 
 it('credits the earliest completed Daily while retaining discoveries from both attempts', () => {
   const answer = (subject: string, options: string[], responseMs = 1000) => ({
@@ -48,4 +51,31 @@ it('credits the earliest completed Daily while retaining discoveries from both a
     'ivysaur',
     'venusaur',
   ]);
+});
+
+it('keeps legacy Training progress without comparing its score to the new version', () => {
+  const current = compactCompletion(completion());
+  if (current.mode !== 'training') throw new Error('Expected Training round');
+  const legacy = compactRoundSchema.parse({
+    ...current,
+    id: crypto.randomUUID(),
+    completedAt: '2026-09-12T10:00:00.000Z',
+    training: {
+      level: current.training.level,
+      generations: current.training.generations,
+      formGroups: current.training.formGroups,
+    },
+    answers: current.answers.map((answer) => {
+      const copy = { ...answer };
+      Reflect.deleteProperty(copy, 'ruleLevel');
+      return copy;
+    }),
+  });
+  const oldOnly = projectCompactRoundHistory([legacy], 'Trainer');
+  expect(oldOnly.results.training.score).toBeUndefined();
+  expect(oldOnly.results.progress.masteryRounds).toBeGreaterThan(0);
+  const combined = projectCompactRoundHistory([current, legacy], 'Trainer');
+  expect(combined.results.training.score?.score).toBe(
+    scoreCompactRound(current).score,
+  );
 });

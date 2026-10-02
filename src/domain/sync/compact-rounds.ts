@@ -5,7 +5,10 @@ import {
   getResponseTime,
   getSpeedBonusPoints,
 } from '../quiz/scoring.ts';
-import { getTrainingScoreMultipliers } from '../quiz/score-multipliers.ts';
+import {
+  getLegacyTrainingScoreMultipliers,
+  getTrainingScoreMultipliers,
+} from '../quiz/score-multipliers.ts';
 import {
   questionDefinitions,
   questionTypes,
@@ -41,6 +44,10 @@ const training = z.object({
   generations: z.array(z.enum(generations)).min(1),
   formGroups: z.array(z.enum(formGroups)).min(1),
 });
+const currentTraining = training.extend({ scoreVersion: z.literal(2) });
+const legacyTraining = training.extend({
+  scoreVersion: z.undefined().optional(),
+});
 
 const base = z.object({
   id: uuidSchema,
@@ -48,10 +55,30 @@ const base = z.object({
   answers: z.array(compactAnswerSchema).min(1),
 });
 
-export const compactRoundSchema = z.discriminatedUnion('mode', [
+const currentTrainingRound = base
+  .extend({
+    mode: z.literal('training'),
+    training: currentTraining,
+    answers: z
+      .array(compactAnswerSchema.extend({ ruleLevel: levelSchema }))
+      .length(10),
+  })
+  .refine(({ training: settings, answers }) => {
+    const levels = new Map<string, number>();
+    return answers.every((answer) => {
+      if (answer.type === 'champion' || answer.ruleLevel > settings.level)
+        return false;
+      const previous = levels.get(answer.type);
+      levels.set(answer.type, answer.ruleLevel);
+      return previous === undefined || previous === answer.ruleLevel;
+    });
+  });
+
+export const compactRoundSchema = z.union([
+  currentTrainingRound,
   base.extend({
     mode: z.literal('training'),
-    training,
+    training: legacyTraining,
     answers: z.array(compactAnswerSchema).length(10),
   }),
   base.extend({
@@ -68,6 +95,7 @@ export const compactRoundSchema = z.discriminatedUnion('mode', [
 export type CompactRound = z.infer<typeof compactRoundSchema>;
 
 export function compactCompletion(completion: RoundCompletion): CompactRound {
+  const scoring = completion.result.scoreMultipliers;
   const common = {
     id: completion.completionId,
     completedAt: completion.completedAt,
@@ -89,6 +117,13 @@ export function compactCompletion(completion: RoundCompletion): CompactRound {
         expected: observation.expected,
         selected: observation.selected,
         responseMs: answer.responseMilliseconds,
+        ...(scoring?.version === 2
+          ? {
+              ruleLevel: scoring.questionTypes.find(
+                (factor) => factor.questionType === answer.questionType,
+              )?.ruleLevel,
+            }
+          : {}),
         ...(answer.questionType === 'champion' && answer.cluesUsed > 0
           ? { cluesUsed: answer.cluesUsed }
           : {}),
@@ -104,6 +139,7 @@ export function compactCompletion(completion: RoundCompletion): CompactRound {
             level: completion.training.level,
             generations: completion.training.generations,
             formGroups: completion.training.formGroups,
+            ...(scoring?.version === 2 ? { scoreVersion: 2 as const } : {}),
           },
         }
       : completion.mode === 'daily'
@@ -144,17 +180,32 @@ export function scoreCompactRound(round: CompactRound): GameResult {
   });
   const multipliers =
     round.mode === 'training'
-      ? getTrainingScoreMultipliers(
-          {
-            level: round.training.level,
-            generations: round.training.generations,
-            formGroups: round.training.formGroups,
-            questionTypes: questionTypes.filter((type) =>
-              round.answers.some((answer) => answer.type === type),
-            ),
-          },
-          answers,
-        )
+      ? round.training.scoreVersion === 2
+        ? getTrainingScoreMultipliers(
+            {
+              level: round.training.level,
+              generations: round.training.generations,
+              questionTypes: questionTypes.filter((type) =>
+                round.answers.some((answer) => answer.type === type),
+              ),
+            },
+            round.answers.map((answer) => ({
+              questionType: answer.type,
+              variantLevel:
+                'ruleLevel' in answer ? answer.ruleLevel : undefined,
+            })),
+          )
+        : getLegacyTrainingScoreMultipliers(
+            {
+              level: round.training.level,
+              generations: round.training.generations,
+              formGroups: round.training.formGroups,
+              questionTypes: questionTypes.filter((type) =>
+                round.answers.some((answer) => answer.type === type),
+              ),
+            },
+            answers,
+          )
       : undefined;
   return {
     answers,

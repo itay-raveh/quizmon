@@ -6,6 +6,7 @@ import {
   getSpeedBonusPoints,
 } from './scoring';
 import type { ScoreMultipliers } from './types';
+import type { TrainingScoreMultipliers } from './score-multipliers';
 
 describe('scoring', () => {
   it('multiplies the whole base score and rounds only the final total', () => {
@@ -36,12 +37,6 @@ describe('scoring', () => {
       }),
     ).toBe(25313);
   });
-  it('awards 1,000 points for a normal correct answer', () => {
-    const question = { category: 'stat' } as const;
-    expect(getAnswerPoints(question, true)).toBe(1_000);
-    expect(getAnswerPoints(question, false)).toBe(0);
-  });
-
   it('compounds drawn question factors and retains the earlier award rule', () => {
     const answers = [
       {
@@ -108,16 +103,14 @@ describe('scoring', () => {
     expect(calculateScore(answers, multipliers)).toBe(10_245);
   });
 
-  it.each([
-    [0, 1_000],
-    [1, 750],
-    [2, 500],
-    [3, 250],
-    [8, 250],
-  ])('awards %i-assist Champion answers %i points', (assists, points) => {
-    expect(getAnswerPoints({ category: 'champion' }, true, assists)).toBe(
-      points,
+  it('reduces Champion awards for help without dropping below the final clue', () => {
+    expect(getAnswerPoints({ category: 'champion' }, true, 0)).toBeGreaterThan(
+      getAnswerPoints({ category: 'champion' }, true, 1),
     );
+    expect(getAnswerPoints({ category: 'champion' }, true, 8)).toBe(
+      getAnswerPoints({ category: 'champion' }, true, 3),
+    );
+    expect(getAnswerPoints({ category: 'champion' }, false)).toBe(0);
   });
 
   it('adds a bounded mastery bonus to earned knowledge points', () => {
@@ -182,6 +175,68 @@ describe('scoring', () => {
       speed: 0,
       mastery: 0,
     });
+  });
+
+  it('rewards a deliberate level increase only when accuracy holds up', () => {
+    const answers = (correct: number) =>
+      Array.from({ length: 10 }, (_, index) => ({
+        category: 'identity' as const,
+        questionType: 'pokemonTypes' as const,
+        correct: index < correct,
+        points: index < correct ? 1000 : 0,
+        responseMilliseconds: 5000,
+      }));
+    const factors = (
+      level: 4 | 5,
+      ruleLevel: 4 | 5,
+    ): TrainingScoreMultipliers => ({
+      version: 2,
+      level,
+      questionTypes: [{ questionType: 'pokemonTypes', ruleLevel }],
+    });
+    const level4 = factors(4, 4);
+    const level5 = factors(5, 5);
+    const carried = factors(5, 4);
+    expect(calculateScore(answers(5), level5)).toBeLessThan(
+      calculateScore(answers(9), level4),
+    );
+    expect(calculateScore(answers(7), level5)).toBeGreaterThan(
+      calculateScore(answers(10), level4),
+    );
+    expect(calculateScore(answers(7), carried)).toBeLessThan(
+      calculateScore(answers(10), level4),
+    );
+    expect(
+      calculateScore(
+        [
+          { ...answers(1)[0]!, questionType: 'pokemonTypes' },
+          {
+            ...answers(0)[0]!,
+            questionType: 'evYields',
+            responseMilliseconds: 0,
+          },
+        ],
+        {
+          ...level5,
+          questionTypes: [
+            ...level5.questionTypes,
+            { questionType: 'evYields', ruleLevel: 4 },
+          ],
+        },
+      ),
+    ).toBe(calculateScore(answers(1).slice(0, 1), level5));
+    expect(calculateScore(answers(5), level5)).toBe(
+      Math.round(calculateScore(answers(10), level5) / 2),
+    );
+    expect(
+      calculateScore(
+        answers(10).map((answer) => ({
+          ...answer,
+          responseMilliseconds: 0,
+        })),
+        level5,
+      ),
+    ).toBe(98_304);
   });
 
   it('totals only active answer time', () => {

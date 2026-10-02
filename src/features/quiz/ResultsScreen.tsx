@@ -11,7 +11,11 @@ import {
 import { generations } from '@/domain/pokemon/types';
 import { isLeagueVictory } from '@/domain/quiz/league';
 import { getCategoryLabel } from '@/domain/quiz/questions/definitions';
-import { calculateScore, getScoreBreakdown } from '@/domain/quiz/scoring';
+import {
+  calculateScore,
+  getScoreBreakdown,
+  getTrainingScoreBreakdown,
+} from '@/domain/quiz/scoring';
 import type { GameMode, GameResult } from '@/domain/quiz/types';
 import type { GameSettings } from '@/domain/settings/types';
 import { LeagueProgress } from '@/features/league/LeagueProgress';
@@ -117,6 +121,10 @@ export const ResultsScreen = ({
   const nextLevel = isTraining ? suggestedLevel(result, settings.level) : null;
   const leagueVictory = isLeague && isLeagueVictory(result);
   const score = getScoreBreakdown(result.answers);
+  const trainingScore =
+    result.scoreMultipliers?.version === 2
+      ? getTrainingScoreBreakdown(result.answers, result.scoreMultipliers)
+      : null;
   const resultStats: ResultStat[] = [
     ...(!isLeague && result.questionCount > 10
       ? [
@@ -135,12 +143,23 @@ export const ResultsScreen = ({
           ? formatDurationMilliseconds(result.elapsedMilliseconds, 'minutes')
           : formatDuration(result.elapsedSeconds, 'minutes'),
     },
-    {
-      label: 'Knowledge',
-      value: formatScore(score.knowledge),
-    },
-    { label: 'Speed', value: formatScore(score.speed) },
-    { label: 'Mastery', value: formatScore(score.mastery) },
+    ...(trainingScore
+      ? [
+          {
+            label: 'Correct',
+            value: `${result.correctCount} / ${result.questionCount}`,
+          },
+          { label: 'Answers', value: formatScore(trainingScore.answers) },
+          { label: 'Speed', value: formatScore(trainingScore.speed) },
+        ]
+      : [
+          {
+            label: 'Knowledge',
+            value: formatScore(score.knowledge),
+          },
+          { label: 'Speed', value: formatScore(score.speed) },
+          { label: 'Mastery', value: formatScore(score.mastery) },
+        ]),
   ];
   const highScoreLabel = isTraining ? 'Training' : isDaily ? 'Daily' : null;
   const resultTitle = isDaily
@@ -243,7 +262,21 @@ export const ResultsScreen = ({
             <strong>Perfect round</strong>
           </div>
         ) : null}
-        {result.scoreMultipliers ? (
+        {result.scoreMultipliers?.version === 2 ? (
+          <div
+            className="score"
+            aria-label={`Score ${formatScore(result.score)}`}
+          >
+            <span>Score</span>
+            <strong>
+              <AnimatedScore
+                playSound={playScoreCount}
+                format={formatScore}
+                value={result.score}
+              />
+            </strong>
+          </div>
+        ) : result.scoreMultipliers ? (
           <MultipliedScore
             baseScore={calculateScore(result.answers)}
             multipliers={result.scoreMultipliers}

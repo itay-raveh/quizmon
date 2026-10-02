@@ -49,15 +49,12 @@ export const App = () => {
       const roundId = crypto.randomUUID();
       const startedOn = new Date().toISOString().slice(0, 10);
       try {
-        const scoring =
+        const scoreMultipliers =
           nextMode.kind === 'training'
-            ? {
-                scoreMultipliers: getTrainingScoreMultipliers(
-                  nextSettings,
-                  nextQuestions,
-                ),
-              }
-            : {};
+            ? getTrainingScoreMultipliers(nextSettings, nextQuestions)
+            : undefined;
+        if (nextMode.kind === 'training' && !scoreMultipliers)
+          throw new Error('Training score rules are unavailable.');
         if (
           nextMode.kind === 'daily' &&
           !(await claimDailyAttempt(nextMode.date))
@@ -72,7 +69,7 @@ export const App = () => {
           startedOn,
           seed,
           type: 'started',
-          ...scoring,
+          scoreMultipliers,
         });
         reset();
         start();
