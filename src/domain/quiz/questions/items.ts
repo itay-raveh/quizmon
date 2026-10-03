@@ -40,6 +40,8 @@ export const buildItemIdentification: QuestionBuilder<
   );
   for (const target of pool) {
     if (spriteCounts.get(target.spriteIdentity!) !== 1) continue;
+    // Berries vary by flavor and Apricorns mainly by color. Restricted choices
+    // can reduce identification to distinguishing variants of the same item.
     if (
       context.variant.response.kind !== 'search' &&
       (target.pocket === 'berries' || target.category === 'apricorn-box')

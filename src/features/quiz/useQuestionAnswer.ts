@@ -2,10 +2,10 @@ import { observeAnswer } from '../../domain/quiz/answer-observation';
 import { getQuestionRendering } from '@/domain/quiz/variants';
 import { showsSearchResponse } from '@/domain/quiz/interaction';
 import {
-  getAnswerPoints,
-  getSpeedBonusPoints,
+  getQuestionScore,
   isQuestionAnswerCorrect,
 } from '@/domain/quiz/scoring';
+import type { Level } from '@/domain/quiz/level';
 import { type AnswerResult, type QuestionData } from '@/domain/quiz/types';
 import { answerFlowDelays, type AnswerFlow } from '@/domain/settings/types';
 import { useGameSounds } from '@/lib/audio/sound-context';
@@ -23,6 +23,7 @@ export interface UseQuestionAnswerOptions {
   getElapsedMilliseconds: () => number;
   questionStartedMilliseconds?: number;
   interactionPaused: boolean;
+  level: Level;
   nextQuestion?: QuestionData;
   onAnswer: (answer: AnswerResult) => void | Promise<void>;
   onAnswerRecorded?: (answer: AnswerResult) => void | Promise<void>;
@@ -69,6 +70,7 @@ export const useQuestionAnswer = ({
   getElapsedMilliseconds,
   questionStartedMilliseconds,
   interactionPaused,
+  level,
   nextQuestion,
   onAnswer,
   onAnswerRecorded,
@@ -134,14 +136,18 @@ export const useQuestionAnswer = ({
       answerStarted.current = true;
 
       const correct = isQuestionAnswerCorrect(question, options);
-      const points = getAnswerPoints(
-        question,
-        correct,
-        cluesShown + (question.initialClues ?? 0),
-      );
       const responseMilliseconds = Math.max(
         0,
         Math.round(onFeedbackStart() - questionStartedAt.current),
+      );
+      const scoring = getQuestionScore(
+        {
+          questionType: question.questionType,
+          correct,
+          cluesUsed: cluesShown + (question.initialClues ?? 0),
+          responseMilliseconds,
+        },
+        level,
       );
       const answer = {
         observation: observeAnswer(question, options),
@@ -153,10 +159,10 @@ export const useQuestionAnswer = ({
           !question.initialClues &&
           cluesShown === 0,
         correct,
-        points,
+        points: scoring.answers,
         questionType: question.questionType,
         responseMilliseconds,
-        speedBonus: getSpeedBonusPoints(points, responseMilliseconds),
+        speedBonus: scoring.speed,
         subject: {
           kind: question.subject.kind,
           generation: question.subject.generation,
@@ -203,6 +209,7 @@ export const useQuestionAnswer = ({
       answered,
       cluesShown,
       interactionPaused,
+      level,
       onAnswerRecorded,
       onFeedbackStart,
       playCorrect,

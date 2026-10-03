@@ -1,11 +1,9 @@
 import { generations } from '../../src/domain/pokemon/types.ts';
 import { questionTypes as coreQuestionTypes } from '../../src/domain/quiz/questions/definitions.ts';
 import {
-  calculateScore,
-  getAnswerPoints,
   getResponseTime,
-  getSpeedBonusPoints,
-  getTrainingScoreBreakdown,
+  getRoundAnswerLevel,
+  getScoreBreakdown,
 } from '../../src/domain/quiz/scoring.ts';
 import { type AnswerResult } from '../../src/domain/quiz/types.ts';
 import { type RoundCompletion } from '../../src/domain/sync/progress.ts';
@@ -27,7 +25,6 @@ export function completion(
       const correct = !options.failedLeague || index < 2;
       const category = champion ? 'champion' : 'type';
       const assistsUsed = champion ? (options.assistsUsed ?? 0) : 0;
-      const points = getAnswerPoints({ category }, correct, assistsUsed);
       return {
         observation: {
           questionId: `fixture-${index}`,
@@ -44,11 +41,22 @@ export function completion(
         correct,
         ...(champion ? { unassistedSearch: false } : {}),
         responseMilliseconds: 1000,
-        points,
-        speedBonus: getSpeedBonusPoints(points, 1000),
+        points: 0,
+        speedBonus: 0,
       };
     },
   );
+  const gameMode =
+    mode === 'daily'
+      ? { kind: 'daily' as const, date: options.dailyDate ?? '2026-09-11' }
+      : { kind: mode };
+  const scoring = getScoreBreakdown(answers, (index) =>
+    getRoundAnswerLevel(gameMode, 3, index),
+  );
+  answers.forEach((answer, index) => {
+    answer.points = scoring.awards[index]!.points;
+    answer.speedBonus = scoring.awards[index]!.speedBonus;
+  });
   return {
     completionId: crypto.randomUUID(),
     mode,
@@ -70,10 +78,7 @@ export function completion(
       questionCount: count,
       correctCount: answers.filter((a) => a.correct).length,
       ...getResponseTime(answers),
-      score:
-        mode === 'training'
-          ? getTrainingScoreBreakdown(answers, 3).score
-          : calculateScore(answers),
+      score: scoring.score,
     },
   };
 }

@@ -6,6 +6,8 @@ import type {
 } from './types.ts';
 import { silhouetteSprite, responsePresets } from './shared.ts';
 
+export const championClueFactors = [1, 0.75, 0.5, 0.25] as const;
+
 const controls = {
   view: { answer: { kind: 'pokemon' } },
   distractorRankDirection: 'most-similar',

@@ -6,7 +6,7 @@ import {
   generations,
   type PokemonCatalog,
 } from '../../domain/pokemon/types';
-import { getUtcDate } from '../../domain/quiz/daily';
+import { DAILY_LEVEL, getUtcDate } from '../../domain/quiz/daily';
 import {
   buildDailyQuestions,
   resolveTrainingSettings,
@@ -99,7 +99,7 @@ export const useDailyChallenge = ({
     try {
       const next = resolveTrainingSettings(catalog, {
         ...settings,
-        level: 3,
+        level: DAILY_LEVEL,
         generations: [...generations],
         formGroups: [...formGroups],
         questionSelection: 'automatic',

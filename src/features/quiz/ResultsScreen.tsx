@@ -14,9 +14,9 @@ import { isLeagueVictory } from '@/domain/quiz/league';
 import { getCategoryLabel } from '@/domain/quiz/questions/definitions';
 import {
   getScoreBreakdown,
-  getTrainingScoreBreakdown,
+  getRoundAnswerLevel,
+  getQuestionScoreFactor,
 } from '@/domain/quiz/scoring';
-import { getTrainingAnswerFactor } from '@/domain/quiz/training-scoring';
 import type { GameMode, GameResult } from '@/domain/quiz/types';
 import type { GameSettings } from '@/domain/settings/types';
 import { LeagueProgress } from '@/features/league/LeagueProgress';
@@ -117,30 +117,20 @@ export const ResultsScreen = ({
   const isDaily = mode.kind === 'daily';
   const isLeague = mode.kind === 'league';
   const isTraining = mode.kind === 'training';
-  const perfectTraining =
-    isTraining && result.correctCount === result.questionCount;
+  const perfectRound =
+    !isLeague && result.correctCount === result.questionCount;
   const nextLevel = isTraining ? suggestedLevel(result, settings.level) : null;
   const leagueVictory = isLeague && isLeagueVictory(result);
-  const score = getScoreBreakdown(result.answers);
-  const trainingLevel = isTraining ? result.rules?.level : undefined;
-  const trainingScore = trainingLevel
-    ? getTrainingScoreBreakdown(result.answers, trainingLevel)
-    : null;
-  const scoreCheckpoints = useMemo(
+  const score = useMemo(
     () =>
-      trainingLevel
-        ? [
-            0,
-            ...result.answers.map(
-              (_, index) =>
-                getTrainingScoreBreakdown(
-                  result.answers.slice(0, index + 1),
-                  trainingLevel,
-                ).score,
-            ),
-          ]
-        : undefined,
-    [result.answers, trainingLevel],
+      getScoreBreakdown(result.answers, (index) =>
+        getRoundAnswerLevel(mode, result.rules?.level, index),
+      ),
+    [mode, result.answers, result.rules?.level],
+  );
+  const scoreCheckpoints = useMemo(
+    () => [0, ...score.awards.map((award) => award.score)],
+    [score.awards],
   );
   const resultStats: ResultStat[] = [
     ...(!isLeague && result.questionCount > 10
@@ -160,19 +150,8 @@ export const ResultsScreen = ({
           ? formatDurationMilliseconds(result.elapsedMilliseconds, 'minutes')
           : formatDuration(result.elapsedSeconds, 'minutes'),
     },
-    ...(trainingScore
-      ? [
-          { label: 'Answers', value: formatScore(trainingScore.answers) },
-          { label: 'Speed', value: formatScore(trainingScore.speed) },
-        ]
-      : [
-          {
-            label: 'Knowledge',
-            value: formatScore(score.knowledge),
-          },
-          { label: 'Speed', value: formatScore(score.speed) },
-          { label: 'Mastery', value: formatScore(score.mastery) },
-        ]),
+    { label: 'Answers', value: formatScore(score.answers) },
+    { label: 'Speed', value: formatScore(score.speed) },
   ];
   const highScoreLabel = isTraining ? 'Training' : isDaily ? 'Daily' : null;
   const resultTitle = isDaily
@@ -270,7 +249,7 @@ export const ResultsScreen = ({
       </div>
 
       <div className="result-score">
-        {perfectTraining ? (
+        {perfectRound ? (
           <div className="result-score__perfect">
             <strong>Perfect round</strong>
           </div>
@@ -280,7 +259,7 @@ export const ResultsScreen = ({
           <strong aria-hidden="true">
             <AnimatedScore
               checkpoints={scoreCheckpoints}
-              onCheckpoint={scoreCheckpoints ? setActiveAnswerIndex : undefined}
+              onCheckpoint={setActiveAnswerIndex}
               playSound={playScoreCount}
               format={formatScore}
               value={result.score}
@@ -326,9 +305,9 @@ export const ResultsScreen = ({
           />
         ) : result.questionCount <= 10 ? (
           <ol
-            className={`answer-trail${isTraining ? ' answer-trail--training' : ''}`}
+            className={`answer-trail${!isLeague ? ' answer-trail--training' : ''}`}
             aria-label={
-              isTraining
+              !isLeague
                 ? 'Question results and score factors'
                 : 'Question results'
             }
@@ -337,14 +316,12 @@ export const ResultsScreen = ({
               const categoryLabel = getCategoryLabel(answer.category);
               const outcome = answer.correct ? 'correct' : 'incorrect';
               const factor =
-                trainingLevel &&
-                answer.correct &&
-                answer.questionType &&
-                answer.questionType !== 'champion'
+                !isLeague && answer.correct && answer.questionType
                   ? formatScoreMultiplier(
-                      getTrainingAnswerFactor(
+                      getQuestionScoreFactor(
                         answer.questionType,
-                        trainingLevel,
+                        getRoundAnswerLevel(mode, result.rules?.level, index),
+                        answer.cluesUsed,
                       ),
                     )
                   : undefined;
@@ -362,7 +339,7 @@ export const ResultsScreen = ({
                       <XIcon weight="bold" />
                     )}
                   </span>
-                  {isTraining ? (
+                  {!isLeague ? (
                     <span className="answer-trail__factor" aria-hidden="true">
                       {factor}
                     </span>

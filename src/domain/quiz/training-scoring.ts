@@ -1,6 +1,6 @@
 import { gameLevels, type Level } from './level.ts';
 import { questionRules } from './question-rules/registry.ts';
-import type { QuestionType } from './types.ts';
+import type { QuestionData, QuestionType } from './types.ts';
 import { getQuestionVariant } from './variants.ts';
 
 export const trainingScoring = {
@@ -11,16 +11,14 @@ export const trainingScoring = {
   speedBonusHalfLifeMilliseconds: 10_000,
 } as const;
 
-export const getTrainingLevelFactor = (level: number): number =>
+const getTrainingLevelFactor = (level: number): number =>
   trainingScoring.levelFactor ** (level - 1);
 
-export const getTrainingRuleFactor = (
-  level: number,
-  ruleLevel: number,
-): number => trainingScoring.carriedRuleFactor ** (level - ruleLevel);
+const getTrainingRuleFactor = (level: number, ruleLevel: number): number =>
+  trainingScoring.carriedRuleFactor ** (level - ruleLevel);
 
-export const getScoringRuleLevel = (
-  type: QuestionType,
+const getScoringRuleLevel = (
+  type: QuestionData['questionType'],
   level: Level,
 ): Level => {
   const rules = questionRules[type].levels as Partial<
@@ -36,7 +34,7 @@ export const getScoringRuleLevel = (
 };
 
 export const getTrainingAnswerFactor = (
-  type: QuestionType,
+  type: QuestionData['questionType'],
   level: Level,
 ): number =>
   getTrainingLevelFactor(level) *

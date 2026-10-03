@@ -1,10 +1,8 @@
 import { z } from 'zod';
 import {
-  calculateScore,
-  getAnswerPoints,
   getResponseTime,
-  getSpeedBonusPoints,
-  getTrainingScoreBreakdown,
+  getRoundAnswerLevel,
+  getScoreBreakdown,
 } from '../quiz/scoring.ts';
 import {
   questionDefinitions,
@@ -126,7 +124,6 @@ export function scoreCompactRound(round: CompactRound): GameResult {
       answer.selected.length === answer.expected.length &&
       answer.expected.every((value) => answer.selected.includes(value));
     const cluesUsed = answer.cluesUsed ?? 0;
-    const points = getAnswerPoints({ category }, correct, cluesUsed);
     return {
       category,
       questionType: answer.type,
@@ -138,20 +135,32 @@ export function scoreCompactRound(round: CompactRound): GameResult {
       cluesUsed,
       responseMilliseconds: answer.responseMs,
       correct,
-      points,
-      speedBonus: getSpeedBonusPoints(points, answer.responseMs),
+      points: 0,
+      speedBonus: 0,
     };
   });
+  const mode =
+    round.mode === 'daily'
+      ? { kind: 'daily' as const, date: round.day }
+      : { kind: round.mode };
+  const scoring = getScoreBreakdown(answers, (index) =>
+    getRoundAnswerLevel(
+      mode,
+      round.mode === 'training' ? round.training.level : undefined,
+      index,
+    ),
+  );
   return {
-    answers,
+    answers: answers.map((answer, index) => ({
+      ...answer,
+      points: scoring.awards[index]!.points,
+      speedBonus: scoring.awards[index]!.speedBonus,
+    })),
     correctCount: answers.filter((answer) => answer.correct).length,
     questionCount:
       round.mode === 'training' ? 10 : round.mode === 'daily' ? 5 : 15,
     ...getResponseTime(answers),
-    score:
-      round.mode === 'training'
-        ? getTrainingScoreBreakdown(answers, round.training.level).score
-        : calculateScore(answers),
+    score: scoring.score,
     ...(round.mode === 'training'
       ? {
           rules: {

@@ -14,7 +14,7 @@ import {
 } from '@/domain/quiz/format';
 import type { PokemonCatalog } from '@/domain/pokemon/types';
 import { getQuestionTitle } from '@/domain/quiz/questions/definitions';
-import { getAnswerPoints } from '@/domain/quiz/scoring';
+import { getQuestionScore } from '@/domain/quiz/scoring';
 import type { GameMode, QuestionData } from '@/domain/quiz/types';
 import type { TimerDisplay } from '@/domain/settings/types';
 import { TrainerTitleMark } from '@/features/trainer/TrainerTitleMark';
@@ -88,6 +88,7 @@ export const QuestionScreen = ({
   getElapsedMilliseconds,
   questionStartedMilliseconds,
   interactionPaused,
+  level,
   mode,
   nextQuestion,
   number,
@@ -117,6 +118,7 @@ export const QuestionScreen = ({
     getElapsedMilliseconds,
     questionStartedMilliseconds,
     interactionPaused,
+    level,
     nextQuestion,
     onAnswer,
     onAssistance,
@@ -257,7 +259,7 @@ export const QuestionScreen = ({
           className="game-button question__action-reserve"
         >
           {isChampion && !isLeague && championChoicesVisible
-            ? `Reveal another clue · ${getAnswerPoints(question, true, 3)} points`
+            ? `Reveal another clue · ${getQuestionScore({ questionType: question.questionType, correct: true, cluesUsed: 3 }, level).answers} points`
             : 'Check answers'}
         </span>
         {checkAnswerAction}
@@ -269,11 +271,16 @@ export const QuestionScreen = ({
         cluesShown <= question.clues.length ? (
           <GameButton className="clue-button" tone="quiet" onClick={revealClue}>
             {cluesShown === 0 ? 'Show 4 choices' : 'Reveal another clue'} ·{' '}
-            {getAnswerPoints(
-              question,
-              true,
-              cluesShown + 1 + (question.initialClues ?? 0),
-            )}{' '}
+            {
+              getQuestionScore(
+                {
+                  questionType: question.questionType,
+                  correct: true,
+                  cluesUsed: cluesShown + 1 + (question.initialClues ?? 0),
+                },
+                level,
+              ).answers
+            }{' '}
             points
           </GameButton>
         ) : null}

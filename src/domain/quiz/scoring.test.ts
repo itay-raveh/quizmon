@@ -1,85 +1,98 @@
 import {
-  calculateScore,
-  getAnswerPoints,
+  getQuestionScore,
   getResponseTime,
+  getRoundAnswerLevel,
   getScoreBreakdown,
-  getSpeedBonusPoints,
-  getTrainingScoreBreakdown,
 } from './scoring';
 
 describe('scoring', () => {
-  it('reduces Champion awards for help without dropping below the final clue', () => {
-    expect(getAnswerPoints({ category: 'champion' }, true, 0)).toBeGreaterThan(
-      getAnswerPoints({ category: 'champion' }, true, 1),
+  it('reduces Champion points and speed when clues are used at any level', () => {
+    const answer = {
+      questionType: 'champion' as const,
+      correct: true,
+      responseMilliseconds: 0,
+    };
+    const full = getQuestionScore({ ...answer, cluesUsed: 0 }, 3);
+    const helped = getQuestionScore({ ...answer, cluesUsed: 2 }, 3);
+    const finalClue = getQuestionScore({ ...answer, cluesUsed: 3 }, 3);
+
+    expect(full.answers).toBe(2_560);
+    expect(full.speed).toBe(1_280);
+    expect(helped.answers).toBe(1_280);
+    expect(helped.speed).toBe(640);
+    expect(finalClue.answers).toBe(640);
+    expect(getQuestionScore({ ...answer, cluesUsed: 8 }, 3).score).toBe(
+      finalClue.score,
     );
-    expect(getAnswerPoints({ category: 'champion' }, true, 8)).toBe(
-      getAnswerPoints({ category: 'champion' }, true, 3),
-    );
-    expect(getAnswerPoints({ category: 'champion' }, false)).toBe(0);
+    expect(getQuestionScore({ ...answer, correct: false }, 3).score).toBe(0);
+    expect(getQuestionScore(answer, 5).score).toBeGreaterThan(full.score);
   });
 
-  it('adds a bounded mastery bonus to earned knowledge points', () => {
+  it('sums each answer award without a whole-round mastery bonus', () => {
     const answers = [
       {
-        category: 'identity',
+        questionType: 'pokemonTypes' as const,
         correct: true,
-        points: 1_000,
+        responseMilliseconds: 0,
       },
       {
-        category: 'stat',
+        questionType: 'pokemonTypes' as const,
         correct: false,
-        points: 0,
+        responseMilliseconds: 0,
       },
       {
-        category: 'champion',
-        cluesUsed: 2,
+        questionType: 'champion' as const,
         correct: true,
-        points: 500,
+        cluesUsed: 2,
+        responseMilliseconds: 0,
       },
-    ] as const;
-
-    expect(getScoreBreakdown(answers)).toEqual({
-      knowledge: 1_500,
-      speed: 0,
-      mastery: 750,
-    });
-    expect(calculateScore(answers)).toBe(2_250);
+    ];
+    const result = getScoreBreakdown(answers, 3);
+    expect(result.score).toBe(result.answers + result.speed);
+    expect(result.awards.map((award) => award.score)).toEqual([
+      getQuestionScore(answers[0]!, 3).score,
+      getQuestionScore(answers[0]!, 3).score,
+      result.score,
+    ]);
+    expect(
+      result.awards.reduce(
+        (total, award) => total + award.points + award.speedBonus,
+        0,
+      ),
+    ).toBe(result.score);
+    expect(getScoreBreakdown([], 3).score).toBe(0);
   });
 
-  it.each([
-    [1_000, 0, 3_000],
-    [1_000, 2_000, 2_270],
-    [1_000, 5_000, 1_500],
-    [1_000, 8_000, 990],
-    [1_000, 16_000, 330],
-    [1_000, -1, 3_000],
-    [0, 0, 0],
-  ])(
-    'gives %i knowledge points after %i ms a %i speed bonus',
-    (points, elapsed, bonus) => {
-      expect(getSpeedBonusPoints(points, elapsed)).toBe(bonus);
-    },
-  );
-
-  it('combines knowledge, speed, and mastery for a perfect round', () => {
-    const perfect = Array.from({ length: 10 }, () => ({
-      category: 'identity' as const,
+  it('uses the selected Training level, fixed Daily level, and League stages', () => {
+    const answer = {
+      questionType: 'champion' as const,
       correct: true,
-      points: 1_000,
-      speedBonus: 3_000,
-    }));
-
-    expect(getScoreBreakdown(perfect)).toEqual({
-      knowledge: 10_000,
-      speed: 30_000,
-      mastery: 10_000,
-    });
-    expect(calculateScore(perfect)).toBe(50_000);
-    expect(getScoreBreakdown([])).toEqual({
-      knowledge: 0,
-      speed: 0,
-      mastery: 0,
-    });
+      responseMilliseconds: 0,
+    };
+    expect(getRoundAnswerLevel({ kind: 'training' }, 4, 0)).toBe(4);
+    expect(
+      getRoundAnswerLevel({ kind: 'daily', date: '2026-09-11' }, undefined, 4),
+    ).toBe(3);
+    expect(getRoundAnswerLevel({ kind: 'league' }, undefined, 0)).toBe(1);
+    expect(getRoundAnswerLevel({ kind: 'league' }, undefined, 14)).toBe(5);
+    expect(
+      getQuestionScore(
+        answer,
+        getRoundAnswerLevel({ kind: 'league' }, undefined, 14),
+      ).score,
+    ).toBeGreaterThan(
+      getQuestionScore(
+        answer,
+        getRoundAnswerLevel(
+          { kind: 'daily', date: '2026-09-11' },
+          undefined,
+          4,
+        ),
+      ).score,
+    );
+    expect(() =>
+      getRoundAnswerLevel({ kind: 'training' }, undefined, 0),
+    ).toThrow();
   });
 
   it('rewards a deliberate level increase only when accuracy holds up', () => {
@@ -88,24 +101,22 @@ describe('scoring', () => {
       questionType: 'evYields' | 'evolutionChain' = 'evYields',
     ) =>
       Array.from({ length: 10 }, (_, index) => ({
-        category: 'identity' as const,
         questionType,
         correct: index < correct,
-        points: index < correct ? 1000 : 0,
         responseMilliseconds: 5000,
       }));
     const score = (
       correct: number,
       level: 4 | 5,
       type?: 'evYields' | 'evolutionChain',
-    ) => getTrainingScoreBreakdown(answers(correct, type), level).score;
+    ) => getScoreBreakdown(answers(correct, type), level).score;
 
     expect(score(5, 5)).toBeLessThan(score(9, 4));
     expect(score(7, 5)).toBeGreaterThan(score(10, 4));
     expect(score(7, 5, 'evolutionChain')).toBeLessThan(score(10, 4));
     expect(score(5, 5)).toBe(Math.round(score(10, 5) / 2));
     expect(
-      getTrainingScoreBreakdown(
+      getScoreBreakdown(
         answers(10).map((answer) => ({ ...answer, responseMilliseconds: 0 })),
         5,
       ).score,
@@ -114,17 +125,14 @@ describe('scoring', () => {
 
   it('scores a saved answer even if its family is no longer offered at that level', () => {
     const oldAnswer = {
-      category: 'type' as const,
       questionType: 'pokemonTypes' as const,
       correct: true,
-      points: 1000,
       responseMilliseconds: 5000,
     };
-    const score = getTrainingScoreBreakdown([oldAnswer], 5).score;
+    const score = getQuestionScore(oldAnswer, 5).score;
     expect(score).toBeGreaterThan(0);
     expect(score).toBeLessThan(
-      getTrainingScoreBreakdown([{ ...oldAnswer, questionType: 'evYields' }], 5)
-        .score,
+      getQuestionScore({ ...oldAnswer, questionType: 'evYields' }, 5).score,
     );
   });
 

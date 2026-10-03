@@ -1,6 +1,7 @@
 import { Navigate } from '@tanstack/react-router';
 import { getTrainerBadges } from '../domain/player/trainer-progression';
 import { getUtcDate } from '../domain/quiz/daily';
+import { getRoundAnswerLevel } from '../domain/quiz/scoring';
 import { isLeagueVictory } from '../domain/quiz/league';
 import { QuestionScreen } from '../features/quiz/QuestionScreen';
 import { ResultsScreen } from '../features/quiz/ResultsScreen';
@@ -57,6 +58,11 @@ export const QuestionRouteScreen = () => {
   const currentQuestion = session.questions[session.questionIndex];
   return currentQuestion ? (
     <QuestionScreen
+      level={getRoundAnswerLevel(
+        session.mode,
+        session.settings.level,
+        session.questionIndex,
+      )}
       typeRelations={catalogState.catalog?.typeRelations}
       answerFlow={session.settings.answerFlow}
       key={currentQuestion.id}

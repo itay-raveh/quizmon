@@ -3,9 +3,9 @@ import { createLeagueVictoryRecord } from './hall-of-fame.ts';
 import { isLeagueVictory } from '../quiz/league.ts';
 import { snapshotRoundRules } from '../quiz/round-rules.ts';
 import {
-  calculateScore,
   getResponseTime,
-  getTrainingScoreBreakdown,
+  getRoundAnswerLevel,
+  getScoreBreakdown,
 } from '../quiz/scoring.ts';
 import { trainingConfig } from '../sync/progress.ts';
 import type { RoundCompletion } from '../sync/progress.ts';
@@ -19,19 +19,21 @@ export function completeRound(
   trainerName: string,
 ) {
   const { answers, questions, settings, mode } = round;
-  if (mode.kind === 'training' && !settings.level)
-    throw new Error('Training level is required to score a round.');
+  const scoring = getScoreBreakdown(answers, (index) =>
+    getRoundAnswerLevel(mode, settings.level, index),
+  );
   const rules = snapshotRoundRules(settings);
   const result = {
     ...(rules ? { rules } : {}),
-    answers,
+    answers: answers.map((answer, index) => ({
+      ...answer,
+      points: scoring.awards[index]!.points,
+      speedBonus: scoring.awards[index]!.speedBonus,
+    })),
     correctCount: answers.filter(({ correct }) => correct).length,
     ...getResponseTime(answers),
     questionCount: questions.length,
-    score:
-      mode.kind === 'training'
-        ? getTrainingScoreBreakdown(answers, settings.level!).score
-        : calculateScore(answers),
+    score: scoring.score,
   };
   const completionId = round.roundId;
   const victory =
