@@ -32,31 +32,32 @@ const build = (level: Level, seed: string, selected = pool, source = catalog) =>
     'evolutionConditions',
   );
 
-it('offers level-up as one mixed condition when mixed conditions are enabled', () => {
-  const requiredLevel = evolutionData.values
-    .find((entry) => entry.before === 'turtwig' && entry.after === 'grotle')!
-    .conditions.find((condition) => condition.startsWith('at level '))!
-    .slice(9);
+it('does not use a minimum level as the single correct evolution condition', () => {
   const level = gameLevels.find((level) => {
     const variant = getQuestionVariant('evolutionConditions', level)?.variant;
     return (
-      variant?.mixedLevelEvolutionConditions && !variant.exactEvolutionValues
+      variant?.response.selection === 'single' &&
+      variant.mixedLevelEvolutionConditions
     );
   })!;
-  const selected = pool.filter(({ name }) =>
+  const levelOnly = pool.filter(({ name }) =>
     ['turtwig', 'grotle'].includes(name),
   );
-  const question = build(level, 'turtwig', selected);
-  expect(question?.prompt).toMatchObject({
-    kind: 'text',
-    text: 'Which of these is a requirement for this evolution?',
-  });
-  expect(question?.answer.correctOptions).toEqual([
-    `Reach level ${requiredLevel}`,
-  ]);
-  expect(
-    question?.options.filter((option) => option.startsWith('Reach level ')),
-  ).toEqual([`Reach level ${requiredLevel}`]);
+  expect(build(level, 'turtwig', levelOnly)).toBeUndefined();
+
+  const mixed = pool.filter(({ name }) =>
+    ['rattata-alola', 'raticate-alola'].includes(name),
+  );
+  const requiredLevel = evolutionData.values
+    .find(
+      (entry) =>
+        entry.before === 'rattata-alola' && entry.after === 'raticate-alola',
+    )!
+    .conditions.find((condition) => condition.startsWith('at level '))!
+    .slice(9);
+  const question = build(level, 'rattata-alola', mixed);
+  expect(question?.answer.correctOptions).toEqual(['Evolve during the night']);
+  expect(question?.options).not.toContain(`Reach level ${requiredLevel}`);
 });
 
 it('asks for the exact evolution level when the rule requests it', () => {

@@ -138,9 +138,16 @@ export const buildEvolution: QuestionBuilder<
       const label = evolutionConditionLabel(condition, variant);
       return label ? [{ condition, label }] : [];
     });
-    if (allTrue.length < (exactLevel ? 1 : variant.minimumEvolutionConditions))
+    const eligibleTrue =
+      variant.response.selection === 'single'
+        ? allTrue.filter(({ condition }) => !/^at level \d+$/.test(condition))
+        : allTrue;
+    if (
+      eligibleTrue.length <
+      (exactLevel ? 1 : variant.minimumEvolutionConditions)
+    )
       continue;
-    const trueChoices = ordered(context, allTrue).slice(
+    const trueChoices = ordered(context, eligibleTrue).slice(
       0,
       variant.response.selection === 'adaptive' && !exactLevel ? 3 : 1,
     );
