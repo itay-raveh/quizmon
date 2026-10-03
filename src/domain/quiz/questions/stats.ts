@@ -85,7 +85,7 @@ export const buildEvYield: QuestionBuilder<FamilyRules['evYields']> = (
             context.variant.completeEvYield
               ? 'What EVs does defeating '
               : 'Which stat gains EVs from defeating ',
-            context.variant.completeEvYield ? ' give?' : '?',
+            context.variant.completeEvYield ? ' give?' : '',
           ),
           supportingText: 'Base yield, before bonuses',
         },

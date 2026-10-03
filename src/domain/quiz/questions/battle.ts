@@ -82,7 +82,7 @@ export const buildMatchupQuestion: QuestionBuilder<
         prompt: pokemonPrompt(
           target,
           `Which type has a ×${formatTypeMultiplier(multiplier)} matchup against `,
-          '?',
+          '',
         ),
         presentation: { kind: 'text' },
         media: targetMedia(target),
@@ -165,7 +165,7 @@ export const buildCounterPickQuestion: QuestionBuilder<
           prompt: pokemonPrompt(
             target,
             `Whose strongest attack type has a ×${formatTypeMultiplier(multiplier)} matchup against `,
-            '?',
+            '',
           ),
           media: { kind: 'pixel-sprite', src: targetSprite },
           presentation: { kind: 'pokemon' },

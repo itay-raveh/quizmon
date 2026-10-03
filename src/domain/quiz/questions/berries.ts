@@ -82,7 +82,7 @@ export const buildBerry: QuestionBuilder<
             : multiFlavors
               ? 'Which flavors does '
               : 'What is the strongest flavor of ',
-          after: !gift && multiFlavors ? ' have?' : '?',
+          after: !gift && multiFlavors ? ' have?' : '',
           name: item.label,
           sprite: item.sprite,
           ...(gift ? { supportingText: `Generation ${availableGiftGen}` } : {}),

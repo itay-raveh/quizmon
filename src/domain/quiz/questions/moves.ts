@@ -131,7 +131,7 @@ export const buildMove: QuestionBuilder<
             prompt: {
               kind: 'move',
               before: 'What is the default type of ',
-              after: '?',
+              after: '',
               name: target.label,
               visual: moveVisual(rules.type, rules.damageClass),
               description:

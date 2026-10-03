@@ -212,7 +212,7 @@ export const buildTypeTwinsQuestion: QuestionBuilder<
       prompt: pokemonPrompt(
         target,
         'Which Pokémon has the same two types as ',
-        '?',
+        '',
       ),
       media: { kind: 'pixel-sprite', src: target.pokemon.sprite },
       presentation: { kind: 'pokemon' },
