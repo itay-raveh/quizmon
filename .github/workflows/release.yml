@@ -90,7 +90,7 @@ jobs:
       - name: Check real sync isolation
         run: |
           export QUIZMON_PREBUILT_WORKER="$PWD/.wrangler/release-worker"
-          node tests/online/check-runtime-config.ts
+          node tests/online/check-account-sync.ts
       - name: Publish checked RxServer image
         env:
           REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}

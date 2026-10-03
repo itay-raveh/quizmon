@@ -1,6 +1,5 @@
 import { createRemoteJWKSet, jwtVerify } from 'jose';
 import express from 'express';
-import type { ErrorRequestHandler } from 'express';
 import * as Sentry from '@sentry/node';
 import { MongoClient } from 'mongodb';
 import { z } from 'zod';
@@ -87,7 +86,17 @@ export async function startSyncServer(config: {
     };
     const server = await createRxServer({
       database: db,
-      adapter: syncAdapter,
+      adapter: {
+        ...syncAdapter,
+        async create() {
+          const app = express();
+          app.set('env', 'production');
+          await RxServerAdapterExpress.setCors(app, 'players', config.origin);
+          await RxServerAdapterExpress.setCors(app, 'rounds', config.origin);
+          app.use(express.json());
+          return app;
+        },
+      },
       hostname: '0.0.0.0',
       port: config.port,
       cors: config.origin,
@@ -223,38 +232,6 @@ export async function startSyncServer(config: {
       })().catch(next);
     });
     Sentry.setupExpressErrorHandler(server.serverApp);
-    const safeErrorResponse: ErrorRequestHandler = (
-      error,
-      request,
-      response,
-      next,
-    ) => {
-      if (response.headersSent) return next(error);
-      response.vary('Origin');
-      if (request.headers.origin === config.origin) {
-        response.set('Access-Control-Allow-Origin', config.origin);
-        response.set('Access-Control-Allow-Credentials', 'true');
-      }
-      const details =
-        typeof error === 'object' && error !== null
-          ? (error as { status?: unknown; statusCode?: unknown })
-          : null;
-      const candidate = details?.status ?? details?.statusCode;
-      const status =
-        typeof candidate === 'number' &&
-        Number.isInteger(candidate) &&
-        candidate >= 400 &&
-        candidate <= 599
-          ? candidate
-          : 500;
-      response.status(status).json({
-        error:
-          status < 500
-            ? 'Sync request rejected.'
-            : 'Sync temporarily unavailable.',
-      });
-    };
-    server.serverApp.use(safeErrorResponse);
     await server.start();
     db.onClose.push(() => {
       board.close();

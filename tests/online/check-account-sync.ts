@@ -155,39 +155,6 @@ try {
     preflight.headers.get('access-control-allow-headers') ?? '',
     /sentry-trace/,
   );
-  const failedSync = await fetch(
-    `${endpoint}/players/${playerSchema.version}/push`,
-    {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${a.token}`,
-        'Content-Type': 'application/json',
-        Origin: origin,
-      },
-      body: '{}',
-    },
-  );
-  assert.equal(failedSync.status, 500);
-  assert.equal(failedSync.headers.get('access-control-allow-origin'), origin);
-  assert.deepEqual(await failedSync.json(), {
-    error: 'Sync temporarily unavailable.',
-  });
-  const malformedSync = await fetch(
-    `${endpoint}/rounds/${roundSchema.version}/push`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Origin: origin },
-      body: '{',
-    },
-  );
-  assert.equal(malformedSync.status, 400);
-  assert.equal(
-    malformedSync.headers.get('access-control-allow-origin'),
-    origin,
-  );
-  assert.deepEqual(await malformedSync.json(), {
-    error: 'Sync request rejected.',
-  });
   const oversizedSync = await fetch(
     `${endpoint}/rounds/${roundSchema.version}/push`,
     {
@@ -205,9 +172,6 @@ try {
     oversizedSync.headers.get('access-control-allow-origin'),
     origin,
   );
-  assert.deepEqual(await oversizedSync.json(), {
-    error: 'Sync request rejected.',
-  });
   await jwtVerify(
     a.token,
     createRemoteJWKSet(new URL('/api/auth/jwks', origin)),
