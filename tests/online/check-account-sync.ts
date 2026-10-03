@@ -172,6 +172,7 @@ try {
     oversizedSync.headers.get('access-control-allow-origin'),
     origin,
   );
+  assert.deepEqual(await oversizedSync.json(), { error: true, code: 413 });
   await jwtVerify(
     a.token,
     createRemoteJWKSet(new URL('/api/auth/jwks', origin)),

@@ -1,5 +1,6 @@
 import { createRemoteJWKSet, jwtVerify } from 'jose';
 import express from 'express';
+import type { ErrorRequestHandler } from 'express';
 import * as Sentry from '@sentry/node';
 import { MongoClient } from 'mongodb';
 import { z } from 'zod';
@@ -232,6 +233,28 @@ export async function startSyncServer(config: {
       })().catch(next);
     });
     Sentry.setupExpressErrorHandler(server.serverApp);
+    const jsonError: ErrorRequestHandler = (
+      error,
+      _request,
+      response,
+      next,
+    ) => {
+      if (response.headersSent) return next(error);
+      const { status, statusCode } = error as {
+        status?: unknown;
+        statusCode?: unknown;
+      };
+      const candidate = status ?? statusCode;
+      const code =
+        typeof candidate === 'number' &&
+        Number.isInteger(candidate) &&
+        candidate >= 400 &&
+        candidate <= 599
+          ? candidate
+          : 500;
+      response.status(code).json({ error: true, code });
+    };
+    server.serverApp.use(jsonError);
     await server.start();
     db.onClose.push(() => {
       board.close();
