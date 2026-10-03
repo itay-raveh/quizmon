@@ -20,7 +20,7 @@ const excludedIdentificationItems = new Set([
   'air-balloon',
 ]);
 
-const earlyIdentificationExclusions = new Set([
+const bagsAndPaperItems = new Set([
   'berry-pouch',
   'forage-bag',
   'makeup-bag',
@@ -48,8 +48,8 @@ export const buildItemIdentification: QuestionBuilder<
         item.spriteIdentity &&
         !/glasses|goggles|scarf/i.test(item.name) &&
         !excludedIdentificationItems.has(item.name) &&
-        ((context.level ?? 0) >= 3 ||
-          !earlyIdentificationExclusions.has(item.name)),
+        (context.variant.allowBagsAndPaperItems ||
+          !bagsAndPaperItems.has(item.name)),
     ),
   );
   const spriteCounts = new Map<string, number>();

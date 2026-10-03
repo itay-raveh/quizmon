@@ -8,6 +8,7 @@ import { itemSprite, responsePresets } from './shared.ts';
 
 const controls = {
   view: { answer: { kind: 'item' } },
+  allowBagsAndPaperItems: false,
   distinctItemCategories: false,
   sameItemPocket: false,
   sameItemCategory: false,
@@ -29,11 +30,13 @@ export const itemIdentification = {
     },
     3: {
       ...controls,
+      allowBagsAndPaperItems: true,
       sameItemCategory: true,
       response: responsePresets.single,
     },
     4: {
       ...controls,
+      allowBagsAndPaperItems: true,
       response: { kind: 'search', selection: 'single', candidates: 'provided' },
     },
     5: null,
