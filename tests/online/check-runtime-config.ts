@@ -162,13 +162,51 @@ try {
       headers: {
         Authorization: `Bearer ${a.token}`,
         'Content-Type': 'application/json',
+        Origin: origin,
       },
       body: '{}',
     },
   );
   assert.equal(failedSync.status, 500);
+  assert.equal(failedSync.headers.get('access-control-allow-origin'), origin);
   assert.deepEqual(await failedSync.json(), {
     error: 'Sync temporarily unavailable.',
+  });
+  const malformedSync = await fetch(
+    `${endpoint}/rounds/${roundSchema.version}/push`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Origin: origin },
+      body: '{',
+    },
+  );
+  assert.equal(malformedSync.status, 400);
+  assert.equal(
+    malformedSync.headers.get('access-control-allow-origin'),
+    origin,
+  );
+  assert.deepEqual(await malformedSync.json(), {
+    error: 'Sync request rejected.',
+  });
+  const oversizedSync = await fetch(
+    `${endpoint}/rounds/${roundSchema.version}/push`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${a.token}`,
+        'Content-Type': 'application/json',
+        Origin: origin,
+      },
+      body: JSON.stringify({ documents: ['x'.repeat(110_000)] }),
+    },
+  );
+  assert.equal(oversizedSync.status, 413);
+  assert.equal(
+    oversizedSync.headers.get('access-control-allow-origin'),
+    origin,
+  );
+  assert.deepEqual(await oversizedSync.json(), {
+    error: 'Sync request rejected.',
   });
   await jwtVerify(
     a.token,

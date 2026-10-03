@@ -225,12 +225,34 @@ export async function startSyncServer(config: {
     Sentry.setupExpressErrorHandler(server.serverApp);
     const safeErrorResponse: ErrorRequestHandler = (
       error,
-      _request,
+      request,
       response,
       next,
     ) => {
       if (response.headersSent) return next(error);
-      response.status(500).json({ error: 'Sync temporarily unavailable.' });
+      response.vary('Origin');
+      if (request.headers.origin === config.origin) {
+        response.set('Access-Control-Allow-Origin', config.origin);
+        response.set('Access-Control-Allow-Credentials', 'true');
+      }
+      const details =
+        typeof error === 'object' && error !== null
+          ? (error as { status?: unknown; statusCode?: unknown })
+          : null;
+      const candidate = details?.status ?? details?.statusCode;
+      const status =
+        typeof candidate === 'number' &&
+        Number.isInteger(candidate) &&
+        candidate >= 400 &&
+        candidate <= 599
+          ? candidate
+          : 500;
+      response.status(status).json({
+        error:
+          status < 500
+            ? 'Sync request rejected.'
+            : 'Sync temporarily unavailable.',
+      });
     };
     server.serverApp.use(safeErrorResponse);
     await server.start();
