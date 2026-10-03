@@ -8,6 +8,32 @@ import {
   topicSubject,
 } from './topic-support.ts';
 
+const excludedIdentificationItems = new Set([
+  'bicycle',
+  'mach-bike',
+  'acro-bike',
+  'roller-skates',
+  'old-rod',
+  'good-rod',
+  'super-rod',
+  'fishing-rod',
+  'air-balloon',
+]);
+
+const levelThreeIdentificationItems = new Set([
+  'berry-pouch',
+  'forage-bag',
+  'makeup-bag',
+  'loot-sack',
+  'seal-bag',
+  'travel-trunk',
+  'journal',
+  'town-map',
+  'letter',
+  'parcel',
+  'photo-album',
+]);
+
 export const buildItemIdentification: QuestionBuilder<
   FamilyRules['itemIdentification']
 > = (context) => {
@@ -20,7 +46,10 @@ export const buildItemIdentification: QuestionBuilder<
         topicEligible(context, item) &&
         item.sprite &&
         item.spriteIdentity &&
-        !/glasses|goggles|scarf/i.test(item.name),
+        !/glasses|goggles|scarf/i.test(item.name) &&
+        !excludedIdentificationItems.has(item.name) &&
+        ((context.level ?? 0) >= 3 ||
+          !levelThreeIdentificationItems.has(item.name)),
     ),
   );
   const spriteCounts = new Map<string, number>();

@@ -121,3 +121,70 @@ test('level three item choices never consist only of berries', () => {
     true,
   );
 });
+
+test('obvious equipment cannot be an item-identification answer or distractor', () => {
+  const catalog = {
+    pokemon: {},
+    typeRelations: {},
+    topics: {
+      items: [
+        ...['acro-bike', 'super-rod', 'roller-skates', 'air-balloon'].map(
+          (name) => item(name, 'gameplay', name),
+        ),
+        ...['potion', 'poke-ball', 'escape-rope', 'repel'].map((name) =>
+          item(name, 'gameplay', name),
+        ),
+      ],
+    },
+  } as unknown as PokemonCatalog;
+
+  for (const level of [2, 3, 4] as const) {
+    const question = buildQuestionType(
+      {
+        catalog,
+        level,
+        pool: [],
+        random: () => 0.999,
+        used: new Set(),
+      },
+      'itemIdentification',
+    );
+    expect(question?.subject.name).toBe('potion');
+    const choices = [
+      ...(question?.options ?? []),
+      ...(question?.searchOptions?.map(({ name }) => name) ?? []),
+    ];
+    expect(choices).not.toContain('acro-bike');
+    expect(choices).not.toContain('air-balloon');
+    expect(choices).not.toContain('roller-skates');
+  }
+});
+
+test('bags enter item identification at Level 3', () => {
+  const catalog = {
+    pokemon: {},
+    typeRelations: {},
+    topics: {
+      items: [
+        item('berry-pouch', 'gameplay', 'berry-pouch'),
+        ...['seal-case', 'prop-case', 'tm-case', 'coin-case'].map((name) =>
+          item(name, 'gameplay', name),
+        ),
+      ],
+    },
+  } as unknown as PokemonCatalog;
+  const build = (level: 2 | 3) =>
+    buildQuestionType(
+      {
+        catalog,
+        level,
+        pool: [],
+        random: () => 0.999,
+        used: new Set(),
+      },
+      'itemIdentification',
+    );
+
+  expect(build(2)?.options).not.toContain('berry-pouch');
+  expect(build(3)?.subject.name).toBe('berry-pouch');
+});
