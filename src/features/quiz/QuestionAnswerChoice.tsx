@@ -182,7 +182,7 @@ const QuestionAnswerChoiceInner = ({
         question.options.length <= 9 ? String(index + 1) : undefined
       }
       aria-pressed={multiSelect ? optionSelected : undefined}
-      className={`${optionClassName} ${hasSprite ? 'answer--pokemon' : ''} ${isItemChoice && itemImage && policy.sprite !== null ? 'answer--item' : ''} ${isMoveChoice && (move?.sprite || itemImage) && policy.sprite !== null ? 'answer--move' : ''} ${concealed ? 'answer--concealed' : ''}`.trim()}
+      className={`${optionClassName} ${hasSprite ? 'answer--pokemon' : ''} ${isItemChoice && itemImage && policy.sprite !== null ? 'answer--item' : ''} ${concealed ? 'answer--concealed' : ''}`.trim()}
       disabled={answered}
       onClick={() => onSelect(option)}
       sound="none"
@@ -201,15 +201,11 @@ const QuestionAnswerChoiceInner = ({
         />
       ) : isMoveChoice ? (
         <MoveRenderable
-          className="answer__move-renderable"
           name={label}
           visual={move}
           src={itemImage}
           policy={policy}
           state={state}
-          spriteSlotClassName="answer__move-slot"
-          spriteClassName="answer__move-disc"
-          nameClassName="answer__text"
         >
           {move ? null : detail}
         </MoveRenderable>

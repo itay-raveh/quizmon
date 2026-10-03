@@ -10,6 +10,7 @@ import {
   type SpriteRendering,
 } from '@/domain/quiz/rendering';
 import type { ComponentProps, ReactNode } from 'react';
+import './styles/move-renderable.css';
 
 export const QuestionSprite = ({
   rule,
@@ -197,10 +198,6 @@ export const MoveRenderable = ({
   src,
   policy,
   state,
-  className,
-  spriteClassName,
-  spriteSlotClassName,
-  nameClassName,
   children,
 }: {
   name: string;
@@ -208,24 +205,20 @@ export const MoveRenderable = ({
   src?: string;
   policy: Pick<EntityRendering, 'name' | 'sprite' | 'types'>;
   state: RevealState;
-  className?: string;
-  spriteClassName?: string;
-  spriteSlotClassName?: string;
-  nameClassName?: string;
   children?: ReactNode;
 }) => (
-  <span className={className}>
+  <span className="move-renderable">
     {(visual?.sprite || src) && policy.sprite !== null ? (
-      <span className={spriteSlotClassName} aria-hidden="true">
+      <span className="move-renderable__sprite" aria-hidden="true">
         <QuestionSprite
           src={(visual?.sprite ?? src)!}
           rule={policy.sprite}
           state={state}
-          className={spriteClassName}
+          className="move-renderable__disc"
         />
       </span>
     ) : null}
-    <span className={nameClassName}>
+    <span className="move-renderable__name">
       <strong
         style={{
           visibility: isVisible(policy.name, state) ? undefined : 'hidden',
@@ -235,7 +228,7 @@ export const MoveRenderable = ({
       </strong>
       {policy.types !== 'never' && (visual?.type || visual?.damageClass) ? (
         <span
-          className="answer__reveal move-reveal"
+          className="move-renderable__reveal"
           aria-hidden="true"
           style={{
             visibility: isVisible(policy.types, state) ? undefined : 'hidden',

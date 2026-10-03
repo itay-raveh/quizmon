@@ -60,7 +60,6 @@ const QuestionPrompt = ({
             <>
               {prompt.text.split(prompt.move.name)[0]}
               <MoveRenderable
-                className="question__move-subject"
                 name={prompt.move.name}
                 src={prompt.move.sprite}
                 policy={{
@@ -68,7 +67,6 @@ const QuestionPrompt = ({
                   sprite: { reveal: 'after-answer', silhouette: false },
                 }}
                 state={state}
-                spriteClassName="question__move-disc"
               />
               {prompt.text
                 .split(prompt.move.name)
@@ -122,12 +120,10 @@ const QuestionPrompt = ({
         <>
           {prompt.before}
           <MoveRenderable
-            className="question__move-subject"
             name={prompt.name}
             visual={prompt.visual}
             policy={policy}
             state={state}
-            spriteClassName="question__move-disc"
           />
           {prompt.after}
           {prompt.description ? (

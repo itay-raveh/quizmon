@@ -527,36 +527,6 @@
   object-fit: contain;
 }
 
-.answer--move {
-  grid-template-columns: auto minmax(0, 1fr);
-}
-
-.answer__move-renderable {
-  display: flex;
-  min-width: 0;
-  align-items: center;
-  gap: 0.45rem;
-}
-
-.answer--move .answer__text {
-  justify-items: start;
-  text-align: left;
-}
-
-.answer__move-slot {
-  display: grid;
-  width: 3rem;
-  height: 3rem;
-  flex: none;
-  place-items: center;
-}
-
-.answer__move-disc {
-  width: 3rem;
-  height: 3rem;
-  object-fit: contain;
-}
-
 .answer__reveal {
   min-width: 0;
   font-size: var(--text-small);
@@ -648,10 +618,6 @@
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
-}
-
-.answer--move .move-reveal {
-  justify-content: flex-start;
 }
 
 .answers--nature .answer__text {
