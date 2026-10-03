@@ -41,8 +41,8 @@ export const buildItemIdentification: QuestionBuilder<
   for (const target of pool) {
     if (spriteCounts.get(target.spriteIdentity!) !== 1) continue;
     if (
-      target.pocket === 'berries' &&
-      context.variant.response.kind !== 'search'
+      context.variant.response.kind !== 'search' &&
+      (target.pocket === 'berries' || target.category === 'apricorn-box')
     )
       continue;
     if (context.variant.response.kind === 'search') {

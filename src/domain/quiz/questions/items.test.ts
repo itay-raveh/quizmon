@@ -121,3 +121,62 @@ test('level three item choices never consist only of berries', () => {
     true,
   );
 });
+
+const apricornCatalog = {
+  pokemon: {},
+  typeRelations: {},
+  topics: {
+    items: [
+      ...['red', 'blue', 'yellow', 'green'].map((color) => ({
+        ...item(`${color}-apricorn`, 'apricorn-box', color),
+        pocket: 'key',
+      })),
+      ...['explorer-kit', 'poke-radar', 'journal', 'seal-case'].map((name) => ({
+        ...item(name, 'gameplay', name),
+        pocket: 'key',
+      })),
+      item('potion', 'medicine', 'potion'),
+    ],
+  },
+} as unknown as PokemonCatalog;
+
+test.each([2, 3] as const)(
+  'level %i item identification skips Apricorn targets',
+  (level) => {
+    const question = buildQuestionType(
+      {
+        catalog: apricornCatalog,
+        level,
+        pool: [],
+        random: () => 0.999,
+        used: new Set(),
+      },
+      'itemIdentification',
+    );
+    expect(question).toBeDefined();
+    expect(question?.subject.name).not.toMatch(/-apricorn$/);
+  },
+);
+
+test('item identification still includes Apricorns in broad search', () => {
+  const level = gameLevels.find(
+    (candidate) =>
+      getQuestionVariant('itemIdentification', candidate)?.variant.response
+        .kind === 'search',
+  )!;
+  const question = buildQuestionType(
+    {
+      catalog: apricornCatalog,
+      level,
+      pool: [],
+      random: () => 0.999,
+      used: new Set(),
+    },
+    'itemIdentification',
+  );
+  expect(question?.subject.name).toMatch(/-apricorn$/);
+  expect(question?.answer.interaction).toBe('search');
+  expect(
+    question?.searchOptions?.some((option) => option.name === 'potion'),
+  ).toBe(true);
+});
