@@ -24,7 +24,7 @@ import { DailyReminderPrompt } from '@/features/reminders/DailyReminderPrompt';
 import { ShareResultButton } from '@/features/sharing/ShareResultButton';
 import { TrainerProgressSummary } from '@/features/trainer/TrainerProgressSummary';
 import { useGameSounds } from '@/lib/audio/sound-context';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { AnimatedScore } from './AnimatedScore';
 import { CatchCombo } from '@/features/daily/CatchCombo';
 import { markStayedAtLevel, suggestedLevel } from './level-advancement';
@@ -113,7 +113,6 @@ export const ResultsScreen = ({
   const { playPerfect, playResults, playScoreCount, stopCelebration } =
     useGameSounds();
   const heading = useRef<HTMLHeadingElement>(null);
-  const [activeAnswerIndex, setActiveAnswerIndex] = useState(-1);
   const isDaily = mode.kind === 'daily';
   const isLeague = mode.kind === 'league';
   const isTraining = mode.kind === 'training';
@@ -127,10 +126,6 @@ export const ResultsScreen = ({
         getRoundAnswerLevel(mode, result.rules?.level, index),
       ),
     [mode, result.answers, result.rules?.level],
-  );
-  const scoreCheckpoints = useMemo(
-    () => [0, ...score.awards.map((award) => award.score)],
-    [score.awards],
   );
   const resultStats: ResultStat[] = [
     ...(!isLeague && result.questionCount > 10
@@ -257,8 +252,6 @@ export const ResultsScreen = ({
         <div className="score">
           <strong aria-hidden="true">
             <AnimatedScore
-              checkpoints={scoreCheckpoints}
-              onCheckpoint={setActiveAnswerIndex}
               playSound={playScoreCount}
               format={formatScore}
               value={result.score}
@@ -327,11 +320,20 @@ export const ResultsScreen = ({
               const description = `${categoryLabel}: ${outcome}${factor ? `, ${factor} question factor` : ''}`;
               return (
                 <li
-                  className={`${answer.correct ? 'answer-trail--correct' : ''}${answer.correct && index === activeAnswerIndex ? ' answer-trail--active' : ''}`.trim()}
+                  className={
+                    answer.correct ? 'answer-trail--correct' : undefined
+                  }
                   key={`${answer.category}-${index}`}
                   title={description}
                 >
-                  <span aria-hidden="true">
+                  <span
+                    aria-hidden="true"
+                    style={
+                      !isLeague && answer.correct
+                        ? { animationDelay: `${index * 130}ms` }
+                        : undefined
+                    }
+                  >
                     {answer.correct ? (
                       <CheckIcon weight="bold" />
                     ) : (

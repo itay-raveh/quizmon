@@ -306,7 +306,7 @@
   font: 800 0.6rem / 1.1 var(--font-data);
 }
 
-.answer-trail--training .answer-trail--active > span:first-child {
+.answer-trail--training .answer-trail--correct > span:first-child {
   animation: answer-credit 180ms ease-out;
 }
 
@@ -318,7 +318,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .answer-trail--training .answer-trail--active > span:first-child {
+  .answer-trail--training .answer-trail--correct > span:first-child {
     animation: none;
   }
 }
