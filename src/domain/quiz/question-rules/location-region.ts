@@ -9,6 +9,7 @@ import { responsePresets } from './shared.ts';
 const controls = {
   view: { answer: { kind: 'text' } },
   allOptions: false,
+  allowNumberedRoutes: false,
 } as const satisfies QuestionControlsFor<'locationRegion'>;
 
 const rendering = {} satisfies RenderingControlsFor<'locationRegion'>;
@@ -21,6 +22,11 @@ export const locationRegion = {
       allOptions: true,
       response: responsePresets.shortSingle,
     },
-    4: null,
+    4: {
+      ...controls,
+      allOptions: true,
+      allowNumberedRoutes: true,
+      response: responsePresets.shortSingle,
+    },
   },
 } satisfies QuestionRuleRow<FamilyRules['locationRegion'], 'locationRegion'>;

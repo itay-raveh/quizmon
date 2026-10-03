@@ -20,6 +20,8 @@ it('asks only about distinct named places in Name that region', () => {
       ['sinnoh-restaurant', 'Restaurant', 'sinnoh'],
       ['unknown-dungeon', 'Unknown Dungeon', 'kanto'],
       ['north-province', 'North Province (Area Three)', 'paldea'],
+      ['route-201', 'Route 201', 'sinnoh'],
+      ['sea-route-12', 'Sea Route 12', 'kanto'],
       ['ecruteak-city', 'Ecruteak City', 'johto'],
     ] as const
   ).map(([name, label, region]) => ({
@@ -55,6 +57,24 @@ it('asks only about distinct named places in Name that region', () => {
       'locationRegion',
     ),
   ).toBeUndefined();
+  for (const [level, route] of [
+    [4, locations.at(-3)!],
+    [5, locations.at(-2)!],
+  ] as const) {
+    expect(
+      buildQuestionType(
+        {
+          ...context,
+          level,
+          catalog: {
+            ...catalog,
+            topics: { ...catalog.topics!, locations: [route] },
+          },
+        },
+        'locationRegion',
+      )?.subject.name,
+    ).toBe(route.name);
+  }
 });
 
 it('uses the whole location and selects every offered encounter for multi-select', () => {

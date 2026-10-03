@@ -29,6 +29,8 @@ export const buildRegion: QuestionBuilder<FamilyRules['locationRegion']> = (
       (location) =>
         topicEligible(context, location) &&
         regions.some((region) => region.name === location.region) &&
+        (context.variant.allowNumberedRoutes ||
+          !/^(?:sea )?route \d+[a-z]?$/i.test(location.label)) &&
         !/^(?:\?+|unknown\b.*|caf[eé]|restaurant)$/i.test(location.label) &&
         !/^(?:north|south|east|west) province \(area \w+\)$/i.test(
           location.label,

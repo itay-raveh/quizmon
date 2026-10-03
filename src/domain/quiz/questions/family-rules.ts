@@ -107,6 +107,8 @@ interface FamilyControls {
   locationRegion: {
     /** Offer every eligible region instead of four sampled regions. */
     allOptions: boolean;
+    /** Permit locations named only by a numbered land or sea route. */
+    allowNumberedRoutes: boolean;
   };
   moveCategory: {
     /** Ask only about status moves. */
