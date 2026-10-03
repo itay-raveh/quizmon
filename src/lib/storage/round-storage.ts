@@ -4,6 +4,7 @@ import { completeRound } from '../../domain/player/game-history';
 import { applyResult } from '../../domain/player/game-progress';
 import type { LeagueVictoryRecord } from '../../domain/player/hall-of-fame';
 import type { RoundCompletion } from '../../domain/sync/progress';
+import type { QuestionType } from '../../domain/quiz/types';
 import {
   compactCompletion,
   compactRoundSchema,
@@ -17,6 +18,29 @@ import {
   refreshPlayerData,
 } from './player-storage';
 import { updateDeviceState, writeCompletedRound } from './rxdb-game';
+
+export const readPreviousTrainingQuestionTypes = async (): Promise<
+  ReadonlySet<QuestionType>
+> => {
+  const db = getPlayerDatabase();
+  const rounds = await db.rounds
+    .find({ selector: { ownerId: currentOwnerId(), mode: 'training' } })
+    .exec();
+  const previous = rounds
+    .map((document) => document.toMutableJSON())
+    .sort(
+      (a, b) =>
+        a.completedAt.localeCompare(b.completedAt) || a.id.localeCompare(b.id),
+    )
+    .at(-1);
+  if (!previous) return new Set();
+  const round = compactRoundSchema.parse(previous);
+  return new Set(
+    round.answers
+      .map((answer) => answer.type)
+      .filter((type): type is QuestionType => type !== 'champion'),
+  );
+};
 
 export const claimDailyAttempt = async (date: string) => {
   const db = getPlayerDatabase();

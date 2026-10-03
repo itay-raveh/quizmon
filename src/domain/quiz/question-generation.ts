@@ -45,12 +45,35 @@ const buildFirstAvailableQuestion = (
   return undefined;
 };
 
+export const orderTrainingQuestionTypes = (
+  types: readonly QuestionType[],
+  previousRoundTypes: ReadonlySet<QuestionType>,
+  random: () => number,
+): QuestionType[] => {
+  if (!previousRoundTypes.size) return shuffle(types, random);
+  const remaining = [...types];
+  const ordered: QuestionType[] = [];
+  while (remaining.length) {
+    const totalWeight = remaining.reduce(
+      (total, type) => total + (previousRoundTypes.has(type) ? 1 : 2),
+      0,
+    );
+    let draw = random() * totalWeight;
+    const index = remaining.findIndex(
+      (type) => (draw -= previousRoundTypes.has(type) ? 1 : 2) < 0,
+    );
+    ordered.push(remaining.splice(index, 1)[0]!);
+  }
+  return ordered;
+};
+
 export const buildQuestions = (
   catalog: PokemonCatalog,
   settings: GameSettings,
   random: () => number,
   requestedCount = TRAINING_QUESTION_COUNT,
   history?: QuestionHistory,
+  previousRoundTypes: ReadonlySet<QuestionType> = new Set(),
 ): QuestionData[] => {
   const context = createQuestionContext(catalog, settings, random, history);
   const count = settings.level && context.pool.length ? requestedCount : 0;
@@ -59,7 +82,11 @@ export const buildQuestions = (
   for (let index = 0; index < count; index += 1) {
     const question = buildFirstAvailableQuestion(
       context,
-      shuffle(settings.questionTypes, random),
+      orderTrainingQuestionTypes(
+        settings.questionTypes,
+        previousRoundTypes,
+        random,
+      ),
     );
     if (!question) continue;
     questions.push({ ...question, id: `${question.id}:${index}` });

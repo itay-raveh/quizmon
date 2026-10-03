@@ -9,6 +9,7 @@ import { type GameSettings } from '@/domain/settings/types';
 import type { Level } from '@/domain/quiz/level';
 import { createSeededRandom } from '@/lib/random';
 import { readPlayerData } from '@/lib/storage/player-storage';
+import { readPreviousTrainingQuestionTypes } from '@/lib/storage/round-storage';
 import { useCallback, useState } from 'react';
 
 interface TrainingGameOptions {
@@ -30,12 +31,14 @@ export const useTrainingGame = ({
       if (!catalog) return;
       const seed = crypto.randomUUID();
       const gameSettings = resolveTrainingSettings(catalog, nextSettings);
+      const previousRoundTypes = await readPreviousTrainingQuestionTypes();
       const questions = buildQuestions(
         catalog,
         gameSettings,
         createSeededRandom(seed),
         TRAINING_QUESTION_COUNT,
         readPlayerData().questionHistory,
+        previousRoundTypes,
       );
       if (questions.length !== TRAINING_QUESTION_COUNT) {
         setError(
