@@ -442,7 +442,7 @@ async function connectAccountSyncWork() {
       replicationIdentifier: `quizmon-rounds-${owner}`,
       url: `${base}/rounds/${roundSchema.version}`,
       headers,
-      push: {},
+      push: { batchSize: 20 },
       pull: {},
       live: true,
     });
