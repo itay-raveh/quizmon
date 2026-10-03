@@ -188,38 +188,41 @@
   text-align: center;
 }
 
-.type-picker__field {
+.type-picker {
+  display: grid;
+  width: min(100%, 36rem);
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.55rem;
+  align-self: start;
+  justify-self: center;
+}
+
+.type-picker__option.game-button {
   position: relative;
+  display: grid;
   min-width: 0;
+  min-height: 3.2rem;
+  padding: 0.35rem;
+  place-items: center;
 }
 
-.type-picker__selected {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 0.65rem;
+.type-picker__option .type-badge {
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 5 / 2;
 }
 
-.type-picker__remove {
-  display: flex;
-  min-height: 2.75rem;
-  padding: 0.35rem 0.55rem;
-  align-items: center;
-  gap: 0.65rem;
+.type-picker__option--selected.game-button {
   color: var(--navy);
-  background: var(--paper);
-  border: 2px solid var(--navy);
-  border-radius: 0.4rem;
-  cursor: pointer;
-}
-
-.type-picker__remove:hover {
   background: var(--yellow);
 }
 
-.type-picker__remove svg {
-  width: 1rem;
-  height: 1rem;
+.type-picker__option > svg {
+  position: absolute;
+  top: 0.1rem;
+  right: 0.1rem;
+  width: 0.9rem;
+  height: 0.9rem;
 }
 
 .type-picker__results {
@@ -267,4 +270,16 @@
 .type-picker__result--missed {
   color: var(--navy);
   background: var(--missed);
+}
+
+@container (max-width: 35rem) {
+  .type-picker {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@container (max-width: 24rem) {
+  .type-picker {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
