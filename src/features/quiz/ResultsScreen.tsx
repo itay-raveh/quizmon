@@ -255,7 +255,6 @@ export const ResultsScreen = ({
           </div>
         ) : null}
         <div className="score">
-          <span aria-hidden="true">Score</span>
           <strong aria-hidden="true">
             <AnimatedScore
               checkpoints={scoreCheckpoints}
@@ -282,7 +281,7 @@ export const ResultsScreen = ({
             ) : (
               `${highScoreLabel} best`
             )}{' '}
-            {formatScore(bestResult.score)} points
+            {formatScore(bestResult.score)}
           </p>
         ) : null}
       </div>

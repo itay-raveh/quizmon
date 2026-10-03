@@ -181,13 +181,6 @@
   color: var(--navy);
 }
 
-.score > span {
-  font-size: var(--text-micro);
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
 .score strong {
   min-width: 0;
   font: 800 clamp(2rem, 10vw, 2.35rem) / 1.05 var(--font-data);
@@ -375,6 +368,8 @@
 }
 
 .level-advancement-offer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
   margin-top: -12px;
 }
 
@@ -393,9 +388,13 @@
 }
 
 .level-advancement-offer__actions {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.45rem;
+}
+
+.level-advancement-offer__actions .game-button {
+  min-width: 0;
 }
 
 @container (max-width: 20rem) {
