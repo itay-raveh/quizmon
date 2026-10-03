@@ -6,7 +6,11 @@ import { savedSettingsSchema } from '../../domain/player/schemas/player-data';
 import type { GameSettings } from '../../domain/settings/types';
 import { useModalDialog } from '../../hooks/useModalDialog';
 import { selectedAccount } from '../account/account';
-import { useUpdateState } from '../../lib/storage/update-reload-state';
+import {
+  readUpdateState,
+  useUpdateSnapshot,
+  useUpdateState,
+} from '../../lib/storage/update-reload-state';
 import { BackupSettings } from './BackupSettings';
 import { ExperienceSettings } from './ExperienceSettings';
 import { getTrainingSettingsValidation } from './settings-validation';
@@ -33,9 +37,12 @@ export const SettingsDialog = ({
 }: SettingsDialogProps) => {
   const [saving, setSaving] = useState(false);
   const [backupOpen, setBackupOpen] = useState(false);
-  const [storedDraft, setDraft] = useUpdateState('settings-draft', settings);
-  const parsedDraft = savedSettingsSchema.safeParse(storedDraft);
-  const draft = parsedDraft.success ? parsedDraft.data : settings;
+  const [draft, setDraft] = useState<GameSettings>(() => {
+    const restored = readUpdateState('settings-draft', settings);
+    const parsed = savedSettingsSchema.safeParse(restored);
+    return parsed.success ? parsed.data : settings;
+  });
+  useUpdateSnapshot('settings-draft', draft);
   const [submitted, setSubmitted] = useUpdateState('settings-submitted', false);
   const dialogTitle = useRef<HTMLHeadingElement>(null);
   const { dialogProps, closeDialog } = useModalDialog(onClose, {
