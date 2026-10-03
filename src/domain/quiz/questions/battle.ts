@@ -147,10 +147,20 @@ export const buildCounterPickQuestion: QuestionBuilder<
       }
       const correct = pickFreshTarget(context, counters);
       if (!correct) continue;
+      const seenTypes = new Set([typeKey(correct.pokemon.types)]);
+      const distinctDistractors = shuffle(distractors, context.random).filter(
+        ({ pokemon }) => {
+          const key = typeKey(pokemon.types);
+          if (seenTypes.has(key)) return false;
+          seenTypes.add(key);
+          return true;
+        },
+      );
       const options = pokemonOptions(context, {
         correct,
-        candidates: distractors,
+        candidates: distinctDistractors,
       });
+      if (options.length !== 4) continue;
 
       return {
         ...makeQuestion(context, {
