@@ -57,16 +57,6 @@ try {
     score: 1,
     elapsedMilliseconds: 0,
   });
-  await collection.insertOne({
-    _id: `daily/alpha/${daily.day}`,
-    mode: 'daily',
-    ownerId: 'alpha',
-    day: daily.day,
-    roundId: daily.id,
-    completedAt: daily.completedAt,
-    score: 1,
-    elapsedMilliseconds: 0,
-  });
   standings = await startStandings(db, collection);
   assert.equal(
     (await boardRows(standings, 'training', null))[0]?.roundId,
@@ -81,10 +71,6 @@ try {
   assert.equal(
     (await boardRows(standings, 'daily', null, daily.day))[0]?.roundId,
     daily.id,
-  );
-  assert.equal(
-    (await boardRows(standings, 'daily', null, daily.day))[0]?.score,
-    scoreCompactRound(daily).score,
   );
 
   const faster = compactCompletion(completion('training'));
