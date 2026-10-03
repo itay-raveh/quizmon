@@ -48,7 +48,7 @@ export const buildItemIdentification: QuestionBuilder<
         item.spriteIdentity &&
         !/glasses|goggles|scarf/i.test(item.name) &&
         !excludedIdentificationItems.has(item.name) &&
-        (context.variant.allowBagsAndPaperItems ||
+        (context.variant.allowEverydayItems ||
           !bagsAndPaperItems.has(item.name)),
     ),
   );

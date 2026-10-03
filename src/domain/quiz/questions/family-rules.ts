@@ -72,7 +72,7 @@ type NoControls = object;
 interface FamilyControls {
   itemIdentification: {
     /** Permit the selected bag and paper items as answers and choices. */
-    allowBagsAndPaperItems: boolean;
+    allowEverydayItems: boolean;
     /** Require wrong items from different categories. */
     distinctItemCategories: boolean;
     /** Restrict wrong items to the target's bag pocket. */
