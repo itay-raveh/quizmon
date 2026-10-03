@@ -133,20 +133,17 @@
     transform: none;
   }
 
-  .answer--item,
-  .answer--move {
+  .answer--item {
     grid-template-columns: auto minmax(0, 1fr);
   }
 
-  .answer--item .answer__text,
-  .answer--move .answer__text {
+  .answer--item .answer__text {
     grid-column: 1 / -1;
     justify-items: center;
     text-align: center;
   }
 
-  .answer--item .answer__item-slot,
-  .answer--move .answer__move-slot {
+  .answer--item .answer__item-slot {
     justify-self: center;
   }
 
