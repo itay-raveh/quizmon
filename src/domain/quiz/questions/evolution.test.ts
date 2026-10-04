@@ -5,8 +5,6 @@ import type { PokemonCatalog } from '../../pokemon/types.ts';
 import { createSeededRandom } from '../../../lib/random.ts';
 import { gameLevels, type Level } from '../level.ts';
 import { getQuestionVariant } from '../variants.ts';
-import { responsePresets } from '../question-rules/shared.ts';
-import { buildEvolution } from './evolution.ts';
 import { buildQuestionType } from './registry.ts';
 
 const catalog = {
@@ -32,13 +30,10 @@ const build = (level: Level, seed: string, selected = pool, source = catalog) =>
     'evolutionConditions',
   );
 
-it('does not use a minimum level as the single correct evolution condition', () => {
+it('does not offer a minimum level in single-select evolution conditions', () => {
   const level = gameLevels.find((level) => {
     const variant = getQuestionVariant('evolutionConditions', level)?.variant;
-    return (
-      variant?.response.selection === 'single' &&
-      variant.mixedLevelEvolutionConditions
-    );
+    return variant?.response.selection === 'single';
   })!;
   const levelOnly = pool.filter(({ name }) =>
     ['turtwig', 'grotle'].includes(name),
@@ -48,48 +43,33 @@ it('does not use a minimum level as the single correct evolution condition', () 
   const mixed = pool.filter(({ name }) =>
     ['rattata-alola', 'raticate-alola'].includes(name),
   );
-  const requiredLevel = evolutionData.values
-    .find(
-      (entry) =>
-        entry.before === 'rattata-alola' && entry.after === 'raticate-alola',
-    )!
-    .conditions.find((condition) => condition.startsWith('at level '))!
-    .slice(9);
   const question = build(level, 'rattata-alola', mixed);
   expect(question?.answer.correctOptions).toEqual(['Evolve during the night']);
-  expect(question?.options).not.toContain(`Reach level ${requiredLevel}`);
+  expect(
+    question?.options.some((option) =>
+      /^(?:Reach level|Level) \d+$/.test(option),
+    ),
+  ).toBe(false);
 });
 
-it('asks for the exact evolution level when the rule requests it', () => {
-  const requiredLevel = evolutionData.values
-    .find((entry) => entry.before === 'turtwig' && entry.after === 'grotle')!
-    .conditions.find((condition) => condition.startsWith('at level '))!
-    .slice(9);
-  const level = gameLevels.find((level) =>
-    getQuestionVariant('evolutionConditions', level),
+it('only offers minimum levels inside multi-select condition questions', () => {
+  const level = gameLevels.find(
+    (level) =>
+      getQuestionVariant('evolutionConditions', level)?.variant.response
+        .selection === 'adaptive',
   )!;
-  const selected = pool.filter(({ name }) =>
+  const levelOnly = pool.filter(({ name }) =>
     ['turtwig', 'grotle'].includes(name),
   );
-  const variant = {
-    ...getQuestionVariant('evolutionConditions', level)!.variant,
-    exactLevelQuestionChance: 1,
-    exactEvolutionValues: true,
-    compactEvolutionLabels: true,
-    response: responsePresets.adaptive,
-  };
-  const question = buildEvolution({
-    catalog,
-    level,
-    pool: selected,
-    variant,
-    random: () => 0,
-    used: new Set(),
-  });
-  expect(question?.answer.correctOptions).toEqual([`Level ${requiredLevel}`]);
-  expect(question?.answer.interaction).toBe('single-choice');
-  expect(question?.options.every((option) => /^Level \d+$/.test(option))).toBe(
-    true,
+  expect(build(level, 'turtwig', levelOnly)).toBeUndefined();
+
+  const mixed = pool.filter(({ name }) =>
+    ['rattata-alola', 'raticate-alola'].includes(name),
+  );
+  const question = build(level, 'rattata-alola', mixed);
+  expect(question?.answer.interaction).toBe('multi-select');
+  expect(question?.answer.correctOptions).toEqual(
+    expect.arrayContaining(['Level 20', 'Evolve during the night']),
   );
 });
 

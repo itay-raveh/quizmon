@@ -36,7 +36,7 @@ const evolutionConditionLabel = (
     return variant.compactEvolutionLabels ? 'Trade' : 'Trade this Pokémon';
   const level = /^at level (\d+)$/.exec(condition);
   if (level)
-    return variant.exactEvolutionValues || variant.mixedLevelEvolutionConditions
+    return variant.exactEvolutionValues
       ? variant.compactEvolutionLabels
         ? `Level ${level[1]}`
         : `Reach level ${level[1]}`
@@ -88,11 +88,6 @@ export const buildEvolution: QuestionBuilder<
   const variant = context.variant;
   if (!topics || !variant) return;
   const names = new Set(context.pool.map((candidate) => candidate.name));
-  const preferExactLevel = context.random() < variant.exactLevelQuestionChance;
-  const numericOnlyMethod = (entry: EvolutionKnowledge) =>
-    entry.trigger === 'level-up' &&
-    entry.conditions.length === 1 &&
-    /^at level \d+$/.test(entry.conditions[0]!);
   const pool = ordered(
     context,
     topics.evolutions.filter(
@@ -102,14 +97,7 @@ export const buildEvolution: QuestionBuilder<
         (context.generations ?? generations).includes(entry.generation),
     ),
   );
-  if (variant.exactLevelQuestionChance)
-    pool.sort(
-      (a, b) =>
-        Number(numericOnlyMethod(b) === preferExactLevel) -
-        Number(numericOnlyMethod(a) === preferExactLevel),
-    );
   for (const target of pool) {
-    const exactLevel = preferExactLevel && numericOnlyMethod(target);
     const before = context.pool.find(({ name }) => name === target.before)!;
     const after = context.pool.find(({ name }) => name === target.after)!;
     if (
@@ -142,14 +130,10 @@ export const buildEvolution: QuestionBuilder<
       variant.response.selection === 'single'
         ? allTrue.filter(({ condition }) => !/^at level \d+$/.test(condition))
         : allTrue;
-    if (
-      eligibleTrue.length <
-      (exactLevel ? 1 : variant.minimumEvolutionConditions)
-    )
-      continue;
+    if (eligibleTrue.length < variant.minimumEvolutionConditions) continue;
     const trueChoices = ordered(context, eligibleTrue).slice(
       0,
-      variant.response.selection === 'adaptive' && !exactLevel ? 3 : 1,
+      variant.response.selection === 'adaptive' ? 3 : 1,
     );
     const trueLabels = new Set(allTrue.map(({ label }) => label));
     const wrongByLabel = new Map<
@@ -160,21 +144,17 @@ export const buildEvolution: QuestionBuilder<
       if (entry.game !== target.game) continue;
       for (const condition of evolutionRequirements(entry)) {
         if (requirements.includes(condition)) continue;
-        if (exactLevel && !/^at level \d+$/.test(condition)) continue;
+        if (
+          variant.response.selection === 'single' &&
+          /^at level \d+$/.test(condition)
+        )
+          continue;
         const label = evolutionConditionLabel(condition, variant);
         if (label && !trueLabels.has(label))
           wrongByLabel.set(label, { condition, label });
       }
     }
     const wrongPool = ordered(context, [...wrongByLabel.values()]);
-    if (exactLevel) {
-      const level = Number(target.conditions[0]!.slice(9));
-      wrongPool.sort(
-        (a, b) =>
-          Math.abs(Number(a.condition.slice(9)) - level) -
-          Math.abs(Number(b.condition.slice(9)) - level),
-      );
-    }
     const selectedWrong: typeof wrongPool = [];
     const numeric = trueChoices.find(({ condition }) =>
       /^at level \d+$/.test(condition),
@@ -203,8 +183,6 @@ export const buildEvolution: QuestionBuilder<
       selectedWrong.push(choice);
       usedKinds.add(kind);
     }
-    if (numericOnlyMethod(target) && !exactLevel && selectedWrong.length < 3)
-      continue;
     for (const choice of wrongPool) {
       if (selectedWrong.length === 4 - trueChoices.length) break;
       if (!selectedWrong.includes(choice)) selectedWrong.push(choice);
@@ -212,13 +190,10 @@ export const buildEvolution: QuestionBuilder<
     if (selectedWrong.length !== 4 - trueChoices.length) continue;
     const correct = trueChoices.map(({ label }) => label);
     const options = [...correct, ...selectedWrong.map(({ label }) => label)];
-    const multipleAnswers =
-      variant.response.selection === 'adaptive' && !exactLevel;
-    const prompt = exactLevel
-      ? 'What is the minimum level for this evolution?'
-      : multipleAnswers
-        ? 'Which of these are requirements for this evolution? Select all that apply.'
-        : 'Which of these is a requirement for this evolution?';
+    const multipleAnswers = variant.response.selection === 'adaptive';
+    const prompt = multipleAnswers
+      ? 'Which of these are requirements for this evolution? Select all that apply.'
+      : 'Which of these is a requirement for this evolution?';
     const question = makeTopicQuestion(
       context,
       pokemonSubject(before),
@@ -239,10 +214,7 @@ export const buildEvolution: QuestionBuilder<
           stages: getOptionVisuals(context, [target.before, target.after]),
         },
         optionLabels: Object.fromEntries(
-          options.map((label) => [
-            label,
-            exactLevel ? label.split(' ').at(-1)! : label,
-          ]),
+          options.map((label) => [label, label]),
         ),
       },
       'evolution',
@@ -251,12 +223,6 @@ export const buildEvolution: QuestionBuilder<
       return {
         ...question,
         questionType: 'evolutionConditions',
-        options: exactLevel
-          ? question.options.toSorted(
-              (a, b) =>
-                Number(a.split(' ').at(-1)) - Number(b.split(' ').at(-1)),
-            )
-          : question.options,
       };
   }
 };

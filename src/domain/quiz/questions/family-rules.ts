@@ -129,12 +129,8 @@ interface FamilyControls {
     minimumEvolutionConditions: number;
     /** Keep numeric levels and other exact values in condition labels. */
     exactEvolutionValues: boolean;
-    /** Allow exact level labels without enabling other exact values. */
-    mixedLevelEvolutionConditions: boolean;
     /** Shorten condition labels, such as `Trade this Pokémon` to `Trade`. */
     compactEvolutionLabels: boolean;
-    /** Chance of asking for an exact evolution level when eligible. */
-    exactLevelQuestionChance: number;
     /** Include directly used evolution items as conditions. */
     directEvolutionItems: boolean;
     /** Include location-dependent evolution conditions. */
