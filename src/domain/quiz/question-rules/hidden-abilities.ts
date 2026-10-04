@@ -19,11 +19,6 @@ const rendering = {
 export const hiddenAbilities = {
   rendering,
   levels: {
-    4: {
-      ...controls,
-      sameTypeAbilityDistractors: false,
-      response: responsePresets.single,
-    },
     5: {
       ...controls,
       sameTypeAbilityDistractors: true,
