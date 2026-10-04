@@ -6,6 +6,7 @@ import type { PokemonCatalog } from '@/domain/pokemon/types';
 import type { QuestionData } from '@/domain/quiz/types';
 import { AnswerEffectiveness } from './AnswerEffectiveness';
 import { answerOptionState } from './answer-option-state';
+
 export const TypeAnswerPicker = ({
   question,
   selectedOptions,
@@ -20,61 +21,6 @@ export const TypeAnswerPicker = ({
   typeRelations?: PokemonCatalog['typeRelations'];
 }) => {
   const multiSelect = question.answer.interaction === 'multi-select';
-  if (answered) {
-    const visible = question.options.filter(
-      (type) =>
-        selectedOptions.includes(type) ||
-        question.answer.correctOptions.includes(type),
-    );
-    return (
-      <div
-        className="type-picker__results"
-        role="list"
-        aria-label="Type answers"
-      >
-        {visible.map((type) => {
-          const outcome = answerOptionState({
-            answered: true,
-            multiSelect,
-            selected: selectedOptions.includes(type),
-            correct: question.answer.correctOptions.includes(type),
-          });
-          const status =
-            outcome === 'wrong'
-              ? 'Wrong pick'
-              : outcome === 'missed'
-                ? 'Missed'
-                : 'Correct';
-          return (
-            <div
-              className={`type-picker__result type-picker__result--${outcome}`}
-              role="listitem"
-              key={type}
-            >
-              <TypeBadges types={[type]} label={formatPokemonName(type)} />
-              <span className="visually-hidden">{status}</span>
-              {outcome === 'missed' ? (
-                <MinusIcon aria-hidden="true" weight="bold" />
-              ) : outcome === 'correct' ? (
-                <CheckIcon aria-hidden="true" weight="bold" />
-              ) : (
-                <XIcon aria-hidden="true" weight="bold" />
-              )}
-              {question.visual?.kind === 'typeMatchup' && typeRelations ? (
-                <AnswerEffectiveness
-                  option={type}
-                  isTypeOption
-                  attackTypes={[type]}
-                  defenderTypes={question.subject.types ?? []}
-                  typeRelations={typeRelations}
-                />
-              ) : null}
-            </div>
-          );
-        })}
-      </div>
-    );
-  }
   return (
     <div
       className="type-picker"
@@ -83,18 +29,65 @@ export const TypeAnswerPicker = ({
     >
       {question.options.map((type) => {
         const selected = selectedOptions.includes(type);
+        const correct = question.answer.correctOptions.includes(type);
+        const outcome = answerOptionState({
+          answered,
+          multiSelect,
+          selected,
+          correct,
+        });
+        const resultAnnouncement =
+          outcome === 'missed'
+            ? '. Correct answer, not selected'
+            : outcome === 'wrong'
+              ? '. Wrong pick'
+              : outcome === 'correct'
+                ? '. Correct'
+                : '';
         return (
-          <GameButton
-            key={type}
-            className={`type-picker__option ${selected ? 'type-picker__option--selected' : ''}`.trim()}
-            aria-label={formatPokemonName(type)}
-            aria-pressed={multiSelect ? selected : undefined}
-            onClick={() => onSelect(type)}
-            sound="none"
-          >
-            <TypeBadges types={[type]} />
-            {selected ? <CheckIcon aria-hidden="true" weight="bold" /> : null}
-          </GameButton>
+          <div className="type-picker__choice" key={type}>
+            <GameButton
+              className={`type-picker__option ${outcome === 'idle' ? '' : `answer--${outcome}`}`.trim()}
+              aria-label={`${formatPokemonName(type)}${resultAnnouncement}`}
+              aria-pressed={multiSelect ? selected : undefined}
+              disabled={answered}
+              onClick={() => onSelect(type)}
+              sound="none"
+            >
+              <TypeBadges types={[type]} />
+              {outcome === 'missed' ? (
+                <MinusIcon
+                  className="type-picker__mark"
+                  aria-hidden="true"
+                  weight="bold"
+                />
+              ) : outcome === 'wrong' ? (
+                <XIcon
+                  className="type-picker__mark"
+                  aria-hidden="true"
+                  weight="bold"
+                />
+              ) : outcome === 'correct' || outcome === 'selected' ? (
+                <CheckIcon
+                  className="type-picker__mark"
+                  aria-hidden="true"
+                  weight="bold"
+                />
+              ) : null}
+            </GameButton>
+            {answered &&
+            (selected || correct) &&
+            question.visual?.kind === 'typeMatchup' &&
+            typeRelations ? (
+              <AnswerEffectiveness
+                option={type}
+                isTypeOption
+                attackTypes={[type]}
+                defenderTypes={question.subject.types ?? []}
+                typeRelations={typeRelations}
+              />
+            ) : null}
+          </div>
         );
       })}
     </div>
