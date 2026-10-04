@@ -14,8 +14,8 @@
 }
 
 .move-renderable__disc {
-  width: 3rem;
-  height: 3rem;
+  width: 1.2em;
+  height: 1.2em;
   object-fit: contain;
 }
 
