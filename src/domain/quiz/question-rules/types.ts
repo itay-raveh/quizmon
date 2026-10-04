@@ -224,6 +224,7 @@ export type QuestionRuleRow<
   Rules extends { rendering: QuestionRendering; response: { kind: string } },
   Type extends keyof FamilyRules,
 > = {
+  active?: boolean;
   /** Family visibility changes applied after the base policy. */
   rendering: RenderingControlsFor<Type>;
   /** Sparse rules. A `null` entry ends availability until another rule. */

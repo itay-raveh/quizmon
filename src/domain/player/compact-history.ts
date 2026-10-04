@@ -6,7 +6,10 @@ import {
   questionRepeatPolicy,
   rememberQuestion,
 } from '../quiz/history.ts';
-import { questionDefinitions } from '../quiz/questions/definitions.ts';
+import {
+  isQuestionType,
+  questionDefinitions,
+} from '../quiz/questions/definitions.ts';
 import pokemonGenerations from '../pokemon/data/pokemon-generations.json' with { type: 'json' };
 import {
   compactRoundSchema,
@@ -75,6 +78,7 @@ export function recentQuestionHistory(rounds: Iterable<CompactRound>) {
   const isPokemon = (name: string) => Object.hasOwn(pokemonGenerations, name);
   for (const round of recent) {
     for (const answer of round.answers) {
+      if (answer.type !== 'champion' && !isQuestionType(answer.type)) continue;
       const definition =
         answer.type === 'champion' ? null : questionDefinitions[answer.type];
       const pokemonOptions =

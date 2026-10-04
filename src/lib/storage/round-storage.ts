@@ -5,6 +5,7 @@ import { applyResult } from '../../domain/player/game-progress';
 import type { LeagueVictoryRecord } from '../../domain/player/hall-of-fame';
 import type { RoundCompletion } from '../../domain/sync/progress';
 import type { QuestionType } from '../../domain/quiz/types';
+import { isQuestionType } from '../../domain/quiz/questions/definitions';
 import {
   compactCompletion,
   compactRoundSchema,
@@ -38,7 +39,7 @@ export const readPreviousTrainingQuestionTypes = async (): Promise<
   return new Set(
     round.answers
       .map((answer) => answer.type)
-      .filter((type): type is QuestionType => type !== 'champion'),
+      .filter((type): type is QuestionType => isQuestionType(type)),
   );
 };
 

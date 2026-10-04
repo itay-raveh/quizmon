@@ -1,6 +1,6 @@
 import { GameButton } from '@/components/GameButton';
 import { LevelLabel } from '@/components/LevelLabel';
-import { CaretDownIcon, CheckIcon, XIcon } from '@/components/icons';
+import { CaretDownIcon, CheckIcon, MinusIcon, XIcon } from '@/components/icons';
 import type { TrainerProgressChange } from '@/domain/player/trainer-progression';
 import {
   formatDailyDate,
@@ -305,6 +305,7 @@ export const ResultsScreen = ({
             }
           >
             {result.answers.map((answer, index) => {
+              const unavailable = !answer.questionType;
               const categoryLabel = getCategoryLabel(answer.category);
               const outcome = answer.correct ? 'correct' : 'incorrect';
               const factor =
@@ -317,11 +318,17 @@ export const ResultsScreen = ({
                       ),
                     )
                   : undefined;
-              const description = `${categoryLabel}: ${outcome}${factor ? `, ${factor} question factor` : ''}`;
+              const description = unavailable
+                ? 'Unavailable question: no points'
+                : `${categoryLabel}: ${outcome}${factor ? `, ${factor} question factor` : ''}`;
               return (
                 <li
                   className={
-                    answer.correct ? 'answer-trail--correct' : undefined
+                    unavailable
+                      ? 'answer-trail--unavailable'
+                      : answer.correct
+                        ? 'answer-trail--correct'
+                        : undefined
                   }
                   key={`${answer.category}-${index}`}
                   title={description}
@@ -334,7 +341,9 @@ export const ResultsScreen = ({
                         : undefined
                     }
                   >
-                    {answer.correct ? (
+                    {unavailable ? (
+                      <MinusIcon weight="bold" />
+                    ) : answer.correct ? (
                       <CheckIcon weight="bold" />
                     ) : (
                       <XIcon weight="bold" />

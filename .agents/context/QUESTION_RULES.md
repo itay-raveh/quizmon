@@ -7,6 +7,7 @@ Each question family has one rule file in [`src/domain/quiz/question-rules/`](..
 | Change | Source |
 | --- | --- |
 | A family's generation controls, response mode, rendering, or levels | Its file in [`question-rules/`](../../src/domain/quiz/question-rules/) |
+| Remove a family from automatic play while keeping it in Custom Training | Set `active: false` on its rule row |
 | Shared sprite and response defaults | [`shared.ts`](../../src/domain/quiz/question-rules/shared.ts) |
 | Correct-answer counts for sampled four-choice multi-select questions | [`sampledMultiCorrectCounts`](../../src/domain/quiz/question-rules/shared.ts) |
 | Allowed rule and rendering fields | [`FamilyRules`](../../src/domain/quiz/questions/family-rules.ts) and [`RenderingControlsFor`](../../src/domain/quiz/question-rules/types.ts) |
@@ -19,6 +20,8 @@ Each question family has one rule file in [`src/domain/quiz/question-rules/`](..
 ## Rules and levels
 
 A family file exports a row with `rendering` and `levels`. Its local `controls` object supplies defaults copied into each entry. Every level entry is complete: it does not inherit controls from lower levels. The numeric level keys use [`Level`](../../src/domain/quiz/level.ts), currently 1 through 5.
+
+Families are active by default. `active: false` removes a family from automatic Training, Daily, and League generation but keeps its level rules, Custom Training choice, and normal scoring. The Custom picker places these families under Custom only. Level `null` entries still control which levels can use a family, including in Custom Training.
 
 [`getQuestionVariant(type, level)`](../../src/domain/quiz/variants.ts) selects the highest defined level at or below the requested level and returns its actual level with the resolved rule. A `null` level entry ends availability until another rule appears. It returns `undefined` if no level qualifies.
 
@@ -54,3 +57,5 @@ if (result) console.log(result.level, result.variant.response);
 ## Question data and validation
 
 Generated questions carry their resolved `rendering`, `view`, and `variantLevel`. [`questionRenderingSchema`](../../src/domain/quiz/rendering.ts) validates complete rendering snapshots; [`savedQuestionSchema`](../../src/domain/quiz/lineup.ts) validates question objects. Completed rounds persist compact answer observations rather than full question lineups, and unfinished rounds do not resume. TypeScript checks authored rules, while runtime validation handles data read from storage. A new visibility combination still needs a generation or UI check to establish that its clues and answers remain usable.
+
+Completed rounds keep unknown family IDs in their original answer positions. They earn zero points and no question-specific progress when rescored, while invalid answer facts still fail validation. Saved Custom selections discard unknown IDs when loaded.

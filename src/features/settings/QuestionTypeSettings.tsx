@@ -10,6 +10,7 @@ import {
   type QuestionTypeGroup,
 } from '@/domain/quiz/questions/definitions';
 import type { QuestionType } from '@/domain/quiz/types';
+import { isActiveQuestionType } from '@/domain/quiz/variants';
 import { formatScoreMultiplier } from '@/domain/quiz/format';
 import type { GameSettings } from '@/domain/settings/types';
 import {
@@ -33,23 +34,33 @@ interface QuestionTypeSettingsProps extends Pick<
   submitted: boolean;
 }
 
-const groupedQuestionTypes = questionTypeGroups.map((group) => ({
-  ...group,
-  types: questionTypes.filter(
-    (questionType) => questionDefinitions[questionType].group === group.id,
-  ),
-}));
+const groupedQuestionTypes = questionTypeGroups
+  .map((group) => ({
+    ...group,
+    types: questionTypes.filter(
+      (questionType) =>
+        isActiveQuestionType(questionType) &&
+        questionDefinitions[questionType].group === group.id,
+    ),
+  }))
+  .filter(({ types }) => types.length > 0);
+const customOnlyQuestionTypes = questionTypes.filter(
+  (type) => !isActiveQuestionType(type),
+);
 
 const getInitialExpandedGroup = (
   selectedQuestionTypes: readonly QuestionType[],
-): QuestionTypeGroup => {
+): QuestionTypeGroup | 'custom-only' => {
   const selected = new Set(selectedQuestionTypes);
   return (
     groupedQuestionTypes.find(
       ({ types }) =>
         types.some((questionType) => selected.has(questionType)) &&
         types.some((questionType) => !selected.has(questionType)),
-    )?.id ?? questionTypeGroups[0].id
+    )?.id ??
+    (customOnlyQuestionTypes.some((type) => selected.has(type))
+      ? 'custom-only'
+      : (groupedQuestionTypes[0]?.id ?? 'custom-only'))
   );
 };
 
@@ -64,16 +75,63 @@ export const QuestionTypeSettings = ({
 }: QuestionTypeSettingsProps) => {
   const [explainedQuestionType, setExplainedQuestionType] =
     useState<QuestionType>('pokemonFromHistoricalSprite');
-  const [initialExpandedGroup] = useState<QuestionTypeGroup>(() =>
-    getInitialExpandedGroup(draft.questionTypes),
+  const [initialExpandedGroup] = useState<QuestionTypeGroup | 'custom-only'>(
+    () => getInitialExpandedGroup(draft.questionTypes),
   );
   const playInteractionSound = useInteractionSound();
   const selectedQuestionTypes = new Set(draft.questionTypes);
   const available = new Set(availableQuestionTypes);
+  const availableCurrent = availableQuestionTypes.filter(isActiveQuestionType);
   const allSelected =
-    availableQuestionTypes.length > 0 &&
-    availableQuestionTypes.every((type) => selectedQuestionTypes.has(type));
+    availableCurrent.length > 0 &&
+    availableCurrent.every((type) => selectedQuestionTypes.has(type));
   const hasError = submitted && (!questionTypesAreValid || matchingCount === 0);
+  const renderQuestionType = (questionType: QuestionType) => {
+    const label = questionDefinitions[questionType].label;
+    const factor = draft.level
+      ? getQuestionTypeMultiplier(questionType, draft.level)
+      : undefined;
+    const selectable = available.has(questionType);
+    const checked = selectable && selectedQuestionTypes.has(questionType);
+    return (
+      <div
+        className={`question-type-tile${checked ? ' question-type-tile--selected' : ''}${!selectable ? ' question-type-tile--unavailable' : ''}`}
+        key={questionType}
+      >
+        <SelectionTile
+          checked={checked}
+          disabled={!selectable}
+          label={label}
+          description={
+            !selectable || factor === undefined
+              ? 'Unavailable'
+              : formatScoreMultiplier(factor)
+          }
+          onChange={(event) =>
+            onChange((current) => ({
+              ...current,
+              questionTypes: toggleValue(
+                current.questionTypes,
+                questionType,
+                event.target.checked,
+              ),
+            }))
+          }
+        />
+        <SoundButton
+          aria-label={`About ${label}`}
+          className="question-type-tile__help"
+          onClick={() => setExplainedQuestionType(questionType)}
+          popoverTarget="question-type-help"
+          popoverTargetAction="show"
+        >
+          <span aria-hidden="true">
+            <QuestionIcon weight="bold" />
+          </span>
+        </SoundButton>
+      </div>
+    );
+  };
 
   return (
     <>
@@ -88,26 +146,31 @@ export const QuestionTypeSettings = ({
             Question types
           </h3>
           <SoundButton
-            aria-label={`${allSelected ? 'Deselect' : 'Select'} all question types`}
+            aria-label={`${allSelected ? 'Deselect' : 'Select'} all current question types`}
             className="selection-toggle"
-            disabled={availableQuestionTypes.length === 0}
+            disabled={availableCurrent.length === 0}
             onClick={() =>
               onChange((current) => ({
                 ...current,
                 questionTypes: allSelected
-                  ? current.questionTypes.filter((type) => !available.has(type))
+                  ? current.questionTypes.filter(
+                      (type) => !availableCurrent.includes(type),
+                    )
                   : questionTypes.filter(
                       (type) =>
-                        available.has(type) ||
+                        availableCurrent.includes(type) ||
                         current.questionTypes.includes(type),
                     ),
               }))
             }
             sound={allSelected ? 'toggle-off' : 'toggle-on'}
           >
-            {allSelected ? 'Deselect all' : 'Select all'}
+            {allSelected ? 'Deselect current' : 'Select current'}
           </SoundButton>
         </div>
+        <p className="question-type-settings__intro">
+          Choose the formats for your Training rounds.
+        </p>
         {hasError ? (
           <p className="form-error" id="question-types-error" role="alert">
             {selectedQuestionTypes.has('pokemonByGeneration') &&
@@ -154,58 +217,55 @@ export const QuestionTypeSettings = ({
                   className="selection-grid selection-grid--question-types"
                   role="group"
                 >
-                  {group.types.map((questionType) => {
-                    const label = questionDefinitions[questionType].label;
-                    const factor = draft.level
-                      ? getQuestionTypeMultiplier(questionType, draft.level)
-                      : undefined;
-                    const selectable = available.has(questionType);
-                    const checked =
-                      selectable && selectedQuestionTypes.has(questionType);
-                    return (
-                      <div
-                        className={`question-type-tile${checked ? ' question-type-tile--selected' : ''}${!selectable ? ' question-type-tile--unavailable' : ''}`}
-                        key={questionType}
-                      >
-                        <SelectionTile
-                          checked={checked}
-                          disabled={!selectable}
-                          label={label}
-                          description={
-                            !selectable || factor === undefined
-                              ? 'Unavailable'
-                              : formatScoreMultiplier(factor)
-                          }
-                          onChange={(event) =>
-                            onChange((current) => ({
-                              ...current,
-                              questionTypes: toggleValue(
-                                current.questionTypes,
-                                questionType,
-                                event.target.checked,
-                              ),
-                            }))
-                          }
-                        />
-                        <SoundButton
-                          aria-label={`About ${label}`}
-                          className="question-type-tile__help"
-                          onClick={() => setExplainedQuestionType(questionType)}
-                          popoverTarget="question-type-help"
-                          popoverTargetAction="show"
-                        >
-                          <span aria-hidden="true">
-                            <QuestionIcon weight="bold" />
-                          </span>
-                        </SoundButton>
-                      </div>
-                    );
-                  })}
+                  {group.types.map(renderQuestionType)}
                 </div>
               </div>
             </details>
           );
         })}
+        {customOnlyQuestionTypes.length ? (
+          <details
+            className="question-type-group"
+            aria-labelledby="question-type-group-custom-only-title"
+            name="question-types"
+            open={initialExpandedGroup === 'custom-only'}
+          >
+            <summary
+              className="question-type-group__disclosure"
+              onClick={() => playInteractionSound('tap')}
+            >
+              <h4 id="question-type-group-custom-only-title">Custom only</h4>
+              <span className="question-type-group__count">
+                {
+                  customOnlyQuestionTypes.filter(
+                    (type) =>
+                      available.has(type) && selectedQuestionTypes.has(type),
+                  ).length
+                }{' '}
+                /{' '}
+                {
+                  customOnlyQuestionTypes.filter((type) => available.has(type))
+                    .length
+                }
+                <span className="visually-hidden"> selected</span>
+              </span>
+              <CaretDownIcon aria-hidden="true" weight="bold" />
+            </summary>
+            <div className="question-type-group__panel">
+              <p className="question-type-settings__note">
+                These formats do not appear in automatic games. They score
+                normally when selected here.
+              </p>
+              <div
+                aria-label="Custom only question types"
+                className="selection-grid selection-grid--question-types"
+                role="group"
+              >
+                {customOnlyQuestionTypes.map(renderQuestionType)}
+              </div>
+            </div>
+          </details>
+        ) : null}
       </section>
 
       <div

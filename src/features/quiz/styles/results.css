@@ -269,6 +269,11 @@
   background: var(--blue);
 }
 
+.answer-trail .answer-trail--unavailable {
+  background: var(--metal-silver-light);
+  color: var(--navy);
+}
+
 .answer-trail--training {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -299,6 +304,11 @@
 
 .answer-trail--training .answer-trail--correct > span:first-child {
   background: var(--blue);
+}
+
+.answer-trail--training .answer-trail--unavailable > span:first-child {
+  background: var(--metal-silver-light);
+  color: var(--navy);
 }
 
 .answer-trail__factor {

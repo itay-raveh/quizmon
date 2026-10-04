@@ -17,7 +17,7 @@ import type { QuestionContext } from './questions/context.ts';
 import { questionTypes } from './questions/definitions.ts';
 import { buildQuestionType } from './questions/registry.ts';
 import type { QuestionData, QuestionType } from './types.ts';
-import { getQuestionVariant } from './variants.ts';
+import { getQuestionVariant, isActiveQuestionType } from './variants.ts';
 
 const createQuestionContext = (
   catalog: PokemonCatalog,
@@ -158,6 +158,7 @@ export const buildLeagueQuestions = (
     const candidates = shuffle(
       questionTypes.filter(
         (type) =>
+          isActiveQuestionType(type) &&
           !usedTypes.has(type) &&
           getQuestionVariant(type, stage.level) &&
           (stage.level !== 4 || !getQuestionVariant(type, 3)),
@@ -221,33 +222,37 @@ export const buildDailyQuestions = (
   );
 };
 
+export const getAvailableTrainingQuestionTypes = (
+  catalog: PokemonCatalog,
+  settings: GameSettings,
+): QuestionType[] =>
+  settings.level
+    ? questionTypes.filter((type) =>
+        Boolean(
+          buildQuestionType(
+            createQuestionContext(
+              catalog,
+              settings,
+              createSeededRandom(`availability:${type}`),
+            ),
+            type,
+          ),
+        ),
+      )
+    : [];
+
 export const resolveTrainingSettings = (
   catalog: PokemonCatalog,
   settings: GameSettings,
 ): GameSettings => {
   const resolved = getTrainingSettings(settings);
   if (!settings.level) return resolved;
-  const automatic = getTrainingSettings({
-    ...settings,
-    questionSelection: 'automatic',
-  });
-  const automaticQuestionTypes = automatic.questionTypes.filter((type) =>
-    Boolean(
-      buildQuestionType(
-        createQuestionContext(
-          catalog,
-          automatic,
-          createSeededRandom(`availability:${type}`),
-        ),
-        type,
-      ),
-    ),
-  );
+  const available = getAvailableTrainingQuestionTypes(catalog, resolved);
   return {
     ...resolved,
-    automaticQuestionTypes,
+    automaticQuestionTypes: available.filter(isActiveQuestionType),
     questionTypes: resolved.questionTypes.filter((type) =>
-      automaticQuestionTypes.includes(type),
+      available.includes(type),
     ),
   };
 };

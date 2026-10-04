@@ -77,3 +77,46 @@ it('compares older Training rounds using the current scoring rules', () => {
     scoreCompactRound(older).score,
   );
 });
+
+it('keeps an unknown format in place without awarding points or progress', () => {
+  const original = compactCompletion(completion());
+  if (original.mode !== 'training') throw new Error('Expected Training round');
+  const unknown = compactRoundSchema.parse({
+    ...original,
+    answers: [
+      {
+        ...original.answers[0],
+        type: 'removed-format',
+        subject: 'eevee',
+        expected: ['eevee'],
+        selected: ['eevee'],
+      },
+      ...original.answers.slice(1),
+    ],
+  });
+  const missed = compactRoundSchema.parse({
+    ...original,
+    answers: [
+      { ...original.answers[0], selected: [] },
+      ...original.answers.slice(1),
+    ],
+  });
+  const result = scoreCompactRound(unknown);
+  const projected = projectCompactRoundHistory([unknown], 'Trainer');
+
+  expect(result.answers).toHaveLength(10);
+  expect(result.answers[0]).toMatchObject({ correct: false, points: 0 });
+  expect(result.answers[0]?.questionType).toBeUndefined();
+  expect(result.score).toBe(scoreCompactRound(missed).score);
+  expect(projected.results.progress.correctQuestionTypes.pokemonTypes).toBe(9);
+  expect(projected.pokedex).not.toContain('eevee');
+  expect(
+    compactRoundSchema.safeParse({
+      ...unknown,
+      answers: [
+        { ...unknown.answers[0], responseMs: -1 },
+        ...unknown.answers.slice(1),
+      ],
+    }).success,
+  ).toBe(false);
+});

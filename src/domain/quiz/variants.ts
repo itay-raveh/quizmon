@@ -8,8 +8,12 @@ import { mergeRendering, type QuestionRendering } from './rendering.ts';
 import { resolveLevelVariant, type Level } from './level.ts';
 import type { QuestionData } from './types.ts';
 import type { FamilyRules } from './questions/family-rules.ts';
+import type { QuestionType } from './questions/definitions.ts';
 
 export { baseQuestionRendering } from './question-rules/shared.ts';
+
+export const isActiveQuestionType = (type: QuestionType): boolean =>
+  !('active' in questionRules[type] && questionRules[type].active === false);
 
 const withRendering = <
   Type extends keyof FamilyRules,

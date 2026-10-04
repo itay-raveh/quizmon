@@ -119,13 +119,13 @@ export const savedSettingsSchema = z.object({
       generations.filter((value) => selected.includes(value)),
     ),
   questionTypes: z
-    .array(z.enum(questionTypes))
+    .array(name)
     .min(1)
     .transform((selected) =>
       questionTypes.filter((value) => selected.includes(value)),
     ),
   automaticQuestionTypes: z
-    .array(z.enum(questionTypes))
+    .array(name)
     .transform((selected) =>
       questionTypes.filter((value) => selected.includes(value)),
     )

@@ -375,6 +375,8 @@ export const questionDefinitions = {
 /** Current persisted family IDs, derived from the definitions without a second enum. */
 export type QuestionType = keyof typeof questionDefinitions;
 export const questionTypes = Object.keys(questionDefinitions) as QuestionType[];
+export const isQuestionType = (type: string): type is QuestionType =>
+  Object.hasOwn(questionDefinitions, type);
 export const getQuestionTitle = (question: {
   questionType: QuestionType | 'champion';
 }): string =>

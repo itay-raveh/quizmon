@@ -1,4 +1,4 @@
-import { getQuestionVariant } from '../quiz/variants.ts';
+import { getQuestionVariant, isActiveQuestionType } from '../quiz/variants.ts';
 import { getFormGroup } from '../pokemon/forms.ts';
 import {
   formGroups,
@@ -15,7 +15,7 @@ export const defaultGameSettings: GameSettings = {
   answerFlow: 'manual',
   formGroups: [...formGroups],
   generations: ['I'],
-  questionTypes: [...questionTypes],
+  questionTypes: questionTypes.filter(isActiveQuestionType),
   reduceMotion: false,
   soundVolume: 1,
   timerDisplay: 'seconds',
@@ -48,7 +48,7 @@ export const getTrainingSettings = (settings: GameSettings): GameSettings => ({
   questionTypes: settings.level
     ? (settings.questionSelection === 'custom'
         ? settings.questionTypes
-        : questionTypes
+        : questionTypes.filter(isActiveQuestionType)
       ).filter(
         (type) =>
           getQuestionVariant(type, settings.level!) &&

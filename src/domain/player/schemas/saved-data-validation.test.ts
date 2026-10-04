@@ -130,7 +130,21 @@ it('deduplicates saved selections before they become game settings', () => {
   expect(parsed.settings?.automaticQuestionTypes).toEqual(['pokemonTypes']);
 });
 
-it('rejects saved results and settings that use retired question IDs', () => {
+it('drops retired question IDs from saved settings without rejecting a save', () => {
+  const parsed = parsePlayerData({
+    ...emptyPlayerData(),
+    settings: {
+      ...defaultGameSettings,
+      questionSelection: 'custom',
+      questionTypes: ['missing-type', 'pokemonTypes'],
+      automaticQuestionTypes: ['missing-type'],
+    },
+  });
+  expect(parsed.settings?.questionTypes).toEqual(['pokemonTypes']);
+  expect(parsed.settings?.automaticQuestionTypes).toEqual([]);
+});
+
+it('rejects saved results that use retired question IDs', () => {
   const base = emptyPlayerData();
   const result = structuredClone(completion().result);
   Reflect.set(result.answers[0]!, 'questionType', 'missing-type');

@@ -5,6 +5,7 @@ import {
   getScoreBreakdown,
 } from '../quiz/scoring.ts';
 import {
+  isQuestionType,
   questionDefinitions,
   questionTypes,
 } from '../quiz/questions/definitions.ts';
@@ -16,7 +17,7 @@ import {
   utcTimestampSchema,
   uuidSchema,
 } from '../../lib/validation.ts';
-import type { AnswerResult, GameResult } from '../quiz/types.ts';
+import type { GameResult, SavedAnswerResult } from '../quiz/types.ts';
 import type { RoundCompletion } from './progress.ts';
 
 const values = z
@@ -25,7 +26,7 @@ const values = z
   .refine((items) => new Set(items).size === items.length);
 
 const compactAnswerSchema = z.object({
-  type: z.enum([...questionTypes, 'champion']),
+  type: z.string().min(1).max(200),
   subject: z.string().min(1).max(200),
   options: values.length(4).optional(),
   expected: values.min(1),
@@ -113,7 +114,14 @@ export function compactCompletion(completion: RoundCompletion): CompactRound {
 const pokemonGeneration = pokemonGenerations as Record<string, Generation>;
 
 export function scoreCompactRound(round: CompactRound): GameResult {
-  const answers: AnswerResult[] = round.answers.map((answer) => {
+  const answers: SavedAnswerResult[] = round.answers.map((answer) => {
+    if (answer.type !== 'champion' && !isQuestionType(answer.type))
+      return {
+        category: 'knowledge',
+        correct: false,
+        points: 0,
+        responseMilliseconds: answer.responseMs,
+      };
     const definition =
       answer.type === 'champion' ? null : questionDefinitions[answer.type];
     const category = definition?.category ?? 'champion';
@@ -179,6 +187,7 @@ export function scoreCompactRound(round: CompactRound): GameResult {
 export function discoverCompactRound(round: CompactRound): string[] {
   const found = new Set<string>();
   for (const answer of round.answers) {
+    if (answer.type !== 'champion' && !isQuestionType(answer.type)) continue;
     if (
       answer.selected.length !== answer.expected.length ||
       !answer.expected.every((value) => answer.selected.includes(value))

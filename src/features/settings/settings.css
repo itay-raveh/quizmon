@@ -95,6 +95,14 @@
   padding: 0.1rem 0 1rem;
 }
 
+.question-type-settings__intro,
+.question-type-settings__note {
+  margin: 0 0 0.75rem;
+  color: var(--muted);
+  font-size: var(--text-label);
+  line-height: 1.4;
+}
+
 .selection-toggle {
   min-height: 2.75rem;
   padding: 0.35rem 0.65rem;

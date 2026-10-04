@@ -44,13 +44,20 @@ it('projects saved rounds and preferences after IndexedDB reload', async () => {
   );
   await writePlayerPreferences(second, 'guest', { settings: null });
   expect((await readGameData(second, 'guest')).data.settings).toBeNull();
-  const invalid = structuredClone(fact);
-  invalid.id = crypto.randomUUID();
-  Reflect.set(invalid.answers[0]!, 'type', 'retired-type');
+  const retired = structuredClone(fact);
+  retired.id = crypto.randomUUID();
+  Reflect.set(retired.answers[0]!, 'type', 'retired-type');
   await second.rounds.insert({
-    ...invalid,
+    ...retired,
     ownerId: 'guest',
   });
+  expect(
+    (await readGameData(second, 'guest')).data.results.training.score,
+  ).toBeDefined();
+  const invalid = structuredClone(fact);
+  invalid.id = crypto.randomUUID();
+  invalid.answers[0]!.responseMs = -1;
+  await second.rounds.insert({ ...invalid, ownerId: 'guest' });
   await expect(readGameData(second, 'guest')).rejects.toThrow(
     'A saved completed round is invalid.',
   );
