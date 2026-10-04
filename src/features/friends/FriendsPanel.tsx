@@ -64,7 +64,7 @@ function Player({
               title={`View ${player.name}'s profile`}
               tone="quiet"
             >
-              <EyeIcon aria-hidden="true" weight="regular" />
+              <EyeIcon aria-hidden="true" weight="bold" />
             </GameButton>
           ) : (
             <span
@@ -372,7 +372,7 @@ export function FriendsPanel({
               })
             }
           >
-            <ShareNetworkIcon aria-hidden="true" />
+            <ShareNetworkIcon aria-hidden="true" weight="bold" />
             {canShareFriendLink() ? 'Invite friends' : 'Copy invite link'}
           </GameButton>
         )}

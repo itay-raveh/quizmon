@@ -73,7 +73,7 @@ function InviteFriends({
             });
         }}
       >
-        <ShareNetworkIcon aria-hidden="true" />
+        <ShareNetworkIcon aria-hidden="true" weight="bold" />
         {canShareFriendLink() ? 'Invite friends' : 'Copy invite link'}
       </GameButton>
       {message && <p role="status">{message}</p>}
@@ -269,7 +269,7 @@ function Standings({
                               title={`View ${row.player.name}'s profile`}
                               tone="quiet"
                             >
-                              <EyeIcon aria-hidden="true" weight="regular" />
+                              <EyeIcon aria-hidden="true" weight="bold" />
                             </GameButton>
                           ) : null}
                         </span>
@@ -542,7 +542,7 @@ export function LeaderboardScreen({
                     aria-label="Previous day"
                     onClick={() => chooseDate(shiftDailyDate(date, -1))}
                   >
-                    <ArrowLeftIcon aria-hidden="true" />
+                    <ArrowLeftIcon aria-hidden="true" weight="bold" />
                   </GameButton>
                   <input
                     type="date"
@@ -557,7 +557,7 @@ export function LeaderboardScreen({
                     disabled={date >= today}
                     onClick={() => chooseDate(shiftDailyDate(date, 1))}
                   >
-                    <ArrowRightIcon aria-hidden="true" />
+                    <ArrowRightIcon aria-hidden="true" weight="bold" />
                   </GameButton>
                 </div>
               )}

@@ -115,7 +115,7 @@ export const LeagueDestination = ({
                   disabled={index === 0}
                   onClick={() => setSelectedId(records[index - 1]!.id)}
                 >
-                  <ArrowLeftIcon aria-hidden="true" />
+                  <ArrowLeftIcon aria-hidden="true" weight="bold" />
                 </GameButton>
                 <span aria-live="polite">
                   Victory {index + 1} of {records.length}
@@ -126,7 +126,7 @@ export const LeagueDestination = ({
                   disabled={index === records.length - 1}
                   onClick={() => setSelectedId(records[index + 1]!.id)}
                 >
-                  <ArrowRightIcon aria-hidden="true" />
+                  <ArrowRightIcon aria-hidden="true" weight="bold" />
                 </GameButton>
               </div>
             )}

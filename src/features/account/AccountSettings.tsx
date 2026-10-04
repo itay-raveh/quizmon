@@ -182,13 +182,16 @@ export const AccountSettings = ({
           ) : !sent ? (
             <ul className="account-settings__benefits">
               <li>
-                <ArrowsClockwiseIcon aria-hidden="true" /> Sync between devices
+                <ArrowsClockwiseIcon aria-hidden="true" weight="bold" /> Sync
+                between devices
               </li>
               <li>
-                <MedalIcon aria-hidden="true" /> Compete with the world
+                <MedalIcon aria-hidden="true" weight="bold" /> Compete with the
+                world
               </li>
               <li>
-                <UsersIcon aria-hidden="true" /> Connect with friends
+                <UsersIcon aria-hidden="true" weight="bold" /> Connect with
+                friends
               </li>
             </ul>
           ) : null}

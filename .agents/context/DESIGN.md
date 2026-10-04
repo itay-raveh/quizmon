@@ -173,6 +173,7 @@ The result is playful, direct, and tactile. It avoids generic application chrome
 - Cream, cobalt, navy, and yellow controls echo the wordmark in restrained doses.
 - Dense game information stays clear through Gabarito and small Martian Mono numeric labels.
 - Hard-edged depth makes controls feel physical without adding ornamental framing.
+- Phosphor interface icons use bold weight.
 - One short transform-and-opacity entrance opens a round and its results.
 
 ## Colors
