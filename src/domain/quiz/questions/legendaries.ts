@@ -1,5 +1,7 @@
-import { pick } from '../../../lib/random.ts';
-import { selectPokemonAnswerGroups } from './answers.ts';
+import {
+  chooseSampledMultiCorrectCount,
+  selectPokemonAnswerGroups,
+} from './answers.ts';
 import { makeQuestion } from './assembly.ts';
 import { type QuestionBuilder } from './context.ts';
 import { textPrompt } from './prompts.ts';
@@ -13,13 +15,12 @@ export const buildLegendHuntQuestion: QuestionBuilder = (context) => {
   const others = pool.filter(
     ({ pokemon }) => !pokemon.isLegendary && !pokemon.isMythical,
   );
-  const correctCount = pick(
-    [2, 3].filter(
-      (count) => matching.length >= count && others.length >= 4 - count,
-    ),
-    context.random,
+  const correctCount = chooseSampledMultiCorrectCount(
+    context,
+    matching.length,
+    others.length,
   );
-  if (!correctCount) return undefined;
+  if (correctCount === undefined) return undefined;
   const answers = selectPokemonAnswerGroups(context, {
     matching,
     others,

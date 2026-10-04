@@ -44,3 +44,7 @@ export const responsePresets = {
   shortMulti: { kind: 'picker', selection: 'multi', minimumOptions: 2 },
   adaptive: { kind: 'picker', selection: 'adaptive', minimumOptions: 4 },
 } as const;
+
+export const sampledMultiCorrectCounts = [
+  1, 2, 3, 4,
+] as const satisfies readonly (1 | 2 | 3 | 4)[];

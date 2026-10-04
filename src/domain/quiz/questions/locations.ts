@@ -1,7 +1,10 @@
 import type { FamilyRules } from './family-rules.ts';
 import { formatPokemonName } from '../../pokemon/format.ts';
 import { generations } from '../../pokemon/types.ts';
-import { createPokemonSimilarityScorer } from './answers.ts';
+import {
+  chooseSampledMultiCorrectCount,
+  createPokemonSimilarityScorer,
+} from './answers.ts';
 import type { QuestionBuilder } from './context.ts';
 import { orderEncounterLocations } from './encounter-order.ts';
 import {
@@ -113,13 +116,7 @@ export const buildEncounter: QuestionBuilder<
       context.pool.filter((candidate) => possiblyAvailable.has(candidate.name)),
     );
     const multiSelect = context.variant.response.selection === 'multi';
-    if (available.length < (multiSelect ? 2 : 1)) continue;
-    const correct = available.slice(
-      0,
-      multiSelect
-        ? Math.min(available.length, context.random() < 0.5 ? 2 : 3)
-        : 1,
-    );
+    if (available.length < 1) continue;
     const regional = new Set(
       topics.encounters
         .filter(
@@ -139,14 +136,14 @@ export const buildEncounter: QuestionBuilder<
         .flatMap((entry) => entry.pokemon),
     );
     const similarity = createPokemonSimilarityScorer(
-      correct[0]!.pokemon,
+      available[0]!.pokemon,
       context.variant.similarityWeights,
     );
-    const score = (candidate: (typeof correct)[number]) =>
+    const score = (candidate: (typeof available)[number]) =>
       (sameMethod.has(candidate.name)
         ? context.variant.sameEncounterMethodWeight
         : 0) + similarity(candidate.pokemon);
-    const wrong = distinctPokemon(
+    const wrongCandidates = distinctPokemon(
       orderedPokemon(
         context,
         context.pool.filter(
@@ -156,11 +153,19 @@ export const buildEncounter: QuestionBuilder<
               regional.has(candidate.name)),
         ),
       ),
-    )
-      .sort((a, b) =>
-        context.variant.closeAlternatives ? score(b) - score(a) : 0,
-      )
-      .slice(0, 4 - correct.length);
+    ).sort((a, b) =>
+      context.variant.closeAlternatives ? score(b) - score(a) : 0,
+    );
+    const correctCount = multiSelect
+      ? chooseSampledMultiCorrectCount(
+          context,
+          available.length,
+          wrongCandidates.length,
+        )
+      : 1;
+    if (correctCount === undefined) continue;
+    const correct = available.slice(0, correctCount);
+    const wrong = wrongCandidates.slice(0, 4 - correctCount);
     const options = distinctPokemon([...correct, ...wrong]);
     if (options.length !== 4) continue;
     const game = topics.games[target.game];

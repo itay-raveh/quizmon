@@ -1,7 +1,12 @@
 import type { FamilyRules } from './family-rules.ts';
 import { pick, shuffle } from '../../../lib/random.ts';
 import { formatPokemonName } from '../../pokemon/format.ts';
-import { pokemonOptions, selectPokemonAnswerGroups } from './answers.ts';
+import {
+  chooseSampledMultiCorrectCount,
+  eligibleSampledMultiCorrectCounts,
+  pokemonOptions,
+  selectPokemonAnswerGroups,
+} from './answers.ts';
 import { makeQuestion, targetMedia } from './assembly.ts';
 import {
   type Candidate,
@@ -62,7 +67,7 @@ const distinctTypeFamilies = (
 };
 const pickTypePuzzlePool = (
   context: QuestionContext,
-  matchingCount: number,
+  matchingCount?: number,
 ) => {
   const pool = distinctTypeFamilies(
     context,
@@ -73,9 +78,10 @@ const pickTypePuzzlePool = (
     shuffle(Object.keys(context.catalog.typeRelations), context.random).filter(
       (type) => {
         const count = typeCounts.get(type) ?? 0;
-        return (
-          count >= matchingCount && pool.length - count >= 4 - matchingCount
-        );
+        return matchingCount === undefined
+          ? eligibleSampledMultiCorrectCounts(count, pool.length - count)
+              .length > 0
+          : count >= matchingCount && pool.length - count >= 4 - matchingCount;
       },
     ),
     context.random,
@@ -123,10 +129,15 @@ export const buildOddOneOutQuestion: QuestionBuilder = (context) => {
   });
 };
 export const buildChooseAllTypeQuestion: QuestionBuilder = (context) => {
-  const correctCount = context.random() < 0.5 ? 2 : 3;
-  const pool = pickTypePuzzlePool(context, correctCount);
+  const pool = pickTypePuzzlePool(context);
   if (!pool?.type) return undefined;
   const { type, matching, others } = pool;
+  const correctCount = chooseSampledMultiCorrectCount(
+    context,
+    matching.length,
+    others.length,
+  );
+  if (correctCount === undefined) return undefined;
   const answers = selectPokemonAnswerGroups(context, {
     matching,
     others,

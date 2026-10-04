@@ -8,6 +8,7 @@ Each question family has one rule file in [`src/domain/quiz/question-rules/`](..
 | --- | --- |
 | A family's generation controls, response mode, rendering, or levels | Its file in [`question-rules/`](../../src/domain/quiz/question-rules/) |
 | Shared sprite and response defaults | [`shared.ts`](../../src/domain/quiz/question-rules/shared.ts) |
+| Correct-answer counts for sampled four-choice multi-select questions | [`sampledMultiCorrectCounts`](../../src/domain/quiz/question-rules/shared.ts) |
 | Allowed rule and rendering fields | [`FamilyRules`](../../src/domain/quiz/questions/family-rules.ts) and [`RenderingControlsFor`](../../src/domain/quiz/question-rules/types.ts) |
 | Question ID, label, or eligibility | [`questionDefinitions`](../../src/domain/quiz/questions/definitions.ts) |
 | Question content and distractor generation | [Family builders](../../src/domain/quiz/questions/registry.ts) |
@@ -28,6 +29,8 @@ A family file exports a row with `rendering` and `levels`. Its local `controls` 
 - Multi-answer `search`: `candidates: 'types'` presents types; `correct` selects the subject's types or the types matching an effectiveness multiplier.
 
 The response and `view.answer.kind` types reject modes and answer layouts a family cannot use. [`assembleQuestion`](../../src/domain/quiz/questions/rendering-pipeline.ts) applies the resolved rendering and response to generated content, then attaches the rendering and view snapshots to the question.
+
+The sampled four-choice multi-select families use `sampledMultiCorrectCounts` from `shared.ts` and choose only counts supported by the eligible correct and wrong Pokémon pools. Complete-list questions, such as Pokémon types and berry flavors, present every factually correct answer instead of sampling a target count.
 
 For example, the Level 5 Pixel peek rule is in [`pokemon-from-pixel-crop.ts`](../../src/domain/quiz/question-rules/pokemon-from-pixel-crop.ts). To inspect its resolved value:
 

@@ -1,6 +1,7 @@
 import type { PokemonDistractors, SimilarityWeights } from './family-rules.ts';
-import { createSeededRandom, shuffle } from '../../../lib/random.ts';
+import { createSeededRandom, pick, shuffle } from '../../../lib/random.ts';
 import { statNames, type PokemonKnowledge } from '../../pokemon/types.ts';
+import { sampledMultiCorrectCounts } from '../question-rules/shared.ts';
 import type { Candidate, QuestionContext } from './context.ts';
 import { groupPokemon } from './sampling.ts';
 import { chooseTargets, distinctPokemon } from './selection.ts';
@@ -228,3 +229,21 @@ export const selectPokemonAnswerGroups = (
   );
   return { target, correctOptions, options };
 };
+
+export const eligibleSampledMultiCorrectCounts = (
+  matchingCount: number,
+  otherCount: number,
+) =>
+  sampledMultiCorrectCounts.filter(
+    (count) => matchingCount >= count && otherCount >= 4 - count,
+  );
+
+export const chooseSampledMultiCorrectCount = (
+  context: QuestionContext,
+  matchingCount: number,
+  otherCount: number,
+) =>
+  pick(
+    eligibleSampledMultiCorrectCounts(matchingCount, otherCount),
+    context.random,
+  );

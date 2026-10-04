@@ -1,7 +1,11 @@
 import { pick } from '../../../lib/random.ts';
 import { formatGeneration } from '../../pokemon/format.ts';
 import { generations, type Generation } from '../../pokemon/types.ts';
-import { selectPokemonAnswerGroups } from './answers.ts';
+import {
+  chooseSampledMultiCorrectCount,
+  eligibleSampledMultiCorrectCounts,
+  selectPokemonAnswerGroups,
+} from './answers.ts';
 import { makeQuestion } from './assembly.ts';
 import { type QuestionBuilder } from './context.ts';
 import { textPrompt } from './prompts.ts';
@@ -9,7 +13,6 @@ import { optionSetRepetition } from './repetition.ts';
 
 export const buildGenerationRoundupQuestion: QuestionBuilder = (context) => {
   const pool = context.pool.filter(({ pokemon }) => pokemon.sprite);
-  const correctCount = context.random() < 0.5 ? 2 : 3;
   const generationCounts = new Map<Generation, number>();
   for (const { pokemon } of pool) {
     generationCounts.set(
@@ -21,13 +24,21 @@ export const buildGenerationRoundupQuestion: QuestionBuilder = (context) => {
     generations.filter((generation) => {
       const matchingCount = generationCounts.get(generation) ?? 0;
       return (
-        matchingCount >= correctCount &&
-        pool.length - matchingCount >= 4 - correctCount
+        eligibleSampledMultiCorrectCounts(
+          matchingCount,
+          pool.length - matchingCount,
+        ).length > 0
       );
     }),
     context.random,
   );
   if (!generation) return undefined;
+  const correctCount = chooseSampledMultiCorrectCount(
+    context,
+    generationCounts.get(generation) ?? 0,
+    pool.length - (generationCounts.get(generation) ?? 0),
+  );
+  if (correctCount === undefined) return undefined;
   const answers = selectPokemonAnswerGroups(context, {
     matching: pool.filter(({ pokemon }) => pokemon.generation === generation),
     others: pool.filter(({ pokemon }) => pokemon.generation !== generation),

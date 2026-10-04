@@ -156,6 +156,25 @@ it('uses the whole location and selects every offered encounter for multi-select
     { ...base, level: multiLevel },
     'encounterLocations',
   );
+  const multiTwo = buildQuestionType(
+    { ...base, level: multiLevel, random: () => 0.9 },
+    'encounterLocations',
+  );
+  const fourCatalog = {
+    ...catalog,
+    topics: {
+      ...catalog.topics!,
+      encounters: [
+        encounter('route-4-north', 'Route 4 (North)', ['a', 'c'], true),
+        encounter('route-4-south', 'Route 4 (South)', ['b', 'd'], true),
+        encounter('route-5', 'Route 5', ['e'], false),
+      ],
+    },
+  } as PokemonCatalog;
+  const multiFour = buildQuestionType(
+    { ...base, catalog: fourCatalog, level: multiLevel, random: () => 0.9 },
+    'encounterLocations',
+  );
 
   expect(single?.prompt.kind === 'text' && single.prompt.text).toContain(
     'Route 4',
@@ -168,6 +187,11 @@ it('uses the whole location and selects every offered encounter for multi-select
     'Route 4',
   );
   expect(multi?.answer.interaction).toBe('multi-select');
-  expect(multi?.answer.correctOptions.toSorted()).toEqual(['a', 'b']);
-  expect(multi?.options).toEqual(expect.arrayContaining(['a', 'b']));
+  expect(multi?.answer.correctOptions).toEqual(['a']);
+  expect(multi?.options).not.toContain('b');
+  expect(multiTwo?.answer.correctOptions.toSorted()).toEqual(['a', 'b']);
+  expect(multiFour?.answer.correctOptions).toHaveLength(4);
+  expect(multiFour?.answer.correctOptions.toSorted()).toEqual(
+    multiFour?.options.toSorted(),
+  );
 });
