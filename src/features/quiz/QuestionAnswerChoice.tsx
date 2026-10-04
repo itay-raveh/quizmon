@@ -156,7 +156,9 @@ const QuestionAnswerChoiceInner = ({
     );
   const attackTypes = typeRelations
     ? question.visual?.kind === 'typeMatchup'
-      ? [option]
+      ? question.options.length <= 4 || optionSelected || optionCorrect
+        ? [option]
+        : undefined
       : question.visual?.kind === 'superEffectiveAttacker'
         ? visual?.types
         : undefined

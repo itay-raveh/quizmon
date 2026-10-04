@@ -1,7 +1,7 @@
 import type { QuestionData } from '@/domain/quiz/types';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { expect, test } from 'vitest';
-import { TypeAnswerPicker } from './TypeAnswerPicker';
+import { QuestionAnswers } from './QuestionAnswers';
 
 const types = ['bug', 'fire', 'grass', 'ice', 'water', 'steel'];
 
@@ -27,7 +27,7 @@ const question = (multiSelect: boolean): QuestionData => ({
 
 const choices = (multiSelect: boolean, answered: boolean) => {
   const markup = renderToStaticMarkup(
-    <TypeAnswerPicker
+    <QuestionAnswers
       question={question(multiSelect)}
       selectedOptions={['water', ...(multiSelect ? ['fire'] : [])]}
       answered={answered}

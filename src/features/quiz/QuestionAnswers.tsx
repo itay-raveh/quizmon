@@ -3,7 +3,6 @@ import { getQuestionView } from '@/domain/quiz/presentation';
 import { QuestionAnswerChoice } from './QuestionAnswerChoice';
 import type { PokemonCatalog } from '@/domain/pokemon/types';
 import type { QuestionData } from '@/domain/quiz/types';
-import { TypeAnswerPicker } from './TypeAnswerPicker';
 import { orderRegionOptions } from './region-option-order';
 interface QuestionAnswersProps {
   typeRelations?: PokemonCatalog['typeRelations'];
@@ -25,17 +24,6 @@ export const QuestionAnswers = ({
   const hasTypeOptionBadges = view.answer.kind === 'type';
   const multiSelect = question.answer.interaction === 'multi-select';
   const policy = getQuestionRendering(question).choices;
-  if (hasTypeOptionBadges && question.options.length > 4) {
-    return (
-      <TypeAnswerPicker
-        question={question}
-        selectedOptions={selectedOptions}
-        answered={answered}
-        onSelect={onSelect}
-        typeRelations={typeRelations}
-      />
-    );
-  }
   const options = orderRegionOptions(question);
   return (
     <div
@@ -70,7 +58,10 @@ export const QuestionAnswers = ({
           ? 'answers--super-effective-attacker'
           : '',
         hasTypeOptionBadges ? 'answers--type-options' : '',
-        question.options.length > 4 && !multiSelect ? 'answers--many' : '',
+        hasTypeOptionBadges && options.length > 4 ? 'answers--type-picker' : '',
+        question.options.length > 4 && !multiSelect && !hasTypeOptionBadges
+          ? 'answers--many'
+          : '',
       ]
         .filter(Boolean)
         .join(' ')}
