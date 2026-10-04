@@ -15,6 +15,7 @@ const rendering = {
 } satisfies RenderingControlsFor<'berryFlavors'>;
 
 export const berryFlavors = {
+  active: false,
   rendering,
   levels: {
     4: {

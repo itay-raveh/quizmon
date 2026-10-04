@@ -15,6 +15,7 @@ const rendering = {
 } satisfies RenderingControlsFor<'naturalGift'>;
 
 export const naturalGift = {
+  active: false,
   rendering,
   levels: {
     5: {

@@ -17,6 +17,7 @@ const rendering = {
 } satisfies RenderingControlsFor<'evYields'>;
 
 export const evYields = {
+  active: false,
   rendering,
   levels: {
     4: {
