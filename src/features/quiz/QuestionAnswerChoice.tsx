@@ -151,6 +151,10 @@ const QuestionAnswerChoiceInner = ({
       <CheckIcon weight="bold" />
     ) : answered && optionSelected ? (
       <XIcon weight="bold" />
+    ) : question.options.length > 9 ? (
+      optionSelected ? (
+        <CheckIcon weight="bold" />
+      ) : null
     ) : (
       index + 1
     );
@@ -189,7 +193,9 @@ const QuestionAnswerChoiceInner = ({
       onClick={() => onSelect(option)}
       sound="none"
     >
-      <kbd aria-hidden="true">{selectionMark}</kbd>
+      {selectionMark !== null ? (
+        <kbd aria-hidden="true">{selectionMark}</kbd>
+      ) : null}
       {isItemChoice ? (
         <ItemRenderable
           className="answer__item-renderable"
