@@ -11,12 +11,13 @@
   display: grid;
   flex: none;
   align-self: flex-start;
+  margin-top: 0.12em;
   place-items: center;
 }
 
 .move-renderable__disc {
-  width: 1.2em;
-  height: 1.2em;
+  width: 1.45em;
+  height: 1.45em;
   object-fit: contain;
 }
 
