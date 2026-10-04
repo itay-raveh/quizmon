@@ -36,7 +36,10 @@ export const getQuestionScoreFactor = (
           Math.min(Math.max(0, cluesUsed), championClueFactors.length - 1)
         ]!
       : 1;
-  return getTrainingAnswerFactor(questionType, level) * clueFactor;
+  return Math.max(
+    1,
+    Math.round(getTrainingAnswerFactor(questionType, level) * clueFactor),
+  );
 };
 
 const rawAward = (answer: ScoringAnswer, level: Level) => {

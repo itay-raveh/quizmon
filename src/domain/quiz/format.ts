@@ -3,10 +3,6 @@ import type { GameMode } from './types.ts';
 const scoreFormatter = new Intl.NumberFormat(undefined, {
   maximumFractionDigits: 0,
 });
-const scoreMultiplierFormatter = new Intl.NumberFormat('en-US', {
-  minimumFractionDigits: 1,
-  maximumFractionDigits: 2,
-});
 const dailyDateFormatter = new Intl.DateTimeFormat(undefined, {
   day: 'numeric',
   month: 'short',
@@ -18,7 +14,7 @@ export const formatScore = (score: number): string =>
   scoreFormatter.format(score);
 
 export const formatScoreMultiplier = (multiplier: number): string =>
-  `×${scoreMultiplierFormatter.format(multiplier)}`;
+  `×${multiplier}`;
 
 export const formatDailyDate = (date: string): string =>
   dailyDateFormatter.format(new Date(`${date}T00:00:00.000Z`));
