@@ -1,13 +1,21 @@
 import type { AccountEnv } from './api.ts';
+import { eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { isAccountId } from './friends.ts';
 import { readTrainer } from './read.ts';
+import { user } from './schema.ts';
 
 export const trainerApi = new Hono<AccountEnv>();
 trainerApi.get('/:id', async (context) => {
   const id = context.req.param('id');
   if (!isAccountId(id))
     return context.json({ error: 'trainer_not_found' }, 404);
+  const [account] = await context
+    .get('db')
+    .select({ id: user.id })
+    .from(user)
+    .where(eq(user.id, id));
+  if (!account) return context.json({ error: 'trainer_not_found' }, 404);
   const trainer = await readTrainer(context, id);
   return trainer
     ? context.json(trainer)

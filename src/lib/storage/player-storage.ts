@@ -68,7 +68,8 @@ export const retryPlayerSave = async () => {
   retrying = true;
   emit();
   try {
-    await retry();
+    const saved = await retry();
+    if (saved === false) return;
     saveError = '';
     retryWrite = undefined;
   } catch (error) {

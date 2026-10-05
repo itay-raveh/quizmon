@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "description": "The ultimate Pokémon knowledge test",
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE",
   "type": "module",
   "scripts": {
     "build": "npm run items:prepare && npm run avatars:prepare && tsc --noEmit && vite build",

@@ -270,6 +270,11 @@ try {
     }),
   );
   assert.deepEqual(privateExport.rounds, []);
+  assert.equal(
+    (await request('/api/trainers/00000000-0000-4000-8000-000000000000', a))
+      .status,
+    404,
+  );
   const trainer = await json(await request(`/api/trainers/${a.id}`, a));
   assert.equal((trainer.player as { id: string }).id, a.id);
   const board = await json(await request('/api/leaderboards/training', a));
