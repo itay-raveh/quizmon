@@ -74,7 +74,7 @@
     "@playwright/test": "1.63.0",
     "@sentry/cli": "3.8.0",
     "@sentry/vite-plugin": "5.4.0",
-    "@tanstack/router-plugin": "^1.168.42",
+    "@tanstack/router-plugin": "1.168.42",
     "@types/howler": "2.2.13",
     "@types/node": "26.6.3",
     "@types/pg": "8.23.1",
