@@ -37,8 +37,7 @@ export const SearchCombobox = <Option,>({
   exactOption?: Option;
 }) => {
   const navigation = useSuggestionNavigation(suggestions, onChoose);
-  const showSuggestions =
-    navigation.open && !disabled && !hideSuggestions && query.trim().length > 0;
+  const showSuggestions = navigation.open && !disabled && !hideSuggestions;
   const expanded = showSuggestions && suggestions.length > 0;
   const listbox = useRef<HTMLUListElement>(null);
   useEffect(() => {

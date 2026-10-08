@@ -558,6 +558,14 @@
   cursor: pointer;
 }
 
+.checkbox:not(:has(.checkbox__description)) {
+  align-items: center;
+}
+
+.checkbox:not(:has(.checkbox__description)) .checkbox__control {
+  margin-top: 0;
+}
+
 .checkbox__control {
   display: grid;
   width: 1.35rem;

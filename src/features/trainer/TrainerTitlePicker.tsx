@@ -1,4 +1,4 @@
-import { useId, useMemo } from 'react';
+import { useId, useMemo, useState } from 'react';
 import { SearchCombobox } from '@/components/SearchCombobox';
 import { useInteractionSound } from '@/lib/audio/sound-context';
 import { useUpdateState } from '@/lib/storage/update-reload-state';
@@ -25,21 +25,27 @@ export const TrainerTitlePicker = ({ titles, value, onChange }: Props) => {
     'trainer-title-query',
     selected?.label ?? '',
   );
+  const [filtering, setFiltering] = useState(false);
+  const earnedTitles = useMemo(
+    () => titles.filter((title) => title.earned),
+    [titles],
+  );
   const search = useMemo(
     () =>
       createSearch(
-        titles
-          .filter((title) => title.earned)
-          .map((title) => ({
-            ...title,
-            normalized: normalizeSearch(title.label),
-          })),
+        earnedTitles.map((title) => ({
+          ...title,
+          normalized: normalizeSearch(title.label),
+        })),
       ),
-    [titles],
+    [earnedTitles],
   );
-  const suggestions = search(query);
+  const suggestions = filtering ? search(query) : earnedTitles;
   return (
-    <div className="trainer-customizer__title">
+    <div
+      className="trainer-customizer__title"
+      onFocus={() => setFiltering(false)}
+    >
       <div className="pokemon-picker">
         <label htmlFor={`${id}-input`}>Trainer title</label>
         <SearchCombobox
@@ -48,6 +54,7 @@ export const TrainerTitlePicker = ({ titles, value, onChange }: Props) => {
           emptyClassName="pokemon-picker__empty"
           query={query}
           onQueryChange={(query) => {
+            setFiltering(query.trim().length > 0);
             setQuery(query);
             onChange(null);
           }}
