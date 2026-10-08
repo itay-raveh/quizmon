@@ -139,7 +139,7 @@
   display: grid;
   width: 100%;
   min-height: 3.25rem;
-  grid-template-columns: 3.25rem minmax(0, 1fr);
+  grid-template-columns: repeat(3, 3.25rem) minmax(0, 1fr);
   gap: 0.55rem;
 }
 
@@ -152,15 +152,49 @@
   overflow-wrap: anywhere;
 }
 
-.landing__actions .game-button > span {
-  display: inline-flex;
-  flex-wrap: wrap;
+.landing__actions .landing__training-setting {
+  display: flex;
+  height: 3.25rem;
+  padding: 0.2rem 0.1rem;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.25em;
-  color: inherit;
-  font: inherit;
-  letter-spacing: normal;
+  gap: 0.15rem;
+}
+
+.landing__setting-label {
+  font-size: 0.75rem;
+  font-weight: 800;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.landing__setting-value {
+  font-size: 1.05rem;
+  line-height: 1.2;
+}
+
+.landing__setting-value .level-label__number {
+  font-size: 0.85em;
+}
+
+.landing__training-setting svg {
+  width: 1.3rem;
+  height: 1.3rem;
+  flex-shrink: 0;
+}
+
+.landing__actions .landing__start {
+  padding: 0.1rem 0.3rem;
+}
+
+.landing__start > span {
+  display: block;
+  line-height: 1.35;
+}
+
+.landing__start .level-label__number {
+  font-size: 0.76em;
 }
 
 .landing__league-button.game-button {
@@ -271,9 +305,4 @@
   .logo-picture {
     width: min(90vw, clamp(17rem, 42svh, 20rem));
   }
-}
-
-.landing__customize svg {
-  width: 1.5rem;
-  height: 1.5rem;
 }

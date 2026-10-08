@@ -37,6 +37,8 @@ export const useSettingsDialog = ({
   };
   const open = () => openSection('general');
   const openTraining = () => openSection('training');
+  const openGenerations = () => openSection('generations');
+  const openLevel = () => openSection('level');
 
   const close = () => {
     setIsOpen(false);
@@ -52,5 +54,14 @@ export const useSettingsDialog = ({
     close();
   };
 
-  return { close, open, openTraining, save, isOpen, section };
+  return {
+    close,
+    open,
+    openTraining,
+    openGenerations,
+    openLevel,
+    save,
+    isOpen,
+    section,
+  };
 };

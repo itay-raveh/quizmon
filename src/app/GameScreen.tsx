@@ -30,6 +30,10 @@ const Home = () => {
         dailyError={daily.error}
         dailyStreak={daily.date === getUtcDate() ? daily.streak : 0}
         level={settings.level ?? 1}
+        selectedGenerations={settings.generations}
+        customized={settings.questionSelection === 'custom'}
+        onChooseGenerations={settingsDialog.openGenerations}
+        onChooseLevel={settingsDialog.openLevel}
         badges={getTrainerBadges(trainer.stats)}
         leagueCompleted={trainer.stats.leagueCompleted}
         onCustomizeTraining={settingsDialog.openTraining}

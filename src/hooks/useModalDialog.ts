@@ -1,5 +1,5 @@
 import {
-  useEffect,
+  useLayoutEffect,
   useRef,
   type PointerEvent,
   type RefObject,
@@ -30,7 +30,7 @@ export const useModalDialog = (
 ) => {
   const dialog = useRef<HTMLDialogElement>(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const element = dialog.current;
     element?.showModal();
     initialFocus?.current?.focus();

@@ -1,10 +1,13 @@
 import { site } from '@/app/site';
 import { GameButton } from '@/components/GameButton';
-import { LevelLabel } from '@/components/LevelLabel';
+import { GenerationLabel } from '@/components/GenerationLabel';
+import { generations, type Generation } from '@/domain/pokemon/types';
+import { LevelNumber, LevelLabel } from '@/components/LevelLabel';
 import {
   ArrowRightIcon,
   LockSimpleIcon,
   SlidersHorizontalIcon,
+  ShuffleIcon,
 } from '@/components/icons';
 import type { Level } from '@/domain/quiz/level';
 import type { TrainerBadge } from '@/domain/player/trainer-progression';
@@ -27,6 +30,10 @@ interface HomeScreenProps {
   dailyForfeited: boolean;
   dailyStreak: number;
   level: Level;
+  selectedGenerations: readonly Generation[];
+  customized: boolean;
+  onChooseGenerations: () => void;
+  onChooseLevel: () => void;
   badges: readonly TrainerBadge[];
   leagueCompleted?: boolean;
   onCustomizeTraining: () => void;
@@ -46,6 +53,10 @@ export const HomeScreen = ({
   dailyForfeited,
   dailyStreak,
   level,
+  selectedGenerations,
+  customized,
+  onChooseGenerations,
+  onChooseLevel,
   badges,
   leagueCompleted = false,
   onCustomizeTraining,
@@ -56,6 +67,10 @@ export const HomeScreen = ({
   storageAvailable,
 }: HomeScreenProps) => {
   const playSound = useInteractionSound();
+  const generationSummary =
+    selectedGenerations.length === generations.length
+      ? 'All'
+      : `${selectedGenerations.length}/${generations.length}`;
   const catalogReady = catalogStatus === 'ready';
   const dailyDetail = `${formatDailyDate(dailyDate)}${storageAvailable ? '' : ' · Browser storage required'}`;
   const badgeCount = badges.length;
@@ -158,22 +173,60 @@ export const HomeScreen = ({
       <div className="landing__control-stack">
         <div className="landing__actions" aria-label="Training">
           <GameButton
-            aria-label="Customize training"
-            title="Customize training"
-            className="landing__customize"
+            aria-label={`Choose generations and forms. ${selectedGenerations.length} of ${generations.length} generations selected`}
+            className="landing__training-setting"
+            disabled={!catalogReady}
+            tone="quiet"
+            onClick={onChooseGenerations}
+          >
+            <span className="landing__setting-label">Gen</span>
+            <span className="landing__setting-value" aria-hidden="true">
+              {selectedGenerations.length === 1 && selectedGenerations[0] ? (
+                <GenerationLabel
+                  generation={selectedGenerations[0]}
+                  variant="numeral"
+                />
+              ) : (
+                generationSummary
+              )}
+            </span>
+          </GameButton>
+          <GameButton
+            aria-label={`Choose training level. Level ${level} selected`}
+            className="landing__training-setting"
+            disabled={!catalogReady}
+            tone="quiet"
+            onClick={onChooseLevel}
+          >
+            <span className="landing__setting-label">Level</span>
+            <span className="landing__setting-value" aria-hidden="true">
+              <LevelNumber level={level} />
+            </span>
+          </GameButton>
+          <GameButton
+            aria-label={`Customize training questions. ${customized ? 'Custom' : 'Automatic'} selection`}
+            className="landing__training-setting"
             disabled={!catalogReady}
             tone="quiet"
             onClick={onCustomizeTraining}
           >
-            <SlidersHorizontalIcon aria-hidden="true" weight="bold" />
+            <span className="landing__setting-label">
+              {customized ? 'Custom' : 'Auto'}
+            </span>
+            {customized ? (
+              <SlidersHorizontalIcon aria-hidden="true" weight="bold" />
+            ) : (
+              <ShuffleIcon aria-hidden="true" weight="bold" />
+            )}
           </GameButton>
           <GameButton
+            className="landing__start"
             aria-label={`Start Level ${level} training`}
             disabled={!catalogReady}
             onClick={onStart}
           >
             <span>
-              <LevelLabel level={level} /> Training
+              Train <LevelLabel level={level} />
             </span>
           </GameButton>
         </div>

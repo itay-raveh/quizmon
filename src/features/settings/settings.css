@@ -876,3 +876,7 @@
 .settings-backup .backup-settings > legend {
   display: none;
 }
+
+.settings-dialog--level {
+  width: min(26rem, calc(100% - 1rem));
+}

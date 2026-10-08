@@ -16,7 +16,14 @@ import { ExperienceSettings } from './ExperienceSettings';
 import { getTrainingSettingsValidation } from './settings-validation';
 import { TrainingSettings } from './TrainingSettings';
 
-export type SettingsSection = 'training' | 'general';
+export type SettingsSection = 'training' | 'generations' | 'level' | 'general';
+
+const sectionTitles = {
+  training: 'Custom questions',
+  generations: 'Generations and Forms',
+  level: 'Training level',
+  general: 'Settings',
+};
 
 interface SettingsDialogProps {
   catalog: PokemonCatalog;
@@ -63,7 +70,7 @@ export const SettingsDialog = ({
   } = draft;
   const validation = useMemo(
     () =>
-      section === 'training'
+      section !== 'general'
         ? getTrainingSettingsValidation(catalog, {
             level,
             questionSelection,
@@ -90,12 +97,15 @@ export const SettingsDialog = ({
     setSubmitted(true);
     if (validation && !validation.isValid) {
       window.setTimeout(() => {
-        const target = !validation.generationsAreValid
-          ? generationsHeading.current
-          : !validation.formGroupsAreValid
-            ? formGroupsHeading.current
-            : questionTypesHeading.current;
-        target?.focus();
+        const target =
+          section !== 'generations' && section !== 'training'
+            ? dialogTitle.current
+            : !validation.generationsAreValid
+              ? generationsHeading.current
+              : !validation.formGroupsAreValid
+                ? formGroupsHeading.current
+                : questionTypesHeading.current;
+        (target ?? dialogTitle.current)?.focus();
         target?.scrollIntoView({ block: 'center' });
       });
       return;
@@ -112,19 +122,15 @@ export const SettingsDialog = ({
   return (
     <dialog
       {...dialogProps}
-      className="settings-dialog"
+      className={`settings-dialog${section === 'level' ? ' settings-dialog--level' : ''}`}
       aria-labelledby="settings-title"
     >
       <header className="settings-dialog__header">
         <h2 id="settings-title" ref={dialogTitle} tabIndex={-1}>
-          {section === 'training' ? 'Customize training' : 'Settings'}
+          {sectionTitles[section]}
         </h2>
         <DialogCloseButton
-          label={
-            section === 'training'
-              ? 'Close training settings'
-              : 'Close settings'
-          }
+          label={`Close ${sectionTitles[section]}`}
           onClick={closeDialog}
         />
       </header>
@@ -137,9 +143,10 @@ export const SettingsDialog = ({
         }}
       >
         <div className="settings-form__body" inert={saving}>
-          {validation ? (
+          {section !== 'general' && validation ? (
             <>
               <TrainingSettings
+                section={section}
                 draft={draft}
                 generationsHeading={generationsHeading}
                 formGroupsHeading={formGroupsHeading}
@@ -149,6 +156,17 @@ export const SettingsDialog = ({
                 trainingChangesApplyNextGame={trainingChangesApplyNextGame}
                 {...validation}
               />
+              {submitted &&
+                !validation.isValid &&
+                section !== 'training' &&
+                validation.generationsAreValid &&
+                validation.formGroupsAreValid && (
+                  <p className="form-error" role="alert">
+                    No questions match these settings. Choose another{' '}
+                    {section === 'level' ? 'level' : 'generation or form'}, or
+                    cancel and adjust Custom questions.
+                  </p>
+                )}
             </>
           ) : (
             <>
