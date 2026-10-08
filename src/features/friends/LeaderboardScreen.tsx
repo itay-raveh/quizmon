@@ -94,6 +94,8 @@ function Standings({
   scope,
   active,
   pageSize,
+  page,
+  onPageChange,
   onViewPlayer,
   onError,
 }: {
@@ -103,12 +105,14 @@ function Standings({
   scope: LeaderboardScope;
   active: boolean;
   pageSize: number;
+  page: number;
+  onPageChange: (page: number) => void;
   onViewPlayer: (id: string) => void;
   onError: (message: string) => void;
 }) {
   const playSound = useInteractionSound();
   const dailyDate = mode === 'daily' ? date : '';
-  const [after, setAfter] = useState<string | null>(null);
+  const after = page > 1 ? String((page - 1) * pageSize) : null;
   const board = useQuery({
     queryKey: [
       'social',
@@ -153,8 +157,8 @@ function Standings({
         : '',
     );
   }, [board.error, friends.error, scope, onError]);
-  const load = (after: string | null) => {
-    setAfter(after);
+  const load = (nextPage: number) => {
+    onPageChange(nextPage);
     onError('');
   };
   const noFriends =
@@ -168,7 +172,6 @@ function Standings({
     ? Array.from({ length: scope === 'friends' ? 3 : pageSize }, () => null)
     : (data?.items ?? []);
   const pastDaily = mode === 'daily' && date < getUtcDate();
-  const offset = Number(after ?? 0);
   const versionHelpId = `leaderboard-version-help-${scope}`;
   return (
     <section
@@ -360,22 +363,19 @@ function Standings({
                 <GameButton
                   tone="quiet"
                   disabled={busy}
-                  onClick={() =>
-                    load(offset > pageSize ? String(offset - pageSize) : null)
-                  }
+                  onClick={() => load(page - 1)}
                 >
                   Previous
                 </GameButton>
               )}
               <span>
-                Page {Math.floor(offset / pageSize) + 1} of{' '}
-                {Math.ceil(data.total / pageSize)}
+                Page {page} of {Math.ceil(data.total / pageSize)}
               </span>
               {data.nextCursor && (
                 <GameButton
                   tone="quiet"
                   disabled={busy}
-                  onClick={() => load(data.nextCursor)}
+                  onClick={() => load(page + 1)}
                 >
                   Next
                 </GameButton>
@@ -394,6 +394,7 @@ export function LeaderboardScreen({
   selectedDate,
   selectedScope = 'friends',
   selectedMode = 'daily',
+  selectedPage = 1,
   onSelectionChange,
 }: {
   onAccount: () => void;
@@ -401,10 +402,12 @@ export function LeaderboardScreen({
   selectedDate?: string;
   selectedScope?: LeaderboardScope;
   selectedMode?: LeaderboardMode;
+  selectedPage?: number;
   onSelectionChange: (
     date: string,
     scope: LeaderboardScope,
     mode: LeaderboardMode,
+    page?: number,
   ) => void;
 }) {
   const account = useSyncExternalStore(subscribeAccount, accountSnapshot);
@@ -434,10 +437,13 @@ export function LeaderboardScreen({
   const swipe = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
     if (account.owner && !account.mergeRequired && swipe.current)
-      swipe.current.scrollLeft =
-        scope === 'global'
-          ? swipe.current.scrollWidth - swipe.current.clientWidth
-          : 0;
+      swipe.current.scrollTo({
+        left:
+          scope === 'global'
+            ? swipe.current.scrollWidth - swipe.current.clientWidth
+            : 0,
+        behavior: 'instant',
+      });
   }, [account.owner, account.mergeRequired, scope]);
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -454,14 +460,6 @@ export function LeaderboardScreen({
   const chooseScope = (next: LeaderboardScope) => {
     if (next === scope) return;
     onSelectionChange(date, next, mode);
-  };
-  const scrollToScope = (next: LeaderboardScope) => {
-    swipe.current?.scrollTo({
-      left:
-        next === 'global'
-          ? swipe.current.scrollWidth - swipe.current.clientWidth
-          : 0,
-    });
   };
   const chooseMode = (next: LeaderboardMode) => {
     setStandingsErrors({ friends: '', global: '' });
@@ -522,14 +520,14 @@ export function LeaderboardScreen({
                   <button
                     type="button"
                     aria-pressed={scope === 'friends'}
-                    onClick={() => scrollToScope('friends')}
+                    onClick={() => chooseScope('friends')}
                   >
                     Friends
                   </button>
                   <button
                     type="button"
                     aria-pressed={scope === 'global'}
-                    onClick={() => scrollToScope('global')}
+                    onClick={() => chooseScope('global')}
                   >
                     Global
                   </button>
@@ -598,7 +596,7 @@ export function LeaderboardScreen({
             <div
               className="leaderboard-swipe"
               ref={swipe}
-              onScroll={(event) => {
+              onScrollEnd={(event) => {
                 chooseScope(
                   event.currentTarget.scrollLeft >
                     (event.currentTarget.scrollWidth -
@@ -618,6 +616,10 @@ export function LeaderboardScreen({
                   scope={boardScope}
                   active={scope === boardScope}
                   pageSize={pageSize}
+                  page={scope === boardScope ? selectedPage : 1}
+                  onPageChange={(page) =>
+                    onSelectionChange(date, boardScope, mode, page)
+                  }
                   onViewPlayer={onViewPlayer}
                   onError={(message) =>
                     setStandingsErrors((current) =>

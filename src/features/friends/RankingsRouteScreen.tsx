@@ -7,11 +7,15 @@ export const RankingsRouteScreen = () => {
   const location = useLocation();
   const search = useSearch({ from: '/rankings' });
   const selectStandings = useCallback(
-    (date: string, scope: 'friends' | 'global', mode: 'daily' | 'training') => {
+    (
+      date: string,
+      scope: 'friends' | 'global',
+      mode: 'daily' | 'training',
+      page = 1,
+    ) => {
       void navigate({
         to: '/rankings',
-        search: { date, scope, mode },
-        replace: true,
+        search: { date, scope, mode, page },
         resetScroll: false,
       });
     },
@@ -32,6 +36,7 @@ export const RankingsRouteScreen = () => {
           search: { from: 'rankings', ...search },
         })
       }
+      selectedPage={search.page ?? 1}
       selectedDate={search.date}
       selectedScope={search.scope ?? 'friends'}
       selectedMode={search.mode ?? 'daily'}

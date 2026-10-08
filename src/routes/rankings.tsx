@@ -15,5 +15,6 @@ export const Route = createFileRoute('/rankings')({
       .catch(undefined),
     scope: z.enum(['friends', 'global']).optional().catch(undefined),
     mode: z.enum(['daily', 'training']).optional().catch(undefined),
+    page: z.int().min(1).max(100_000_000).optional().catch(undefined),
   }),
 });
