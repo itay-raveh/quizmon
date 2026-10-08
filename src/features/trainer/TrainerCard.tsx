@@ -60,19 +60,20 @@ export const TrainerCard = ({
   const height =
     rotomDisplayHeights[profile.partnerPokemon ?? ''] ?? partnerHeight ?? 8;
   const portraitHeight = 29;
-  const visibleHeight = Math.min(
-    portraitHeight * (avatar?.bottom ?? 1) - 2,
-    Math.max(5, (height * portraitHeight) / 16),
-  );
+  const visibleHeight = Math.max(5, (height * portraitHeight) / 16);
   const partnerVisibleFraction = partnerSpriteMeasurements?.[2] ?? 1;
   const spriteSize = Math.min(
     48,
     portraitHeight / Math.max(partnerSpriteMeasurements?.[1] ?? 1, 0.25),
-    visibleHeight / Math.max(partnerVisibleFraction, 0.25),
+    Math.min(visibleHeight, portraitHeight * (avatar?.bottom ?? 1) - 2) /
+      Math.max(partnerVisibleFraction, 0.25),
   );
+  const portraitScale = partnerSprite
+    ? spriteSize / (visibleHeight / Math.max(partnerVisibleFraction, 0.25))
+    : 1;
   const behindTrainer =
     spriteSize * partnerVisibleFraction >=
-    portraitHeight * (avatar?.height ?? 1) * 0.85;
+    portraitHeight * (avatar?.height ?? 1) * portraitScale * 0.85;
 
   return (
     <article
@@ -112,6 +113,10 @@ export const TrainerCard = ({
                 alt={`${avatar.name} trainer avatar`}
                 width="80"
                 height="80"
+                style={{
+                  transform: `scale(${portraitScale})`,
+                  transformOrigin: `50% ${avatar.bottom * 100}%`,
+                }}
               />
             ) : (
               <span
