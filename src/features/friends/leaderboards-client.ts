@@ -80,41 +80,47 @@ async function readLeaderboard(
   const query = new URLSearchParams(date ? { date, scope } : { scope });
   if (after) query.set('after', after);
   query.set('limit', String(limit));
-  const response = await Sentry.startSpan(
+  return Sentry.startSpan(
     {
       name: 'rankings.load',
       op: 'ui.load',
       attributes: { 'rankings.mode': mode, 'rankings.scope': scope },
     },
-    () =>
-      fetch(`/api/leaderboards/${mode}?${query}`, {
+    async () => {
+      const response = await fetch(`/api/leaderboards/${mode}?${query}`, {
         credentials: 'same-origin',
         signal: signal
           ? AbortSignal.any([signal, AbortSignal.timeout(30_000)])
           : AbortSignal.timeout(30_000),
-      }),
+      });
+      if (response.status === 401)
+        throw new Error('Sign in again to view leaderboards.');
+      if (response.status === 429)
+        throw new Error('Too many requests. Wait a minute, then try again.');
+      if (!response.ok)
+        throw new Error('Leaderboards are unavailable. Try again.');
+      const parsed = await Sentry.startSpan(
+        { name: 'rankings.response', op: 'serialize.deserialize' },
+        async () =>
+          leaderboardResponse.safeParse(
+            await response.json().catch(() => null),
+          ),
+      );
+      if (accountSnapshot().owner !== owner) throw new Error(changed);
+      if (!parsed.success)
+        throw new Error(
+          'The leaderboard returned an unreadable response. Try again.',
+        );
+      const value = parsed.data;
+      if (
+        value.accountId !== owner ||
+        (mode === 'daily' ? value.date !== date : value.date !== undefined) ||
+        value.scope !== scope
+      )
+        throw new Error(
+          'The leaderboard returned an unreadable response. Try again.',
+        );
+      return value;
+    },
   );
-  if (response.status === 401)
-    throw new Error('Sign in again to view leaderboards.');
-  if (response.status === 429)
-    throw new Error('Too many requests. Wait a minute, then try again.');
-  if (!response.ok) throw new Error('Leaderboards are unavailable. Try again.');
-  const parsed = leaderboardResponse.safeParse(
-    await response.json().catch(() => null),
-  );
-  if (accountSnapshot().owner !== owner) throw new Error(changed);
-  if (!parsed.success)
-    throw new Error(
-      'The leaderboard returned an unreadable response. Try again.',
-    );
-  const value = parsed.data;
-  if (
-    value.accountId !== owner ||
-    (mode === 'daily' ? value.date !== date : value.date !== undefined) ||
-    value.scope !== scope
-  )
-    throw new Error(
-      'The leaderboard returned an unreadable response. Try again.',
-    );
-  return value;
 }

@@ -1,7 +1,13 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { read, SyncReadError } from '../../server/read.ts';
+import {
+  read,
+  readBoard,
+  readTrainer,
+  SyncReadError,
+} from '../../server/read.ts';
 import { syncAdapter } from '../../server/rxdb-sync.ts';
+import { createTrainerProfile } from '../../src/domain/player/trainer-profile.ts';
 
 void test('sync reads retry temporary failures and preserve the final status', async () => {
   const originalFetch = globalThis.fetch;
@@ -65,4 +71,85 @@ void test('expired SSE authentication closes an already-started stream', () => {
   } as unknown as Parameters<typeof syncAdapter.closeConnection>[0];
   syncAdapter.closeConnection(response, 401, 'Unauthorized');
   assert.equal(ended, true);
+});
+
+void test('combined social reads preserve cards, viewer, pagination, and rollout responses', async () => {
+  const originalFetch = globalThis.fetch;
+  const profile = { ...createTrainerProfile(), name: '  Fixture Trainer  ' };
+  const player = {
+    id: 'fixture',
+    name: 'Fixture Trainer',
+    partnerPokemon: profile.partnerPokemon,
+    leagueCompleted: true,
+  };
+  const row = {
+    playerId: player.id,
+    rank: 2,
+    score: 100,
+    elapsedMilliseconds: 5000,
+    ordinal: 1,
+    comparable: true,
+  };
+  const detail = { profile, stats: {}, pokedex: [], record: {} };
+  const context = {
+    get(name: string) {
+      if (name === 'sync') return { endpoint: 'https://sync.test' };
+      if (name === 'accountId') return player.id;
+      return 'signed';
+    },
+  } as unknown as Parameters<typeof read>[0];
+  try {
+    for (const combined of [true, false]) {
+      const calls: string[] = [];
+      globalThis.fetch = (url, init) => {
+        const path = new URL(
+          typeof url === 'string'
+            ? url
+            : url instanceof URL
+              ? url.href
+              : url.url,
+        ).pathname;
+        calls.push(path);
+        assert.equal(
+          new Headers(init?.headers).get('Authorization'),
+          'Bearer signed',
+        );
+        if (path.endsWith('/players'))
+          return Promise.resolve(
+            Response.json([{ id: player.id, profile, leagueCompleted: true }]),
+          );
+        if (path.endsWith('/board'))
+          return Promise.resolve(
+            Response.json({
+              total: 3,
+              page: [row],
+              viewer: row,
+              ...(combined
+                ? {
+                    players: [
+                      { id: player.id, profile, leagueCompleted: true },
+                    ],
+                  }
+                : {}),
+            }),
+          );
+        return Promise.resolve(
+          Response.json({ ...detail, ...(combined ? { player } : {}) }),
+        );
+      };
+      const board = await readBoard(context, 'training', 'global', 0, 1);
+      assert.deepEqual(board.items[0]?.player, player);
+      assert.deepEqual(board.viewer?.player, player);
+      assert.equal(board.nextCursor, '1');
+      assert.equal(calls.length, combined ? 1 : 2);
+      calls.length = 0;
+      assert.deepEqual(await readTrainer(context, player.id), {
+        ...detail,
+        player,
+      });
+      assert.equal(calls.length, combined ? 1 : 2);
+    }
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
 });

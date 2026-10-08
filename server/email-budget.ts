@@ -7,7 +7,7 @@ import { sql } from 'drizzle-orm';
 export const DAILY_EMAIL_LIMIT = 200;
 export const CYCLE_EMAIL_LIMIT = 3_000;
 
-export async function reserveEmail(db: NodePgDatabase) {
+export async function reserveEmail(db: Pick<NodePgDatabase, 'execute'>) {
   // The billing cycle starts on the 10th. Reserve before sending, including failures.
   // https://www.postgresql.org/docs/18/sql-insert.html#SQL-ON-CONFLICT
   const result = await db.execute(sql`

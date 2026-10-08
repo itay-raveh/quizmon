@@ -42,12 +42,9 @@ export function friendRequestView(row: FriendRequest, actor: string) {
   };
 }
 
-export async function sendFriendRequest(
-  db: NodePgDatabase,
-  actor: string,
-  peer: string,
-  id: string,
-) {
+export async function sendFriendRequest<
+  TSchema extends Record<string, unknown>,
+>(db: NodePgDatabase<TSchema>, actor: string, peer: string, id: string) {
   if (actor === peer) throw new FriendshipError('self_request', 400);
   return db.transaction(async (tx) => {
     const [target] = await tx
@@ -78,8 +75,10 @@ export async function sendFriendRequest(
   });
 }
 
-export async function changeFriendRequest(
-  db: NodePgDatabase,
+export async function changeFriendRequest<
+  TSchema extends Record<string, unknown>,
+>(
+  db: NodePgDatabase<TSchema>,
   actor: string,
   id: string,
   action: FriendAction,
@@ -117,8 +116,10 @@ export async function changeFriendRequest(
   });
 }
 
-export async function listFriendRequests(
-  db: NodePgDatabase,
+export async function listFriendRequests<
+  TSchema extends Record<string, unknown>,
+>(
+  db: NodePgDatabase<TSchema>,
   actor: string,
   view: 'friends' | 'incoming' | 'outgoing',
   page: FriendPage,

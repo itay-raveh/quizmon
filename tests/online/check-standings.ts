@@ -13,9 +13,10 @@ import {
   type Standing,
 } from '../../server/standings.ts';
 import { completion } from './progress-fixtures.ts';
+import { testMongoUrl } from './account-fixture.ts';
 
 const name = `quizmon_standings_${crypto.randomUUID().replaceAll('-', '')}`;
-const url = `mongodb://127.0.0.1:27018/${name}?directConnection=true`;
+const url = testMongoUrl(name);
 const mongo = await new MongoClient(url).connect();
 const collection: Collection<Standing> = mongo
   .db(`${name}_app`)

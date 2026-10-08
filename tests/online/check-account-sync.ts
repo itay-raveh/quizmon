@@ -26,15 +26,16 @@ import {
   signIn,
   startAccountWorker,
   testDatabase,
+  testMongoUrl,
 } from './account-fixture.ts';
 
 const mongoName = `quizmon_runtime_${crypto.randomUUID().replaceAll('-', '')}`;
-const mongoUrl = `mongodb://127.0.0.1:27018/${mongoName}?directConnection=true`;
+const mongoUrl = testMongoUrl(mongoName);
 const postgres = await testDatabase();
 const mongo = new MongoClient(mongoUrl);
 const port = await freePort();
 const endpoint = `http://127.0.0.1:${port}`;
-const origin = 'http://127.0.0.1:4188';
+const origin = `http://127.0.0.1:${await freePort()}`;
 let worker: Awaited<ReturnType<typeof startAccountWorker>> | undefined;
 let sync: Awaited<ReturnType<typeof startSyncServer>> | undefined;
 const databases: Awaited<ReturnType<typeof openPlayerDatabase>>[] = [];
@@ -92,7 +93,7 @@ try {
     prebuiltWorkerDir: process.env.QUIZMON_PREBUILT_WORKER,
   });
   workerBase = worker.base;
-  jwks.listen(4188, '127.0.0.1');
+  jwks.listen(Number(new URL(origin).port), '127.0.0.1');
   await once(jwks, 'listening');
   sync = await startSyncServer({
     mongoUrl,

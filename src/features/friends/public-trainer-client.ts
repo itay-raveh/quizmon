@@ -10,6 +10,7 @@ import {
   type SocialPlayer,
 } from '../../domain/social/friends';
 import { accountSnapshot } from '../account/account';
+import { Sentry } from '../../lib/sentry';
 
 export interface PublicTrainer {
   player: SocialPlayer;
@@ -50,25 +51,34 @@ export async function fetchPublicTrainer(
 ): Promise<PublicTrainer> {
   if (accountSnapshot().owner !== owner)
     throw new Error('Your account changed. Sign in again to view Trainers.');
-  const response = await fetch(
-    `/api/trainers/${encodeURIComponent(playerId)}`,
-    {
-      credentials: 'same-origin',
-      signal: signal
-        ? AbortSignal.any([signal, AbortSignal.timeout(30_000)])
-        : AbortSignal.timeout(30_000),
-    },
-  );
-  if (response.status === 401)
-    throw new Error('Sign in again to view Trainers.');
-  if (response.status === 404)
-    throw new Error('This Trainer is no longer available.');
-  if (!response.ok)
-    throw new Error('Trainer cards are unavailable. Reconnect and try again.');
-  if (!response.headers.get('Content-Type')?.includes('application/json'))
-    throw new Error('Trainer cards are unavailable. Reconnect and try again.');
-  const trainer = parsePublicTrainer(await response.json());
-  if (accountSnapshot().owner !== owner || trainer.player.id !== playerId)
-    throw new Error('Your account changed. Sign in again to view Trainers.');
-  return trainer;
+  return Sentry.startSpan({ name: 'trainer.load', op: 'ui.load' }, async () => {
+    const response = await fetch(
+      `/api/trainers/${encodeURIComponent(playerId)}`,
+      {
+        credentials: 'same-origin',
+        signal: signal
+          ? AbortSignal.any([signal, AbortSignal.timeout(30_000)])
+          : AbortSignal.timeout(30_000),
+      },
+    );
+    if (response.status === 401)
+      throw new Error('Sign in again to view Trainers.');
+    if (response.status === 404)
+      throw new Error('This Trainer is no longer available.');
+    if (!response.ok)
+      throw new Error(
+        'Trainer cards are unavailable. Reconnect and try again.',
+      );
+    if (!response.headers.get('Content-Type')?.includes('application/json'))
+      throw new Error(
+        'Trainer cards are unavailable. Reconnect and try again.',
+      );
+    const trainer = await Sentry.startSpan(
+      { name: 'trainer.response', op: 'serialize.deserialize' },
+      async () => parsePublicTrainer(await response.json()),
+    );
+    if (accountSnapshot().owner !== owner || trainer.player.id !== playerId)
+      throw new Error('Your account changed. Sign in again to view Trainers.');
+    return trainer;
+  });
 }

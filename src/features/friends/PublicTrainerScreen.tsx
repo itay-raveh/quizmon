@@ -6,6 +6,7 @@ import type { PokemonCatalog } from '../../domain/pokemon/types';
 import { accountSnapshot, subscribeAccount } from '../account/account';
 import { PublicTrainerPassport } from '../trainer/PublicTrainerPassport';
 import { fetchPublicTrainer } from './public-trainer-client';
+import { useQueryReadySpan } from '../../hooks/use-query-ready-span';
 
 export function PublicTrainerScreen({
   playerId,
@@ -25,9 +26,17 @@ export function PublicTrainerScreen({
   const { owner } = useSyncExternalStore(subscribeAccount, accountSnapshot);
   const trainer = useQuery({
     queryKey: ['social', owner, 'trainer', playerId],
-    queryFn: () => fetchPublicTrainer(owner, playerId),
+    queryFn: ({ signal }) => fetchPublicTrainer(owner, playerId, signal),
     enabled: Boolean(owner),
   });
+  useQueryReadySpan(
+    'trainer.ready',
+    `${owner}/${playerId}`,
+    Boolean(owner),
+    Boolean(trainer.data && catalog),
+    Boolean(trainer.error || catalogError),
+    Boolean(trainer.data),
+  );
   const error = trainer.error
     ? trainer.error instanceof TypeError
       ? 'Could not reach this Trainer. Check your connection and try again.'
