@@ -51,7 +51,7 @@ export const TrainerCard = ({
   const naturalHeight = ((partnerHeight ?? 8) * portraitHeight) / 16;
   const visibleHeight = profile.usePokedexProportions
     ? naturalHeight
-    : Math.min(portraitHeight * 3, Math.max(10, naturalHeight));
+    : Math.min(portraitHeight * 1.5, Math.max(10, naturalHeight));
   const partnerVisibleFraction = partnerSpriteMeasurements?.[2] ?? 1;
   const spriteSize = Math.min(
     48,

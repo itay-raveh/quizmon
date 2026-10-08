@@ -274,7 +274,6 @@ export const TrainerPassport = ({
             <Checkbox
               checked={usePokedexProportions}
               label="Use Pokédex proportions"
-              description="Use Pokémon heights relative to the trainer sprite. Very large Pokémon can make the trainer tiny."
               onChange={(event) =>
                 setUsePokedexProportions(event.target.checked)
               }
