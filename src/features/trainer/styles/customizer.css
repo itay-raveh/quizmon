@@ -8,6 +8,8 @@
   box-shadow: 0 0.2rem 0 var(--yellow);
   grid-template-areas:
     'name partner'
+    'title title'
+    'proportions proportions'
     'avatar avatar'
     'save save';
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -27,6 +29,27 @@
 
 .trainer-customizer > .pokemon-picker {
   grid-area: partner;
+}
+
+.trainer-customizer__title {
+  display: grid;
+  grid-area: title;
+  min-width: 0;
+  gap: 0.3rem;
+}
+
+.trainer-title-picker__options {
+  display: grid;
+  padding: 1rem;
+  gap: 0.7rem;
+}
+
+.trainer-title-picker__options .game-button[aria-pressed='true'] {
+  background: var(--sky);
+}
+
+.trainer-customizer__proportions {
+  grid-area: proportions;
 }
 
 .trainer-avatar-picker {

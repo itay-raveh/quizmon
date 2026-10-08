@@ -436,7 +436,13 @@
   font: 850 0.65rem / 1 var(--font-data);
 }
 
-.trainer-card__title > svg {
+.trainer-title-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+}
+
+.trainer-title-label > svg {
   width: 1em;
   height: 1em;
   flex: none;

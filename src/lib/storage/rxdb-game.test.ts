@@ -19,7 +19,11 @@ it('projects saved rounds and preferences after IndexedDB reload', async () => {
   const storage = getRxStorageDexie({ indexedDB, IDBKeyRange });
   const first = await openPlayerDatabase(name, storage, false);
   await ensureDeviceState(first);
-  const profile = { ...createTrainerProfile(), name: 'Trainer' };
+  const profile = {
+    ...createTrainerProfile(),
+    name: 'Trainer',
+    usePokedexProportions: true,
+  };
   await writePlayerPreferences(first, 'guest', {
     settings: defaultGameSettings,
   });
@@ -31,7 +35,7 @@ it('projects saved rounds and preferences after IndexedDB reload', async () => {
 
   const second = await openPlayerDatabase(name, storage, false);
   const { data } = await readGameData(second, 'guest');
-  expect(data.profile?.name).toBe('Trainer');
+  expect(data.profile).toEqual(profile);
   expect(data.settings).toEqual(defaultGameSettings);
   expect(Object.keys(data.results.training)).toHaveLength(1);
   await expect(

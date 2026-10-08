@@ -111,6 +111,8 @@
     grid-template-areas:
       'name'
       'partner'
+      'title'
+      'proportions'
       'avatar'
       'save';
     grid-template-columns: minmax(0, 1fr);

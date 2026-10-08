@@ -1,6 +1,7 @@
 import { useMemo, useState, type SubmitEvent } from 'react';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { GameButton } from '../../components/GameButton';
+import { Checkbox } from '../../components/Checkbox';
 import { useInteractionSound } from '../../lib/audio/sound-context';
 import {
   BookOpenIcon,
@@ -36,6 +37,7 @@ import { TrainerBadgeDialog } from './TrainerBadgeDialog';
 import { TrainerCard } from './TrainerCard';
 import { TrainerPokedex } from './TrainerPokedex';
 import { TrainerTitleDialog } from './TrainerTitleDialog';
+import { TrainerTitlePicker } from './TrainerTitlePicker';
 import { TrainerTitles } from './TrainerTitles';
 import { trainerPath } from './trainer-route';
 
@@ -88,9 +90,18 @@ export const TrainerPassport = ({
     'trainer-partner',
     profile.partnerPokemon,
   );
+  const [specialty, setSpecialty] = useUpdateState(
+    'trainer-specialty',
+    profile.specialty,
+  );
+  const [usePokedexProportions, setUsePokedexProportions] = useUpdateState(
+    'trainer-pokedex-proportions',
+    profile.usePokedexProportions,
+  );
+  const activeSpecialty = editing ? specialty : profile.specialty;
   const titles = useMemo(
-    () => getTrainerTitles(stats, profile.specialty),
-    [stats, profile.specialty],
+    () => getTrainerTitles(stats, activeSpecialty),
+    [stats, activeSpecialty],
   );
   const equippedTitle = titles.find((title) => title.equipped && title.earned);
   const savedSpecialty = equippedTitle?.specialty ?? null;
@@ -111,13 +122,19 @@ export const TrainerPassport = ({
       })),
     [catalog.pokemon],
   );
-  const savedPartner = profile.partnerPokemon
-    ? catalog.pokemon[profile.partnerPokemon]
+  const visibleProfile = {
+    ...profile,
+    ...(editing
+      ? { name, avatar, partnerPokemon: partner, usePokedexProportions }
+      : {}),
+    specialty: savedSpecialty,
+  };
+  const savedPartner = visibleProfile.partnerPokemon
+    ? catalog.pokemon[visibleProfile.partnerPokemon]
     : null;
   const matchingAvatars = avatarQuery.trim()
     ? searchAvatars(avatarQuery)
     : trainerAvatarOptions;
-  const visibleProfile = { ...profile, specialty: savedSpecialty };
   const rank = getTrainerRank(stats);
   const finish = getCardFinish(rank).toLowerCase();
   const badges = getTrainerBadges(stats, catalog);
@@ -131,6 +148,8 @@ export const TrainerPassport = ({
         avatar,
         name,
         partnerPokemon: partner,
+        specialty: savedSpecialty,
+        usePokedexProportions,
       }))
     )
       return;
@@ -147,6 +166,8 @@ export const TrainerPassport = ({
     setName(profile.name);
     setAvatar(profile.avatar);
     setPartner(profile.partnerPokemon);
+    setSpecialty(savedSpecialty);
+    setUsePokedexProportions(profile.usePokedexProportions);
     void navigate({ to: '/trainer/edit', replace: true });
   };
 
@@ -244,6 +265,21 @@ export const TrainerPassport = ({
             options={pokemonOptions}
             value={partner}
           />
+          <TrainerTitlePicker
+            titles={titles}
+            value={specialty}
+            onChange={setSpecialty}
+          />
+          <div className="trainer-customizer__proportions">
+            <Checkbox
+              checked={usePokedexProportions}
+              label="Use Pokédex proportions"
+              description="Use Pokémon heights relative to the trainer sprite. Very large Pokémon can make the trainer tiny."
+              onChange={(event) =>
+                setUsePokedexProportions(event.target.checked)
+              }
+            />
+          </div>
           <fieldset className="trainer-avatar-picker">
             <legend>Trainer avatar</legend>
             <input
@@ -275,15 +311,6 @@ export const TrainerPassport = ({
               ))}
               {!matchingAvatars.length && <p>No matching trainers.</p>}
             </div>
-            {avatar && (
-              <GameButton
-                tone="quiet"
-                type="button"
-                onClick={() => setAvatar(null)}
-              >
-                Clear avatar
-              </GameButton>
-            )}
           </fieldset>
           <GameButton type="submit">Save card</GameButton>
         </form>

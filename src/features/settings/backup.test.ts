@@ -1,5 +1,6 @@
 import { emptyDeviceState } from '../../lib/storage/rxdb-game';
 import { parseBackup } from './backup';
+import { createTrainerProfile } from '../../domain/player/trainer-profile';
 
 const backup = () => ({
   format: 'quizmon-backup-v3',
@@ -9,6 +10,28 @@ const backup = () => ({
   player: null,
   rounds: [],
   device: [{ id: 'state', payload: emptyDeviceState() }],
+});
+
+it('restores older profiles with readable proportions and preserves explicit choices', () => {
+  const legacyProfile = createTrainerProfile();
+  Reflect.deleteProperty(legacyProfile, 'usePokedexProportions');
+  const restore = (profile: unknown) =>
+    parseBackup(
+      JSON.stringify({
+        ...backup(),
+        player: { id: 'guest', profile, settings: null },
+      }),
+    );
+  expect(restore(legacyProfile).player?.profile.usePokedexProportions).toBe(
+    false,
+  );
+  expect(
+    restore({ ...legacyProfile, usePokedexProportions: true }).player?.profile
+      .usePokedexProportions,
+  ).toBe(true);
+  expect(() =>
+    restore({ ...legacyProfile, usePokedexProportions: 'true' }),
+  ).toThrow();
 });
 
 it('validates backup identity and device data before any restore writes', () => {

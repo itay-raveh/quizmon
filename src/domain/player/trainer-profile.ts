@@ -16,6 +16,7 @@ export const trainerProfileSchema = z.object({
     .string()
     .transform((name) => name.trim().slice(0, TRAINER_NAME_MAX_LENGTH)),
   partnerPokemon: z.string().nullable(),
+  usePokedexProportions: z.boolean().default(false),
   specialty: z
     .enum(
       Object.keys(trainerSpecialtyDetails) as [
@@ -32,5 +33,6 @@ export const createTrainerProfile = (): TrainerProfile => ({
   avatar: null,
   name: '',
   partnerPokemon: null,
+  usePokedexProportions: false,
   specialty: null,
 });

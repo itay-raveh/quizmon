@@ -6,8 +6,6 @@ import { PlayerName } from '@/components/PlayerName';
 import {
   getCardFinish,
   getTrainerRank,
-  trainerSpecialtyDetails,
-  trainerTierLabels,
   trainerViewLabels,
   type TrainerTier,
 } from '@/domain/player/trainer-progression';
@@ -15,7 +13,7 @@ import type { TrainerStats } from '@/domain/player/progress';
 import { CatchCombo } from '@/features/daily/CatchCombo';
 import type { TrainerProfile } from '@/lib/storage/trainer-profile-storage';
 import { TrainerCardFinishEffects } from './TrainerCardFinishEffects';
-import { TrainerTitleMark } from './TrainerTitleMark';
+import { TrainerTitle } from './TrainerTitle';
 
 interface TrainerCardProps {
   emptyPartnerLabel?: string;
@@ -31,14 +29,6 @@ interface TrainerCardProps {
     pokedexTotal: number;
   };
 }
-
-const rotomDisplayHeights: Record<string, number> = {
-  'rotom-fan': 6,
-  'rotom-frost': 18,
-  'rotom-heat': 6,
-  'rotom-mow': 9,
-  'rotom-wash': 9,
-};
 
 export const TrainerCard = ({
   emptyPartnerLabel = 'Choose partner',
@@ -57,10 +47,11 @@ export const TrainerCard = ({
   const partnerName = profile.partnerPokemon ?? emptyPartnerLabel;
   const avatar = trainerAvatarOptions.find(({ id }) => id === profile.avatar);
   const groundOffset = avatar ? (1 - avatar.bottom) * 100 : 0;
-  const height =
-    rotomDisplayHeights[profile.partnerPokemon ?? ''] ?? partnerHeight ?? 8;
   const portraitHeight = 29;
-  const visibleHeight = Math.max(10, (height * portraitHeight) / 16);
+  const naturalHeight = ((partnerHeight ?? 8) * portraitHeight) / 16;
+  const visibleHeight = profile.usePokedexProportions
+    ? naturalHeight
+    : Math.min(portraitHeight * 3, Math.max(10, naturalHeight));
   const partnerVisibleFraction = partnerSpriteMeasurements?.[2] ?? 1;
   const spriteSize = Math.min(
     48,
@@ -91,16 +82,8 @@ export const TrainerCard = ({
             <PlayerName trainer={trainer} fallback={`${site.name} Trainer`} />
           </h2>
           {profile.specialty ? (
-            <p
-              className="trainer-card__title"
-              aria-label={`${trainerSpecialtyDetails[profile.specialty].label}, ${trainerTierLabels[titleTier]} title`}
-            >
-              <span>{trainerSpecialtyDetails[profile.specialty].label}</span>
-              <TrainerTitleMark
-                plain
-                tier={titleTier}
-                specialty={profile.specialty}
-              />
+            <p className="trainer-card__title">
+              <TrainerTitle tier={titleTier} specialty={profile.specialty} />
             </p>
           ) : null}
         </div>
