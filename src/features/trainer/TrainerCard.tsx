@@ -64,8 +64,8 @@ export const TrainerCard = ({
   const partnerVisibleFraction = partnerSpriteMeasurements?.[2] ?? 1;
   const spriteSize = Math.min(
     48,
-    portraitHeight / Math.max(partnerSpriteMeasurements?.[1] ?? 1, 0.25),
-    Math.min(visibleHeight, portraitHeight * (avatar?.bottom ?? 1) - 2) /
+    34 / Math.max(partnerSpriteMeasurements?.[1] ?? 1, 0.25),
+    Math.min(visibleHeight, portraitHeight * (avatar?.bottom ?? 1) + 1) /
       Math.max(partnerVisibleFraction, 0.25),
   );
   const portraitScale = partnerSprite

@@ -549,6 +549,7 @@
   max-height: 29cqw;
   aspect-ratio: 1;
   place-items: center;
+  transform: translateY(2cqw);
 }
 
 .trainer-card__portrait-image {
@@ -582,6 +583,7 @@
   display: grid;
   max-width: 100%;
   text-align: center;
+  transform: translate(-4cqw, 1.5cqw);
 }
 
 .trainer-card__partner-caption .pokemon-identity__number {
