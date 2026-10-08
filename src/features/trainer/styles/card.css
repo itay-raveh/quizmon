@@ -363,9 +363,9 @@
   display: grid;
   min-width: 0;
   min-height: 0;
-  padding: 5cqw 5cqw 2cqw 6cqw;
+  padding: 3cqw 5cqw 4cqw 6cqw;
   grid-template-areas: 'rank avatar' 'identity avatar';
-  grid-template-columns: minmax(0, 1fr) 33%;
+  grid-template-columns: minmax(0, 1fr) 41%;
   grid-template-rows: auto minmax(0, 1fr);
   align-items: center;
   gap: 2cqw 4cqw;
@@ -529,13 +529,13 @@
 }
 
 .trainer-card__avatar {
-  display: grid;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
   min-width: 0;
   min-height: 0;
-  height: 100%;
   grid-area: avatar;
-  grid-template-rows: minmax(0, 1fr) auto;
-  justify-items: center;
+  align-self: start;
   gap: 1cqw;
 }
 
@@ -543,13 +543,11 @@
   position: relative;
   z-index: 1;
   display: grid;
-  width: auto;
-  height: 100%;
-  max-width: 100%;
-  max-height: 29cqw;
+  width: 29cqw;
+  height: 29cqw;
+  flex: none;
   aspect-ratio: 1;
   place-items: center;
-  transform: translateY(2cqw);
 }
 
 .trainer-card__portrait-image {
@@ -581,9 +579,9 @@
   position: relative;
   z-index: 5;
   display: grid;
+  width: 100%;
   max-width: 100%;
   text-align: center;
-  transform: translate(-4cqw, 1.5cqw);
 }
 
 .trainer-card__partner-caption .pokemon-identity__number {

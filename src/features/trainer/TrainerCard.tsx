@@ -60,7 +60,7 @@ export const TrainerCard = ({
   const height =
     rotomDisplayHeights[profile.partnerPokemon ?? ''] ?? partnerHeight ?? 8;
   const portraitHeight = 29;
-  const visibleHeight = Math.max(5, (height * portraitHeight) / 16);
+  const visibleHeight = Math.max(10, (height * portraitHeight) / 16);
   const partnerVisibleFraction = partnerSpriteMeasurements?.[2] ?? 1;
   const spriteSize = Math.min(
     48,
