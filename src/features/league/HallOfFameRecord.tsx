@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import { PokemonIdentity } from '@/components/PokemonIdentity';
 import { PlayerName } from '@/components/PlayerName';
 import type { LeagueVictoryRecord } from '@/domain/player/hall-of-fame';
@@ -37,18 +38,24 @@ export const HallOfFameRecord = ({
       <h1 tabIndex={-1}>Hall of Fame</h1>
       <div className="hall-record__portrait">
         <LeagueTrophy />
+        <span className="hall-record__sparkles" aria-hidden="true">
+          {'✦   ✧   ✦\n  ✧   ✦   ✧'}
+        </span>
         <ul className="hall-record__group" aria-label="Challenge Pokémon">
           {arrangeGroup(record.pokemon, sizes).map(
-            ({ name, left, top, width, layer, mirrored }) => (
+            ({ name, left, top, width, layer, mirrored }, index) => (
               <li
                 key={name}
                 title={formatPokemonName(name)}
-                style={{
-                  left: `${left}%`,
-                  top: `${top}%`,
-                  width: `${width}%`,
-                  zIndex: layer,
-                }}
+                style={
+                  {
+                    left: `${left}%`,
+                    top: `${top}%`,
+                    width: `${width}%`,
+                    zIndex: layer,
+                    '--hop-delay': `${index * 90}ms`,
+                  } as CSSProperties
+                }
               >
                 {catalog.pokemon[name]?.sprite ? (
                   <img
@@ -80,7 +87,7 @@ export const HallOfFameRecord = ({
           />
         </h2>
         <p className="hall-record__score">
-          <strong>{formatScore(record.result.score)}</strong> points
+          <strong>{formatScore(record.result.score)}</strong>
         </p>
       </div>
       <footer className="hall-record__signature">

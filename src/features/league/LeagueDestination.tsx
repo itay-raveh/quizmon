@@ -1,3 +1,4 @@
+import { useGameSounds } from '@/lib/audio/sound-context';
 import { GameButton } from '@/components/GameButton';
 import { BackButton } from '@/components/BackButton';
 import { ArrowLeftIcon, ArrowRightIcon } from '@/components/icons';
@@ -41,6 +42,8 @@ export const LeagueDestination = ({
 }: LeagueDestinationProps) => {
   const view = completed ? requestedView : 'challenge';
   const heading = useRef<HTMLDivElement>(null);
+  const { playPerfect, playReward, stopCelebration, stopRewards } =
+    useGameSounds();
   const [savedRecords, setSavedRecords] = useState(
     () => readPlayerData().hallOfFame,
   );
@@ -52,6 +55,25 @@ export const LeagueDestination = ({
   const selectedIndex = records.findIndex(({ id }) => id === selectedId);
   const index = selectedIndex < 0 ? records.length - 1 : selectedIndex;
   const record = records[index];
+  const celebrating =
+    celebrate && view === 'hall' && record?.id === freshRecord?.id;
+  useEffect(() => {
+    if (!celebrating) return;
+    playPerfect();
+    playReward(0, 'gold');
+    const stop = () => {
+      stopCelebration();
+      stopRewards();
+    };
+    const stopWhenHidden = () => {
+      if (document.hidden) stop();
+    };
+    document.addEventListener('visibilitychange', stopWhenHidden);
+    return () => {
+      stop();
+      document.removeEventListener('visibilitychange', stopWhenHidden);
+    };
+  }, [celebrating, playPerfect, playReward, stopCelebration, stopRewards]);
 
   useEffect(() => {
     const refresh = () => setSavedRecords(readPlayerData().hallOfFame);
@@ -67,7 +89,7 @@ export const LeagueDestination = ({
 
   return (
     <section
-      className={`league-hall${celebrate ? ' league-hall--induction' : ''}`}
+      className={`league-hall${celebrating ? ' league-hall--induction' : ''}`}
       aria-label="Quizmon League"
     >
       <header className="league-hall__header">

@@ -1,7 +1,10 @@
 import type { PokemonDistractors, SimilarityWeights } from './family-rules.ts';
-import { createSeededRandom, pick, shuffle } from '../../../lib/random.ts';
+import { createSeededRandom, shuffle } from '../../../lib/random.ts';
 import { statNames, type PokemonKnowledge } from '../../pokemon/types.ts';
-import { sampledMultiCorrectCounts } from '../question-rules/shared.ts';
+import {
+  sampledMultiCorrectCounts,
+  sampledMultiCorrectWeights,
+} from '../question-rules/shared.ts';
 import type { Candidate, QuestionContext } from './context.ts';
 import { groupPokemon } from './sampling.ts';
 import { chooseTargets, distinctPokemon } from './selection.ts';
@@ -242,8 +245,14 @@ export const chooseSampledMultiCorrectCount = (
   context: QuestionContext,
   matchingCount: number,
   otherCount: number,
-) =>
-  pick(
-    eligibleSampledMultiCorrectCounts(matchingCount, otherCount),
-    context.random,
-  );
+) => {
+  const counts = eligibleSampledMultiCorrectCounts(matchingCount, otherCount);
+  let draw =
+    context.random() *
+    counts.reduce((sum, count) => sum + sampledMultiCorrectWeights[count], 0);
+  for (const count of counts) {
+    draw -= sampledMultiCorrectWeights[count];
+    if (draw < 0) return count;
+  }
+  return undefined;
+};

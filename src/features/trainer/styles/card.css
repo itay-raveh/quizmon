@@ -315,18 +315,9 @@
 }
 
 .trainer-card__polish::after {
-  inset: 3px;
-  border: 2px solid transparent;
-  border-image: linear-gradient(
-      125deg,
-      #fffbe2,
-      #bc811d 20%,
-      #fffce6 38%,
-      #efc564 62%,
-      #fffbe2 75%,
-      #ad7112
-    )
-    1;
+  inset: 2cqw;
+  border: 2px solid var(--metal-gold-light);
+  border-radius: calc(var(--surface-radius) - 3px);
   opacity: 0.95;
 }
 
@@ -400,12 +391,6 @@
   padding-bottom: 0.5cqw;
   border-bottom: 1px solid var(--trainer-rank-accent-strong);
   gap: 0.35em;
-}
-
-.trainer-card__rank .trophy {
-  width: clamp(1.5rem, 2em, 2rem);
-  height: auto;
-  flex: none;
 }
 
 .trainer-card__identity {

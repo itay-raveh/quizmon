@@ -33,7 +33,7 @@ Families are active by default. `active: false` removes a family from automatic 
 
 The response and `view.answer.kind` types reject modes and answer layouts a family cannot use. [`assembleQuestion`](../../src/domain/quiz/questions/rendering-pipeline.ts) applies the resolved rendering and response to generated content, then attaches the rendering and view snapshots to the question.
 
-The sampled four-choice multi-select families use `sampledMultiCorrectCounts` from `shared.ts` and choose only counts supported by the eligible correct and wrong Pokémon pools. Complete-list questions, such as Pokémon types and berry flavors, present every factually correct answer instead of sampling a target count.
+The sampled four-choice multi-select families use `sampledMultiCorrectCounts` from `shared.ts` and weight one through four correct answers at 15%, 35%, 35%, and 15% respectively when all counts are feasible. They renormalize these weights over counts supported by the eligible correct and wrong Pokémon pools. History selection preserves the first viable draft’s answer count. Complete-list questions, such as Pokémon types and berry flavors, present every factually correct answer instead of sampling a target count.
 
 For example, the Level 5 Pixel peek rule is in [`pokemon-from-pixel-crop.ts`](../../src/domain/quiz/question-rules/pokemon-from-pixel-crop.ts). To inspect its resolved value:
 

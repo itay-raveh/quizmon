@@ -127,6 +127,8 @@ export const PlayRouteScreen = () => {
   if (session.phase === 'landing') return <Home />;
   if (session.phase === 'questions') return <QuestionRouteScreen />;
   if (session.mode.kind === 'league' && isLeagueVictory(session.result))
-    return <Navigate to="/league" search={{ view: 'hall' }} replace />;
+    return (
+      <Navigate to="/league" search={{ view: 'hall' }} replace ignoreBlocker />
+    );
   return <ResultsRouteScreen />;
 };

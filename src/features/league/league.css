@@ -181,7 +181,9 @@
 
 .hall-record__honors {
   text-align: center;
-  margin-top: 1rem;
+  position: relative;
+  z-index: 1;
+  margin-top: -14%;
 }
 
 .hall-record__honors h2 {
@@ -250,17 +252,66 @@
 }
 
 .league-hall--induction .league-trophy__rays {
-  animation: league-radiance 650ms cubic-bezier(0.16, 1, 0.3, 1);
+  animation: league-radiance 6s ease-in-out;
+}
+
+.league-hall--induction .hall-record__group li {
+  animation: league-hop 700ms ease-in-out var(--hop-delay) 3;
+}
+
+.hall-record__sparkles {
+  display: none;
+}
+
+.league-hall--induction .hall-record__sparkles {
+  display: block;
+  position: absolute;
+  inset: 8% 10% 25%;
+  pointer-events: none;
+  color: var(--hall-gold);
+  font-size: clamp(1.5rem, 5cqi, 2.5rem);
+  white-space: pre;
+  text-align: center;
+  animation: league-sparkles 1.2s ease-in-out 4 forwards;
 }
 
 @keyframes league-radiance {
-  from {
-    transform: scale(0.75) rotate(-10deg);
-    opacity: 0.5;
+  0% {
+    transform: scale(0.8) rotate(-20deg);
+    opacity: 0.4;
   }
-  to {
-    transform: scale(1) rotate(0);
+  25%,
+  75% {
     opacity: 1;
+  }
+  50% {
+    opacity: 0.65;
+  }
+  100% {
+    transform: scale(1) rotate(180deg);
+    opacity: 1;
+  }
+}
+
+@keyframes league-hop {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  40% {
+    translate: 0 -12%;
+  }
+}
+
+@keyframes league-sparkles {
+  0%,
+  100% {
+    opacity: 0;
+    scale: 0.8;
+  }
+  50% {
+    opacity: 1;
+    scale: 1;
   }
 }
 
@@ -285,7 +336,13 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .league-hall--induction .league-trophy__rays {
+  .league-hall--induction .league-trophy__rays,
+  .league-hall--induction .hall-record__group li,
+  .league-hall--induction .hall-record__sparkles {
     animation: none;
+  }
+
+  .league-hall--induction .hall-record__sparkles {
+    display: none;
   }
 }

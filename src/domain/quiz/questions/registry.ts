@@ -195,10 +195,14 @@ export const buildQuestionType = (
       questionType,
     };
     const questionRarity = rarity(question);
-    // Choosing a less-seen draft must not turn the initial rarity draw into more Megas.
+    // Recency must preserve the initial rarity and sampled answer count.
     if (
       !selected ||
       (questionRarity === selectedRarity &&
+        (question.answer.interaction !== 'multi-select' ||
+          question.options.length !== 4 ||
+          question.answer.correctOptions.length ===
+            selected.answer.correctOptions.length) &&
         compareRecency(question, selected) < 0)
     ) {
       selected = question;

@@ -3,7 +3,6 @@ import { trainerAvatarOptions } from '@/domain/player/trainer-avatars';
 import type { PackedSpriteMeasurements } from '@/domain/pokemon/types';
 import { PokemonIdentity } from '@/components/PokemonIdentity';
 import { PlayerName } from '@/components/PlayerName';
-import { Trophy } from '@/components/Trophy';
 import {
   getCardFinish,
   getTrainerRank,
@@ -62,12 +61,13 @@ export const TrainerCard = ({
     rotomDisplayHeights[profile.partnerPokemon ?? ''] ?? partnerHeight ?? 8;
   const portraitHeight = 29;
   const visibleHeight = Math.min(
-    portraitHeight,
+    portraitHeight * (avatar?.bottom ?? 1) - 2,
     Math.max(5, (height * portraitHeight) / 16),
   );
   const partnerVisibleFraction = partnerSpriteMeasurements?.[2] ?? 1;
   const spriteSize = Math.min(
     48,
+    portraitHeight / Math.max(partnerSpriteMeasurements?.[1] ?? 1, 0.25),
     visibleHeight / Math.max(partnerVisibleFraction, 0.25),
   );
   const behindTrainer =
@@ -84,10 +84,7 @@ export const TrainerCard = ({
         <div className="trainer-card__watermark" />
       </div>
       <div className="trainer-card__front">
-        <header className="trainer-card__rank">
-          {rank}
-          {isChampion ? <Trophy /> : null}
-        </header>
+        <header className="trainer-card__rank">{rank}</header>
         <div className="trainer-card__identity">
           <h2>
             <PlayerName trainer={trainer} fallback={`${site.name} Trainer`} />

@@ -48,3 +48,10 @@ export const responsePresets = {
 export const sampledMultiCorrectCounts = [
   1, 2, 3, 4,
 ] as const satisfies readonly (1 | 2 | 3 | 4)[];
+
+export const sampledMultiCorrectWeights = {
+  1: 15,
+  2: 35,
+  3: 35,
+  4: 15,
+} as const;
