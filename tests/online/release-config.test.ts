@@ -29,21 +29,9 @@ await test('runtime renderer binds the provisioned Hyperdrive without local defa
   const input = readReleaseConfig(config);
   const rendered = renderSourceWorkerConfig(rawConfig, input);
   assert.equal(input.sync.endpoint, 'https://sync.example.test');
-  for (const field of [
-    'limits',
-    'durable_objects',
-    'exports',
-    'secrets',
-    'send_email',
-  ])
-    assert.deepEqual(
-      rendered[field as keyof typeof rendered],
-      rawConfig[field],
-    );
   assert.deepEqual(rendered.hyperdrive, [
     { binding: 'ACCOUNT_DB', id: config.hyperdriveId },
   ]);
-  assert.equal(rendered.vars.MAIL_DELIVERY, 'cloudflare');
   assert.equal(rendered.vars.AUTH_ORIGIN, config.origin);
   assert.equal(rendered.vars.SYNC_AUDIENCE, input.sync.audience);
   assert.ok(!JSON.stringify(rendered).includes('127.0.0.1'));

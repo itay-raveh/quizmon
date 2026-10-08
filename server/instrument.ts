@@ -1,6 +1,7 @@
 import * as Sentry from '@sentry/node';
+import { isMainThread } from 'node:worker_threads';
 
-if (process.env.SENTRY_DSN)
+if (isMainThread && process.env.SENTRY_DSN)
   Sentry.init({
     dsn: process.env.SENTRY_DSN,
     release: process.env.SENTRY_RELEASE,
