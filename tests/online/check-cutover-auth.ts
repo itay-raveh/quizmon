@@ -6,13 +6,13 @@ import { MongoClient } from 'mongodb';
 import { betterAuth } from 'better-auth';
 import { mongodbAdapter } from 'better-auth/adapters/mongodb';
 import { emailOTP } from 'better-auth/plugins';
-import { testDatabase } from './account-fixture.ts';
+import { testDatabase, testMongoUrl } from './account-fixture.ts';
 import { isRecord } from '../../src/lib/validation.ts';
 
 const run = promisify(execFile);
 const postgres = await testDatabase();
 const appName = `cutover_auth_${crypto.randomUUID().replaceAll('-', '')}`;
-const mongoUrl = 'mongodb://127.0.0.1:27018/quizmon?directConnection=true';
+const mongoUrl = testMongoUrl('quizmon');
 const mongo = await new MongoClient(mongoUrl).connect();
 try {
   const { pool } = postgres;

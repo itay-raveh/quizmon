@@ -14,7 +14,7 @@ import { trainerProfileSchema } from '../src/domain/player/trainer-profile.ts';
 import { compactRoundSchema } from '../src/domain/sync/compact-rounds.ts';
 import { openPlayerDatabase } from '../src/lib/storage/rxdb-database.ts';
 import { playerProfiles, trainerProfile } from './rxdb-read.ts';
-import { boardRows, startStandings, type Standing } from './standings.ts';
+import { boardPage, startStandings, type Standing } from './standings.ts';
 
 const accountId = z.string().regex(/^[A-Za-z0-9_-]{1,128}$/);
 addRxPlugin(RxDBCleanupPlugin);
@@ -182,15 +182,8 @@ export async function startSyncServer(config: {
       if (!body.success) return response.sendStatus(400);
       const { mode, visible, day, offset, limit } = body.data;
       const ownerId = accountId.parse(response.locals.ownerId as unknown);
-      void boardRows(board, mode, visible, day).then(
-        (rows) =>
-          response.json({
-            total: rows.length,
-            page: rows.slice(offset, offset + limit),
-            viewer:
-              rows.find((row) => row.playerId === ownerId && row.comparable) ??
-              null,
-          }),
+      void boardPage(board, mode, visible, ownerId, offset, limit, day).then(
+        (page) => response.json(page),
         next,
       );
     });

@@ -15,6 +15,17 @@ export const migrationsFolder = fileURLToPath(
   new URL('../../server/migrations', import.meta.url),
 );
 
+export function testMongoUrl(name: string) {
+  const url = new URL(
+    process.env.QUIZMON_TEST_MONGO_URL ?? 'mongodb://127.0.0.1:27018',
+  );
+  assert.equal(url.protocol, 'mongodb:');
+  assert.ok(['127.0.0.1', 'localhost'].includes(url.hostname));
+  url.pathname = `/${name}`;
+  url.searchParams.set('directConnection', 'true');
+  return url.toString();
+}
+
 export async function testDatabase(migrationDirectory = migrationsFolder) {
   assert.equal(
     docker('context', 'inspect', '--format', '{{.Endpoints.docker.Host}}'),

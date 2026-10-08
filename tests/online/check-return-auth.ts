@@ -1,11 +1,11 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { MongoClient, type Document } from 'mongodb';
-import { testDatabase } from './account-fixture.ts';
+import { testDatabase, testMongoUrl } from './account-fixture.ts';
 
 const postgres = await testDatabase();
 const name = `quizmon_return_${crypto.randomUUID().replaceAll('-', '')}`;
-const mongoUrl = `mongodb://127.0.0.1:27018/${name}?directConnection=true`;
+const mongoUrl = testMongoUrl(name);
 const mongo = await new MongoClient(mongoUrl).connect();
 const db = mongo.db();
 const now = new Date('2026-09-30T08:00:00.000Z');
