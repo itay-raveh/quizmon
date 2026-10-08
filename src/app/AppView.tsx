@@ -39,6 +39,10 @@ export const AppView = () => {
           : match?.staticData.title;
     document.title = title ? `${title} | Quizmon` : site.title;
     if (match?.status !== 'success') return;
+    if (session.phase === 'questions') {
+      previousScreen.current = screen;
+      return;
+    }
     const heading = [
       ...(main.current?.querySelectorAll<HTMLElement>('h1') ?? []),
     ].find((candidate) => !candidate.closest('[hidden]'));

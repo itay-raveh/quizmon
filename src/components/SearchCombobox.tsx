@@ -14,6 +14,8 @@ export const SearchCombobox = <Option,>({
   renderOption,
   placeholder,
   emptyMessage,
+  autoFocus = false,
+  descriptionId,
   disabled = false,
   invalid = false,
   hideSuggestions = false,
@@ -30,6 +32,8 @@ export const SearchCombobox = <Option,>({
   renderOption: (option: Option) => ReactNode;
   placeholder: string;
   emptyMessage: string;
+  autoFocus?: boolean;
+  descriptionId?: string;
   disabled?: boolean;
   invalid?: boolean;
   hideSuggestions?: boolean;
@@ -60,7 +64,9 @@ export const SearchCombobox = <Option,>({
         <Autocomplete.Input
           id={`${id}-input`}
           aria-labelledby={`${id}-label`}
+          aria-describedby={descriptionId}
           aria-invalid={invalid || undefined}
+          autoFocus={autoFocus}
           autoComplete="off"
           autoCapitalize="none"
           spellCheck={false}
