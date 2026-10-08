@@ -459,6 +459,7 @@ button.friends-icon-button.game-button:active:not(:disabled) {
 .leaderboard-swipe {
   display: flex;
   gap: 0.75rem;
+  padding-bottom: 0.4rem;
   overflow-x: auto;
   overflow-y: hidden;
   scroll-snap-type: x mandatory;
