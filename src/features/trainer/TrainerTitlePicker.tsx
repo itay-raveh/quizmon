@@ -47,11 +47,12 @@ export const TrainerTitlePicker = ({ titles, value, onChange }: Props) => {
       onFocus={() => setFiltering(false)}
     >
       <div className="pokemon-picker">
-        <label htmlFor={`${id}-input`}>Trainer title</label>
+        <label id={`${id}-label`} htmlFor={`${id}-input`}>
+          Trainer title
+        </label>
         <SearchCombobox
           id={id}
           className="pokemon-picker__field"
-          emptyClassName="pokemon-picker__empty"
           query={query}
           onQueryChange={(query) => {
             setFiltering(query.trim().length > 0);
@@ -65,6 +66,7 @@ export const TrainerTitlePicker = ({ titles, value, onChange }: Props) => {
             onChange(title.specialty);
           }}
           getKey={(title) => title.specialty}
+          getLabel={(title) => title.label}
           renderOption={(title) => (
             <TrainerTitle specialty={title.specialty} tier={title.tier} />
           )}

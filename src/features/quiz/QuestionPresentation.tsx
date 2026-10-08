@@ -1,3 +1,7 @@
+import {
+  QuestionIdentity,
+  QuestionSprite,
+} from '@/components/PokemonRenderable';
 import { TypeBadges } from '@/components/TypeBadge';
 import {
   formatPokemonName,
@@ -13,12 +17,7 @@ import {
   type QuestionRendering,
   type RevealState,
 } from '@/domain/quiz/rendering';
-import {
-  ItemRenderable,
-  MoveRenderable,
-  QuestionIdentity,
-  QuestionSprite,
-} from './QuestionEntity';
+import { ItemRenderable, MoveRenderable } from './QuestionEntity';
 import { QuestionClues } from './QuestionClues';
 import { QuestionArtwork } from './QuestionArtwork';
 import { QuestionInstruction } from './QuestionInstruction';

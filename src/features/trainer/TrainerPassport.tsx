@@ -118,6 +118,8 @@ export const TrainerPassport = ({
     () =>
       Object.entries(catalog.pokemon).map(([name, pokemon]) => ({
         name,
+        label: pokemon.displayName,
+        dexNumber: pokemon.speciesId,
         sprite: pokemon.sprite,
       })),
     [catalog.pokemon],

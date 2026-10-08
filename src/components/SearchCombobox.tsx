@@ -1,15 +1,16 @@
-import { useSuggestionNavigation } from '@/hooks/useSuggestionNavigation';
-import { useEffect, useRef, type ReactNode, type Ref } from 'react';
+import { Autocomplete } from '@base-ui/react/autocomplete';
+import { useState, type ReactNode, type Ref } from 'react';
+import './search-combobox.css';
 
 export const SearchCombobox = <Option,>({
   id,
   className,
-  emptyClassName,
   query,
   onQueryChange,
   suggestions,
   onChoose,
   getKey,
+  getLabel,
   renderOption,
   placeholder,
   emptyMessage,
@@ -21,12 +22,12 @@ export const SearchCombobox = <Option,>({
 }: {
   id: string;
   className: string;
-  emptyClassName: string;
   query: string;
   onQueryChange: (query: string) => void;
   suggestions: readonly Option[];
   onChoose: (option: Option) => void;
   getKey: (option: Option) => string;
+  getLabel: (option: Option) => string;
   renderOption: (option: Option) => ReactNode;
   placeholder: string;
   emptyMessage: string;
@@ -36,98 +37,79 @@ export const SearchCombobox = <Option,>({
   inputRef?: Ref<HTMLInputElement>;
   exactOption?: Option;
 }) => {
-  const navigation = useSuggestionNavigation(suggestions, onChoose);
-  const showSuggestions = navigation.open && !disabled && !hideSuggestions;
-  const expanded = showSuggestions && suggestions.length > 0;
-  const listbox = useRef<HTMLUListElement>(null);
-  useEffect(() => {
-    if (!expanded) return;
-    const viewport = window.visualViewport;
-    const resize = () => {
-      listbox.current?.style.setProperty(
-        '--suggestion-viewport-height',
-        `${viewport?.height ?? window.innerHeight}px`,
-      );
-    };
-    resize();
-    viewport?.addEventListener('resize', resize);
-    window.addEventListener('resize', resize);
-    return () => {
-      viewport?.removeEventListener('resize', resize);
-      window.removeEventListener('resize', resize);
-    };
-  }, [expanded]);
+  const [open, setOpen] = useState(false);
+  const expanded = open && !disabled && !hideSuggestions;
   return (
     <div className={className}>
-      <input
-        ref={inputRef}
-        id={`${id}-input`}
-        role="combobox"
-        aria-autocomplete="list"
-        aria-expanded={expanded}
-        aria-controls={expanded ? id : undefined}
-        aria-activedescendant={
-          expanded && navigation.activeIndex >= 0
-            ? `${id}-option-${navigation.activeIndex}`
-            : undefined
-        }
-        aria-invalid={invalid || undefined}
-        autoComplete="off"
-        autoCapitalize="none"
-        spellCheck={false}
-        disabled={disabled}
-        placeholder={placeholder}
+      <Autocomplete.Root
+        items={suggestions}
+        filter={null}
+        itemToStringValue={getLabel}
         value={query}
-        onFocus={() => navigation.setOpen(true)}
-        onBlur={() => {
-          navigation.setOpen(false);
-          navigation.resetActiveIndex();
+        onValueChange={(value, details) => {
+          if (details.reason !== 'item-press') onQueryChange(value);
         }}
-        onChange={(event) => {
-          onQueryChange(event.target.value);
-          navigation.resetActiveIndex();
-          navigation.setOpen(true);
-        }}
-        onKeyDown={(event) => {
-          if (event.nativeEvent.isComposing || hideSuggestions) return;
-          if (
-            event.key === 'Enter' &&
-            navigation.open &&
-            navigation.activeIndex < 0 &&
-            exactOption !== undefined
-          ) {
-            event.preventDefault();
-            navigation.choose(exactOption);
-          } else navigation.handleKeyDown(event);
-        }}
-      />
-      {showSuggestions ? (
-        suggestions.length ? (
-          <ul id={id} role="listbox" ref={listbox}>
-            {suggestions.map((option, index) => (
-              <li
-                key={getKey(option)}
-                id={`${id}-option-${index}`}
-                role="option"
-                aria-selected={index === navigation.activeIndex}
-                ref={
-                  index === navigation.activeIndex
-                    ? navigation.activeOptionRef
-                    : undefined
-                }
-                onMouseDown={(event) => event.preventDefault()}
-                onClick={() => navigation.choose(option)}
+        open={expanded}
+        onOpenChange={setOpen}
+        openOnInputClick
+        disabled={disabled}
+      >
+        <Autocomplete.Input
+          ref={inputRef}
+          id={`${id}-input`}
+          aria-labelledby={`${id}-label`}
+          aria-invalid={invalid || undefined}
+          autoComplete="off"
+          autoCapitalize="none"
+          spellCheck={false}
+          placeholder={placeholder}
+          onFocus={() => setOpen(true)}
+          onKeyDown={(event) => {
+            if (event.nativeEvent.isComposing || !expanded) return;
+            if (
+              event.key === 'Enter' &&
+              exactOption !== undefined &&
+              !event.currentTarget.getAttribute('aria-activedescendant')
+            ) {
+              event.preventDefault();
+              onChoose(exactOption);
+              setOpen(false);
+            }
+          }}
+        />
+        <Autocomplete.Status className="visually-hidden">
+          {expanded && suggestions.length > 0
+            ? `${suggestions.length} results available.`
+            : null}
+        </Autocomplete.Status>
+        <Autocomplete.Portal>
+          <Autocomplete.Positioner
+            className="search-combobox__positioner"
+            sideOffset={7}
+          >
+            <Autocomplete.Popup className="search-combobox__popup">
+              <Autocomplete.Empty>
+                <p className="search-combobox__empty">{emptyMessage}</p>
+              </Autocomplete.Empty>
+              <Autocomplete.List
+                className="search-combobox__list"
+                aria-labelledby={`${id}-label`}
               >
-                {renderOption(option)}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className={emptyClassName} role="status">
-            {emptyMessage}
-          </p>
-        )
-      ) : null}
+                {(option: Option) => (
+                  <Autocomplete.Item
+                    key={getKey(option)}
+                    className="search-combobox__option"
+                    value={option}
+                    onClick={() => onChoose(option)}
+                  >
+                    {renderOption(option)}
+                  </Autocomplete.Item>
+                )}
+              </Autocomplete.List>
+            </Autocomplete.Popup>
+          </Autocomplete.Positioner>
+        </Autocomplete.Portal>
+      </Autocomplete.Root>
     </div>
   );
 };

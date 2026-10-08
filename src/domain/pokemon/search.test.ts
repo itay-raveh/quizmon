@@ -37,3 +37,16 @@ it('keeps exact names ahead of forms and rejects empty or unrelated queries', ()
   expect(search('   ')).toEqual([]);
   expect(search('zzzzzzzzzz')).toEqual([]);
 });
+
+it('keeps catalog order when Fuse gives prefix matches equal relevance', () => {
+  const search = createSearch(
+    ['charmeleon', 'charizard', 'charmander'].map((name) =>
+      createPokemonSearchEntry({ name }),
+    ),
+  );
+  expect(search('char').map(({ name }) => name)).toEqual([
+    'charmeleon',
+    'charizard',
+    'charmander',
+  ]);
+});

@@ -1,4 +1,4 @@
-import { ItemRenderable, PokemonRenderable } from './QuestionEntity';
+import { ItemRenderable } from './QuestionEntity';
 import {
   isVisible,
   spriteState,
@@ -66,33 +66,21 @@ export const ChampionSearch = ({
         disabled={disabled || answered}
         mode="champion"
         renderPokemon={
-          answerKind === 'pokemon'
-            ? (pokemon) => (
-                <PokemonRenderable
-                  name={pokemon.name}
-                  dexNumber={pokemon.dexNumber}
-                  src={pokemon.sprite}
-                  types={pokemon.types}
+          answerKind === 'item'
+            ? (item) => (
+                <ItemRenderable
+                  name={item.label ?? formatPokemonName(item.name)}
+                  src={item.sprite}
                   policy={policy}
                   state={{ answered, cluesShown }}
-                  spriteSlotClassName="pokemon-picker__sprite"
-                  typesClassName="pokemon-picker__types"
-                  hideNumberFromAccessibility
+                  className="item-renderable"
+                  spriteClassName="item-renderable__sprite"
                 />
               )
-            : answerKind === 'item'
-              ? (item) => (
-                  <ItemRenderable
-                    name={item.label ?? formatPokemonName(item.name)}
-                    src={item.sprite}
-                    policy={policy}
-                    state={{ answered, cluesShown }}
-                    className="item-renderable"
-                    spriteClassName="item-renderable__sprite"
-                  />
-                )
-              : undefined
+            : undefined
         }
+        rendering={policy}
+        state={{ answered, cluesShown }}
         onConfirm={onAnswer}
         searchSubject={answerKind === 'pokemon' ? 'Pokémon' : answerKind}
         onQueryChange={setQuery}

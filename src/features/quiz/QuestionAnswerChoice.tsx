@@ -1,3 +1,7 @@
+import {
+  PokemonRenderable,
+  QuestionIdentity,
+} from '@/components/PokemonRenderable';
 import { GameButton } from '@/components/GameButton';
 import { GenerationLabel } from '@/components/GenerationLabel';
 import { CheckIcon, MinusIcon, XIcon } from '@/components/icons';
@@ -18,12 +22,7 @@ import { memo } from 'react';
 import { answerOptionState } from './answer-option-state';
 import { MoveReveal } from './MoveReveal';
 import { NatureEffect } from './NatureEffect';
-import {
-  ItemRenderable,
-  MoveRenderable,
-  PokemonRenderable,
-  QuestionIdentity,
-} from './QuestionEntity';
+import { ItemRenderable, MoveRenderable } from './QuestionEntity';
 
 interface QuestionAnswerChoiceProps {
   question: QuestionData;

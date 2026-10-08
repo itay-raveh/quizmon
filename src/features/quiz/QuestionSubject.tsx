@@ -5,7 +5,7 @@ import {
   type RevealState,
 } from '@/domain/quiz/rendering';
 import type { ReactNode } from 'react';
-import { PokemonRenderable } from './QuestionEntity';
+import { PokemonRenderable } from '@/components/PokemonRenderable';
 
 export const QuestionSubject = ({
   name,

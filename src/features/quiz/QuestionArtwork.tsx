@@ -1,3 +1,7 @@
+import {
+  PokemonRenderable,
+  QuestionSprite,
+} from '@/components/PokemonRenderable';
 import { StatDirection } from './StatDirection';
 import { NatureEffect } from './NatureEffect';
 import { getQuestionRendering } from '@/domain/quiz/variants';
@@ -7,11 +11,7 @@ import {
   spriteState,
   type EntityRendering,
 } from '@/domain/quiz/rendering';
-import {
-  ItemRenderable,
-  PokemonRenderable,
-  QuestionSprite,
-} from './QuestionEntity';
+import { ItemRenderable } from './QuestionEntity';
 import { QuestionSubject } from './QuestionSubject';
 import { GenerationLabel } from '@/components/GenerationLabel';
 import { RelationArrow, TypeEffectArrow } from './RelationArrow';

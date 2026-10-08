@@ -1,4 +1,6 @@
-import { formatPokedexNumber } from '@/domain/pokemon/format';
+import { PokemonRenderable } from './PokemonRenderable';
+import { baseQuestionRendering } from '@/domain/quiz/question-rules/shared';
+import type { QuestionRendering, RevealState } from '@/domain/quiz/rendering';
 import {
   createPokemonSearchEntry,
   createSearch,
@@ -19,6 +21,8 @@ interface SearchPokemon {
 interface PokemonSearchProps {
   searchSubject?: 'Pokémon' | 'ability' | 'item' | 'TM';
   renderPokemon?: (pokemon: SearchPokemon) => ReactNode;
+  rendering?: QuestionRendering['search'];
+  state?: RevealState;
   disabled?: boolean;
   mode: 'partner' | 'champion';
   onClear?: () => void;
@@ -32,6 +36,8 @@ interface PokemonSearchProps {
 export const PokemonSearch = ({
   searchSubject = 'Pokémon',
   renderPokemon,
+  rendering = baseQuestionRendering.search,
+  state = { answered: false, cluesShown: 0 },
   disabled = false,
   mode,
   onClear,
@@ -73,14 +79,13 @@ export const PokemonSearch = ({
           : undefined
       }
     >
-      <label htmlFor={`${listboxId}-input`}>
+      <label id={`${listboxId}-label`} htmlFor={`${listboxId}-input`}>
         {champion ? 'Your answer' : 'Partner Pokémon'}
       </label>
       <div className={`${className}__controls`}>
         <SearchCombobox
           id={listboxId}
           className={`${className}__${champion ? 'combobox' : 'field'}`}
-          emptyClassName={`${className}__empty`}
           query={query}
           suggestions={suggestions}
           disabled={disabled}
@@ -96,6 +101,7 @@ export const PokemonSearch = ({
             if (!champion) onConfirm(suggestion.name);
           }}
           getKey={(suggestion) => suggestion.name}
+          getLabel={(suggestion) => suggestion.label}
           placeholder={
             champion
               ? searchSubject === 'TM'
@@ -108,31 +114,17 @@ export const PokemonSearch = ({
             renderPokemon ? (
               renderPokemon(suggestion)
             ) : (
-              <>
-                {!champion || suggestion.sprite ? (
-                  <span aria-hidden="true" className="pokemon-picker__sprite">
-                    {suggestion.sprite ? (
-                      <img
-                        alt=""
-                        decoding="async"
-                        height="32"
-                        loading="lazy"
-                        onError={(event) => {
-                          event.currentTarget.hidden = true;
-                        }}
-                        src={suggestion.sprite}
-                        width="32"
-                      />
-                    ) : null}
-                  </span>
-                ) : null}
-                <span>{suggestion.label}</span>
-                {champion && suggestion.dexNumber !== undefined ? (
-                  <small aria-hidden="true">
-                    {formatPokedexNumber(suggestion.dexNumber)}
-                  </small>
-                ) : null}
-              </>
+              <PokemonRenderable
+                name={suggestion.label}
+                dexNumber={suggestion.dexNumber}
+                src={suggestion.sprite}
+                types={suggestion.types}
+                policy={rendering}
+                state={state}
+                spriteSlotClassName="search-combobox__sprite"
+                typesClassName="pokemon-picker__types"
+                hideNumberFromAccessibility={champion}
+              />
             )
           }
         />

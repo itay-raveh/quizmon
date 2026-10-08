@@ -34,6 +34,7 @@
     "generate:release-schema": "node scripts/generate-release-config-schema.ts"
   },
   "dependencies": {
+    "@base-ui/react": "1.8.0",
     "@fontsource-variable/gabarito": "^5.3.0",
     "@fontsource-variable/martian-mono": "^5.3.0",
     "@hookform/resolvers": "^5.9.1",

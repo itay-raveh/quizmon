@@ -6,6 +6,8 @@ interface PokemonPickerProps {
   onChange: (pokemon: string | null) => void;
   options: readonly {
     name: string;
+    label?: string;
+    dexNumber: number;
     sprite: string | null;
   }[];
   value: string | null;
