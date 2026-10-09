@@ -13,7 +13,7 @@ const target = {
   generation: generations.find(
     (generation) => generation === pokemonData.pokemon.bulbasaur.generation,
   )!,
-  identitySprites: { generations: [] },
+  identitySprites: { currentBack: null, generations: [] },
   spriteMeasurements: [0.4, 0.6, 0.3, 0.5, 0.9],
 } satisfies PokemonKnowledge;
 const typeOnly = {

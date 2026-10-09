@@ -13,7 +13,6 @@ import {
 import { leagueStages } from '../league.ts';
 import { gameLevels } from '../level.ts';
 import { getQuestionVariant } from '../variants.ts';
-import type { QuestionData } from '../types.ts';
 import {
   defaultGameSettings,
   getTrainingSettings,
@@ -154,42 +153,31 @@ it('rejects image-only choices when a catalog sprite is missing', () => {
   ).toBe(false);
 });
 
-it('selects role sprites independently without changing answers', () => {
-  const [name, pokemon] = Object.entries(catalog.pokemon).find(
-    ([, value]) =>
-      value.sprite &&
-      value.identitySprites.generations.some(({ back }) => back.length),
-  )!;
-  const back = pokemon.identitySprites.generations.find(
-    ({ back }) => back.length,
-  )!.back[0]!;
-  const testPokemon = {
-    ...pokemon,
-    identitySprites: {
-      generations: [
-        { generation: pokemon.generation, front: [], back: [back] },
-      ],
+it('renders a generated comparison’s subject and choices from one shared actual game set', () => {
+  const eligible = pool.filter(({ pokemon }) =>
+    ['I', 'II'].includes(pokemon.generation),
+  );
+  const original = buildQuestionType(
+    {
+      catalog,
+      pool: eligible,
+      level: 3,
+      used: new Set(),
+      random: createSeededRandom('shared-comparison'),
     },
-  };
-  const testCatalog = {
-    ...catalog,
-    pokemon: { ...catalog.pokemon, [name]: testPokemon },
-  };
-  const spriteLevel = gameLevels.find((level) =>
-    getQuestionVariant('pokemonMatch', level),
+    'dualTypeMatch',
   )!;
-  const rules = getQuestionVariant('pokemonMatch', spriteLevel)!.variant;
-  const allSources = {
+  const rules = getQuestionVariant('dualTypeMatch', 3)!.variant;
+  const historical = {
     ...rules,
     rendering: {
       ...rules.rendering,
-      related: {
-        ...rules.rendering.related,
+      subject: {
+        ...rules.rendering.subject,
         sprite: {
-          reveal: 'after-answer',
+          reveal: 'always',
           silhouette: false,
-          historicalSpriteChance: 0,
-          backSpriteChance: 0,
+          historicalSpriteChance: 0.5,
         },
       },
       choices: {
@@ -197,94 +185,123 @@ it('selects role sprites independently without changing answers', () => {
         sprite: {
           reveal: 'always',
           silhouette: false,
-          historicalSpriteChance: 1,
-          backSpriteChance: 1,
+          historicalSpriteChance: 0.5,
         },
       },
     },
   } as const;
-  const question: Omit<QuestionData, 'questionType'> = {
-    answer: { interaction: 'single-choice', correctOptions: [name] },
-    category: 'identity',
-    id: name,
-    media: { kind: 'none' },
-    options: [name],
-    prompt: { kind: 'text', text: 'Choose one.' },
-    repetition: {
-      identity: name,
-      subjects: [name],
-      primary: [name],
-      distractors: [],
-    },
-    subject: {
-      kind: 'pokemon',
-      name,
-      generation: pokemon.generation,
-      types: pokemon.types,
+  const render = (source: PokemonCatalog) => {
+    let rolls = 0;
+    return assembleQuestion(
+      {
+        ...original,
+        optionVisuals: undefined,
+        media: {
+          kind: 'pixel-sprite',
+          src: source.pokemon[original.subject.name]!.sprite!,
+        },
+      },
+      {
+        catalog: source,
+        pool: eligible,
+        used: new Set(),
+        random: () => (rolls++ === 0 ? 0.2 : 0.8),
+      },
+      historical,
+    );
+  };
+  const result = render(catalog);
+  const sources = [
+    result.media.kind === 'pixel-sprite' ? result.media.src : '',
+    ...result.options.map((name) => result.optionVisuals![name]!.src!),
+  ];
+  expect(sources.every((src) => src.includes('/versions/'))).toBe(true);
+  expect(
+    new Set(
+      sources.map(
+        (src) => src.match(/versions\/(generation-[^/]+\/[^/]+)\//)?.[1],
+      ),
+    ).size,
+  ).toBe(1);
+  for (const [index, name] of [
+    original.subject.name,
+    ...original.options,
+  ].entries()) {
+    const assets = catalog.pokemon[name]!.identitySprites.generations.flatMap(
+      (era) => [...era.front, ...era.back],
+    );
+    expect(assets).toContain(sources[index]);
+  }
+  expect(result.answer).toEqual(original.answer);
+  expect(render(catalog)).toEqual(result);
+  const missing = original.options[0]!;
+  const unavailable = {
+    ...catalog,
+    pokemon: {
+      ...catalog.pokemon,
+      [missing]: {
+        ...catalog.pokemon[missing]!,
+        identitySprites: { currentBack: null, generations: [] },
+      },
     },
   };
-  const result = assembleQuestion(
-    question,
-    {
-      catalog: testCatalog,
-      pool,
-      random: () => 0,
-      used: new Set(),
-    },
-    allSources,
-  );
-  expect(result.optionVisuals?.[name]?.src).toBe(back);
-  expect(result.optionVisuals?.[name]?.src).not.toBe(pokemon.sprite);
-  expect(result.relatedVisuals?.[name]?.src).toBe(pokemon.sprite);
-  expect(result.answer).toEqual(question.answer);
+  const fallback = render(unavailable);
+  expect(fallback.media).toEqual({
+    kind: 'pixel-sprite',
+    src: catalog.pokemon[original.subject.name]!.sprite,
+  });
+  for (const name of fallback.options)
+    expect(fallback.optionVisuals![name]!.src).toBe(
+      catalog.pokemon[name]!.sprite,
+    );
+  expect(fallback.answer).toEqual(original.answer);
+});
 
-  const searchLevel = gameLevels.find(
-    (level) =>
-      getQuestionVariant('pokedexEntryMatch', level)?.variant.response.kind ===
-      'search',
+it('renders generated current-mode Pokémon choices from their actual form backs', () => {
+  const original = buildQuestionType(
+    {
+      catalog,
+      pool,
+      level: 3,
+      used: new Set(),
+      random: createSeededRandom('current-form-backs'),
+    },
+    'pokemonMatch',
   )!;
-  const searchRules = getQuestionVariant(
-    'pokedexEntryMatch',
-    searchLevel,
-  )!.variant;
-  const searchWithHistoricalSubject = {
-    ...searchRules,
+  const rules = getQuestionVariant('pokemonMatch', 3)!.variant;
+  const current = {
+    ...rules,
     rendering: {
-      ...searchRules.rendering,
-      search: {
-        ...searchRules.rendering.search,
+      ...rules.rendering,
+      choices: {
+        ...rules.rendering.choices,
         sprite: {
           reveal: 'always',
           silhouette: false,
           historicalSpriteChance: 0,
-          backSpriteChance: 0,
-        },
-      },
-      subject: {
-        ...searchRules.rendering.subject,
-        sprite: {
-          reveal: 'after-answer',
-          silhouette: false,
-          historicalSpriteChance: 1,
           backSpriteChance: 1,
         },
       },
     },
   } as const;
-  const search = assembleQuestion(
-    question,
+  const result = assembleQuestion(
+    { ...original, optionVisuals: undefined },
     {
-      catalog: testCatalog,
+      catalog,
       pool,
-      random: () => 0,
       used: new Set(),
+      random: createSeededRandom('render-current-backs'),
     },
-    searchWithHistoricalSubject,
+    current,
   );
-  expect(search.media).toEqual({ kind: 'pixel-sprite', src: back });
-  expect(
-    search.searchOptions?.find((option) => option.name === name)?.sprite,
-  ).toBe(pokemon.sprite);
+  for (const name of result.options) {
+    const pokemon = catalog.pokemon[name]!;
+    expect(result.optionVisuals![name]!.src).toBe(
+      pokemon.identitySprites.currentBack ?? pokemon.sprite,
+    );
+    expect(result.optionVisuals![name]!.src).not.toContain('/versions/');
+  }
+  expect(result.answer).toEqual(original.answer);
 });
 
 it('keeps seeded Daily and League generation stable within the current rules', () => {

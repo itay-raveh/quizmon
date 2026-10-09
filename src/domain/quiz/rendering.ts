@@ -10,7 +10,7 @@ export type SpriteRendering = {
   silhouette: boolean;
   /** Sample concealment once per role, shared by all its entities. */
   silhouetteChance?: number;
-  /** Independently request an older game sprite; unavailable eras fall back to current art. */
+  /** Request a shared historical game set; no common set keeps the comparison current. */
   historicalSpriteChance?: number;
   /** Independently request the back view; unavailable backs fall back to front art. */
   backSpriteChance?: number;
@@ -102,7 +102,7 @@ export const mergeRendering = (
   },
 });
 
-/** Sample each appearance axis once per role, shared by all its entities. */
+/** Share the historical draw across roles; orientation and concealment stay independent. */
 export const sampleRendering = (
   rendering: QuestionRendering,
   random: () => number,
@@ -110,7 +110,14 @@ export const sampleRendering = (
   const sampled = mergeRendering(rendering);
   const roll = (chance: number) =>
     chance === 1 || (chance > 0 && random() < chance);
-  for (const role of ['subject', 'choices', 'related', 'search'] as const) {
+  const roles = ['subject', 'choices', 'related', 'search'] as const;
+  const historicalRoll = roles.some((role) => {
+    const chance = sampled[role].sprite?.historicalSpriteChance ?? 0;
+    return chance > 0 && chance < 1;
+  })
+    ? random()
+    : 0;
+  for (const role of roles) {
     const sprite = sampled[role].sprite;
     if (!sprite) continue;
     const { silhouetteChance, ...fixed } = sprite;
@@ -120,7 +127,9 @@ export const sampleRendering = (
         silhouetteChance === undefined
           ? sprite.silhouette
           : roll(silhouetteChance),
-      historicalSpriteChance: Number(roll(sprite.historicalSpriteChance ?? 0)),
+      historicalSpriteChance: Number(
+        historicalRoll < (sprite.historicalSpriteChance ?? 0),
+      ),
       backSpriteChance: Number(roll(sprite.backSpriteChance ?? 0)),
     };
   }

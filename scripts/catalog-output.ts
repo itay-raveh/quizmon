@@ -6,6 +6,7 @@ import { catalogSchema } from './catalog-schema.ts';
 export const writeCatalogFiles = async (
   catalog: PokemonCatalog,
   directory: URL,
+  updateTopics = true,
 ): Promise<void> => {
   catalogSchema.parse(catalog);
   await mkdir(directory, { recursive: true });
@@ -19,8 +20,8 @@ export const writeCatalogFiles = async (
     previous = [];
   }
   const { topics, ...pokemon } = catalog;
-  const topicFiles: string[] = [];
-  if (topics)
+  const topicFiles: string[] = updateTopics ? [] : previous;
+  if (topics && updateTopics)
     for (const [key, values] of Object.entries(topics)) {
       const batches: unknown[] = [];
       if (Array.isArray(values)) {

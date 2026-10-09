@@ -113,6 +113,7 @@ const pokemon = z.object({
   genus: text,
   formId: z.number(),
   identitySprites: z.object({
+    currentBack: text.nullable(),
     generations: z.array(
       z.object({
         back: texts,

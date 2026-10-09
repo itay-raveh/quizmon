@@ -1,6 +1,14 @@
 import { sampleRendering, spriteState } from '../rendering.ts';
 import { moveVisual } from '../move-presentation.ts';
-import { choosePokemonSprite, getOptionVisuals } from './assembly.ts';
+import { getOptionVisuals } from './assembly.ts';
+import {
+  choosePokemonSprites,
+  type PokemonSpriteRequest,
+} from './pokemon-sprites.ts';
+
+type SpriteAssignment = PokemonSpriteRequest & {
+  apply: (src: string | null) => void;
+};
 import { applyResponseStrategy } from './response-strategies.ts';
 import type { Level } from '../level.ts';
 import type { QuestionContext, QuestionDraft } from './context.ts';
@@ -68,6 +76,7 @@ const applySubjectAndRelatedRendering = (
   question: QuestionDraft,
   context: QuestionContext,
   rules: FamilyRules[keyof FamilyRules],
+  sprites: SpriteAssignment[],
 ): void => {
   const subjectPolicy = rules.rendering.subject.sprite;
   const subjectPokemon =
@@ -79,24 +88,27 @@ const applySubjectAndRelatedRendering = (
       question.media.kind === 'sprite' ||
       question.media.kind === 'pixel-sprite'
     ) {
-      const src = choosePokemonSprite(
-        subjectPokemon,
-        subjectPolicy,
-        context.random,
-        question.media.src,
-      );
-      if (src) question.media = { ...question.media, src };
+      const media = question.media;
+      sprites.push({
+        pokemon: subjectPokemon,
+        policy: subjectPolicy,
+        currentFront: media.src,
+        apply: (src) => {
+          if (src) question.media = { ...media, src };
+        },
+      });
     } else if (
       question.media.kind === 'none' &&
       (question.prompt.kind === 'pokemon' ||
         subjectPolicy.reveal === 'after-answer')
     ) {
-      const src = choosePokemonSprite(
-        subjectPokemon,
-        subjectPolicy,
-        context.random,
-      );
-      if (src) question.media = { kind: 'pixel-sprite', src };
+      sprites.push({
+        pokemon: subjectPokemon,
+        policy: subjectPolicy,
+        apply: (src) => {
+          if (src) question.media = { kind: 'pixel-sprite', src };
+        },
+      });
     }
   }
   if (
@@ -113,15 +125,16 @@ const applySubjectAndRelatedRendering = (
               ? subjectPolicy
               : rules.rendering.related.sprite;
           const pokemon = context.catalog.pokemon[name];
-          return [
-            name,
-            policy && pokemon
-              ? {
-                  ...stage,
-                  src: choosePokemonSprite(pokemon, policy, context.random),
-                }
-              : stage,
-          ];
+          const rendered = { ...stage };
+          if (policy && pokemon)
+            sprites.push({
+              pokemon,
+              policy,
+              apply: (src) => {
+                rendered.src = src;
+              },
+            });
+          return [name, rendered];
         }),
       ),
     };
@@ -131,18 +144,17 @@ const applySubjectAndRelatedRendering = (
     rules.rendering.related.sprite
   ) {
     const pokemon = context.catalog.pokemon[question.visual.evolution.name];
-    if (pokemon)
-      question.visual = {
-        ...question.visual,
-        evolution: {
-          ...question.visual.evolution,
-          src: choosePokemonSprite(
-            pokemon,
-            rules.rendering.related.sprite,
-            context.random,
-          ),
+    if (pokemon) {
+      const evolution = { ...question.visual.evolution };
+      question.visual = { ...question.visual, evolution };
+      sprites.push({
+        pokemon,
+        policy: rules.rendering.related.sprite,
+        apply: (src) => {
+          evolution.src = src;
         },
-      };
+      });
+    }
   }
   if (question.media.kind === 'pokemonFromPixelCrop' && 'cropScale' in rules) {
     question.media = {
@@ -156,17 +168,27 @@ const applyAnswerRendering = (
   question: QuestionDraft,
   context: QuestionContext,
   rules: FamilyRules[keyof FamilyRules],
+  sprites: SpriteAssignment[],
 ): void => {
   const response = rules.response;
   if (rules.view.answer.kind === 'pokemon') {
     const relatedPolicy = rules.rendering.related.sprite;
-    if (relatedPolicy)
-      question.relatedVisuals = getOptionVisuals(
-        context,
-        question.answer.correctOptions,
-        (pokemon) =>
-          choosePokemonSprite(pokemon, relatedPolicy, context.random),
-      );
+    if (relatedPolicy) {
+      const visuals = getOptionVisuals(context, question.answer.correctOptions);
+      question.relatedVisuals = visuals;
+      for (const name of question.answer.correctOptions) {
+        const pokemon = context.catalog.pokemon[name];
+        const visual = visuals[name];
+        if (pokemon && visual)
+          sprites.push({
+            pokemon,
+            policy: relatedPolicy,
+            apply: (src) => {
+              visual.src = src;
+            },
+          });
+      }
+    }
     if (response.kind !== 'search') {
       const choicePolicy = rules.rendering.choices.sprite;
       question.optionVisuals = {
@@ -176,38 +198,44 @@ const applyAnswerRendering = (
       if (choicePolicy)
         for (const option of question.options) {
           const pokemon = context.catalog.pokemon[option];
-          if (pokemon)
-            question.optionVisuals[option] = {
+          if (pokemon) {
+            const visual = (question.optionVisuals[option] = {
               ...question.optionVisuals[option],
               dexNumber: pokemon.speciesId,
               types: pokemon.types,
-              src: choosePokemonSprite(
-                pokemon,
-                choicePolicy,
-                context.random,
-                question.optionVisuals[option]?.src ?? pokemon.sprite,
-              ),
-            };
+              src: question.optionVisuals[option]?.src ?? pokemon.sprite,
+            });
+            sprites.push({
+              pokemon,
+              policy: choicePolicy,
+              currentFront: visual.src,
+              apply: (src) => {
+                visual.src = src;
+              },
+            });
+          }
         }
     }
     if (question.searchOptions)
       question.searchOptions = question.searchOptions.map((option) => {
         const pokemon = context.catalog.pokemon[option.name];
-        return pokemon
-          ? {
-              ...option,
-              dexNumber: option.dexNumber ?? pokemon.speciesId,
-              sprite: rules.rendering.search.sprite
-                ? choosePokemonSprite(
-                    pokemon,
-                    rules.rendering.search.sprite,
-                    context.random,
-                    option.sprite ?? pokemon.sprite,
-                  )
-                : (option.sprite ?? pokemon.sprite),
-              types: pokemon.types,
-            }
-          : option;
+        if (!pokemon) return option;
+        const rendered = {
+          ...option,
+          dexNumber: option.dexNumber ?? pokemon.speciesId,
+          sprite: option.sprite ?? pokemon.sprite,
+          types: pokemon.types,
+        };
+        if (rules.rendering.search.sprite)
+          sprites.push({
+            pokemon,
+            policy: rules.rendering.search.sprite,
+            currentFront: rendered.sprite,
+            apply: (src) => {
+              rendered.sprite = src;
+            },
+          });
+        return rendered;
       });
   }
   if (rules.view.answer.kind === 'move' && response.kind !== 'search') {
@@ -250,8 +278,12 @@ export const assembleQuestion = (
     rendering,
     view: rules.view,
   };
-  applySubjectAndRelatedRendering(question, context, resolvedRules);
+  const sprites: SpriteAssignment[] = [];
+  applySubjectAndRelatedRendering(question, context, resolvedRules, sprites);
   applyResponseStrategy(question, context, resolvedRules);
-  applyAnswerRendering(question, context, resolvedRules);
+  applyAnswerRendering(question, context, resolvedRules, sprites);
+  const sources = choosePokemonSprites(sprites, context.random);
+  for (const [index, sprite] of sprites.entries())
+    sprite.apply(sources[index]!);
   return question;
 };

@@ -31,6 +31,7 @@ interface PokemonIdentitySpriteGeneration {
 }
 
 export interface PokemonIdentitySprites {
+  currentBack: string | null;
   generations: PokemonIdentitySpriteGeneration[];
 }
 

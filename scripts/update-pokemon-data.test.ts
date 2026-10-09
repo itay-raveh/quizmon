@@ -1,6 +1,6 @@
 import type { Pokemon } from 'pokenode-ts';
 import { statNames } from '../src/domain/pokemon/types';
-import { getStats } from './update-pokemon-data';
+import { getCurrentBackSprite, getStats } from './update-pokemon-data';
 
 it('rejects incomplete or ambiguous upstream base stats', () => {
   const pokemon = {
@@ -22,4 +22,26 @@ it('rejects incomplete or ambiguous upstream base stats', () => {
     ),
   ])
     expect(() => getStats({ ...pokemon, stats })).toThrow(/Invalid .* stat/);
+});
+
+it('imports the supplied form pair and rejects pairing a changed front with the shipped artwork', () => {
+  const front =
+    'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10115.png';
+  const back =
+    'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/10115.png';
+  const sprites = { front_default: front, back_default: back };
+  expect(getCurrentBackSprite(sprites)).toBe('/sprites/pokemon/back/10115.png');
+  expect(getCurrentBackSprite({ ...sprites, back_default: null })).toBeNull();
+  expect(
+    getCurrentBackSprite(sprites, '/sprites/pokemon/10217.png'),
+  ).toBeNull();
+  expect(() =>
+    getCurrentBackSprite({
+      ...sprites,
+      back_default: 'https://other.example/10115.png',
+    }),
+  ).toThrow();
+  expect(() =>
+    getCurrentBackSprite({ ...sprites, back_default: front }),
+  ).toThrow();
 });

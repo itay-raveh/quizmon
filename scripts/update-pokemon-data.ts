@@ -76,6 +76,49 @@ export const getStats = (pokemon: Pokemon): Record<StatName, number> => {
   ) as Record<StatName, number>;
 };
 
+export const getCurrentBackSprite = (
+  sprites: Pick<PokemonForm['sprites'], 'front_default' | 'back_default'>,
+  currentFront = normalizeSpriteUrl(sprites.front_default),
+): string | null => {
+  const path = normalizeSpriteUrl(sprites.back_default);
+  if (
+    path &&
+    (!isSpritePath(path) || !path.startsWith('/sprites/pokemon/back/'))
+  )
+    throw new Error(`Unexpected current back sprite path: ${path}`);
+  return normalizeSpriteUrl(sprites.front_default) === currentFront
+    ? path
+    : null;
+};
+
+const addCurrentBackSprites = async (
+  catalog: PokemonCatalog,
+  client: MainClient,
+): Promise<PokemonCatalog> => {
+  const entries = Object.values(catalog.pokemon);
+  const forms = await client.resolveAll<PokemonForm>(
+    entries.map(({ formId }) => ({
+      name: String(formId),
+      url: `https://pokeapi.co/api/v2/pokemon-form/${formId}/`,
+    })),
+    { concurrency: CONCURRENCY },
+  );
+  const byId = new Map(forms.map((form) => [form.id, form]));
+  for (const pokemon of entries) {
+    const form = byId.get(pokemon.formId);
+    if (!form) throw new Error(`Missing form ${pokemon.formId}`);
+    if (normalizeSpriteUrl(form.sprites.front_default) !== pokemon.sprite)
+      console.warn(
+        `Current front changed for form ${pokemon.formId}; retaining its shipped front without a back.`,
+      );
+    pokemon.identitySprites.currentBack = getCurrentBackSprite(
+      form.sprites,
+      pokemon.sprite,
+    );
+  }
+  return catalog;
+};
+
 interface VersionSpriteSet {
   back_default?: unknown;
   front_default?: unknown;
@@ -96,6 +139,7 @@ const getIdentitySprites = (
     Record<string, VersionSpriteSet>
   >;
   return {
+    currentBack: getCurrentBackSprite(form.sprites),
     generations: generations.flatMap((generation) => {
       if (generations.indexOf(generation) < generations.indexOf(introduced))
         return [];
@@ -346,7 +390,12 @@ if (import.meta.main) {
   if (
     extra.length ||
     (mode !== undefined &&
-      !['--topics-only', '--sprites-only', '--showdown-only'].includes(mode))
+      ![
+        '--topics-only',
+        '--sprites-only',
+        '--showdown-only',
+        '--current-backs-only',
+      ].includes(mode))
   )
     throw new Error('Use one catalog update mode at a time.');
   const client = new MainClient({
@@ -354,16 +403,21 @@ if (import.meta.main) {
     revalidate: true,
   });
   const catalog =
-    mode === '--showdown-only'
-      ? await readCatalogFiles(DATA_DIRECTORY)
-      : mode === '--topics-only'
+    mode === '--current-backs-only'
+      ? await addCurrentBackSprites(
+          await readCatalogFiles(DATA_DIRECTORY),
+          client,
+        )
+      : mode === '--showdown-only'
         ? await readCatalogFiles(DATA_DIRECTORY)
-        : mode === '--sprites-only'
-          ? await addSpriteMeasurements(
-              await readCatalogFiles(DATA_DIRECTORY),
-              measureSprites,
-            )
-          : await buildPokemonCatalog(client);
+        : mode === '--topics-only'
+          ? await readCatalogFiles(DATA_DIRECTORY)
+          : mode === '--sprites-only'
+            ? await addSpriteMeasurements(
+                await readCatalogFiles(DATA_DIRECTORY),
+                measureSprites,
+              )
+            : await buildPokemonCatalog(client);
   if (mode === '--showdown-only') {
     if (!catalog.topics) throw new Error('Missing topic catalog');
     addPkmnDescriptions(catalog.topics);
@@ -372,7 +426,7 @@ if (import.meta.main) {
     await addItemSpriteIdentities(topics);
     catalog.topics = topics;
   }
-  if (mode !== '--sprites-only') {
+  if (mode !== '--sprites-only' && mode !== '--current-backs-only') {
     await addShowdownBattleData(catalog);
     for (const [name, pokemon] of Object.entries(catalog.pokemon))
       if (
@@ -381,7 +435,11 @@ if (import.meta.main) {
       )
         throw new Error(`Missing Showdown battle types for ${name}`);
   }
-  await writeCatalogFiles(catalog, DATA_DIRECTORY);
+  await writeCatalogFiles(
+    catalog,
+    DATA_DIRECTORY,
+    mode !== '--current-backs-only',
+  );
   for (const [file, field] of [
     ['pokemon-labels.json', 'displayName'],
     ['pokemon-generations.json', 'generation'],
