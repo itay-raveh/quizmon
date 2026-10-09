@@ -14,10 +14,12 @@ type ReadContext = Context<AccountEnv>;
 
 export class SyncReadError extends Error {
   readonly status: number | 'network';
+  readonly retryAfter?: string;
 
-  constructor(status: number | 'network') {
+  constructor(status: number | 'network', retryAfter?: string) {
     super('Sync read failed');
     this.status = status;
+    this.retryAfter = retryAfter;
   }
 }
 
@@ -53,6 +55,13 @@ export async function read<T>(
       continue;
     }
     if (response.ok) return response.json() as Promise<T>;
+    const header = response.headers.get('Retry-After');
+    const retryAfter =
+      header && /^\d{1,3}$/.test(header) && Number(header) > 0
+        ? header
+        : undefined;
+    if (response.status === 429 || (response.status === 503 && retryAfter))
+      throw new SyncReadError(response.status, retryAfter);
     if (attempt === 4 || ![502, 503, 504].includes(response.status))
       throw new SyncReadError(response.status);
     await new Promise((resolve) => setTimeout(resolve, 2 ** attempt * 1000));
