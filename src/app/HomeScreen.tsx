@@ -2,7 +2,8 @@ import { site } from '@/app/site';
 import { GameButton } from '@/components/GameButton';
 import { GenerationLabel } from '@/components/GenerationLabel';
 import { generations, type Generation } from '@/domain/pokemon/types';
-import { LevelNumber, LevelLabel } from '@/components/LevelLabel';
+import { LevelLabel } from '@/components/LevelLabel';
+import { TrainingLevelButton } from '@/components/TrainingLevelButton';
 import {
   ArrowRightIcon,
   LockSimpleIcon,
@@ -191,18 +192,12 @@ export const HomeScreen = ({
               )}
             </span>
           </GameButton>
-          <GameButton
-            aria-label={`Choose training level. Level ${level} selected`}
+          <TrainingLevelButton
+            level={level}
             className="landing__training-setting"
             disabled={!catalogReady}
-            tone="quiet"
             onClick={onChooseLevel}
-          >
-            <span className="landing__setting-label">Level</span>
-            <span className="landing__setting-value" aria-hidden="true">
-              <LevelNumber level={level} />
-            </span>
-          </GameButton>
+          />
           <GameButton
             aria-label={`Customize training questions. ${customized ? 'Custom' : 'Automatic'} selection`}
             className="landing__training-setting"

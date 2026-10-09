@@ -1,5 +1,6 @@
 import { Navigate } from '@tanstack/react-router';
 import { getTrainerBadges } from '../domain/player/trainer-progression';
+import { defaultGameSettings } from '../domain/settings/game-settings';
 import { getUtcDate } from '../domain/quiz/daily';
 import { getRoundAnswerLevel } from '../domain/quiz/scoring';
 import { isLeagueVictory } from '../domain/quiz/league';
@@ -29,7 +30,7 @@ const Home = () => {
         dailyForfeited={daily.forfeited}
         dailyError={daily.error}
         dailyStreak={daily.date === getUtcDate() ? daily.streak : 0}
-        level={settings.level ?? 1}
+        level={settings.level ?? defaultGameSettings.level!}
         selectedGenerations={settings.generations}
         customized={settings.questionSelection === 'custom'}
         onChooseGenerations={settingsDialog.openGenerations}
@@ -96,7 +97,8 @@ export const QuestionRouteScreen = () => {
 };
 
 export const ResultsRouteScreen = () => {
-  const { daily, league, navigation, session, training } = useAppGameContext();
+  const { daily, league, navigation, session, settingsDialog, training } =
+    useAppGameContext();
   if (session.phase !== 'results') return null;
   return (
     <ResultsScreen
@@ -115,7 +117,7 @@ export const ResultsRouteScreen = () => {
       }}
       onRetryLeague={() => void league.start()}
       onTrainAgain={training.trainAgain}
-      onTryLevel={training.tryLevel}
+      onChooseLevel={settingsDialog.openLevel}
       onStartTraining={training.start}
       trainingError={training.error}
       result={session.result}

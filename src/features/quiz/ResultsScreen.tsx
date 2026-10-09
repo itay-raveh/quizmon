@@ -1,6 +1,9 @@
 import { Disclosure } from '@/components/Disclosure';
 import { GameButton } from '@/components/GameButton';
 import { LevelLabel } from '@/components/LevelLabel';
+import { TrainingLevelButton } from '@/components/TrainingLevelButton';
+import { SoundButton } from '@/components/SoundButton';
+import { defaultGameSettings } from '@/domain/settings/game-settings';
 import { CaretDownIcon, CheckIcon, MinusIcon, XIcon } from '@/components/icons';
 import type { TrainerProgressChange } from '@/domain/player/trainer-progression';
 import {
@@ -25,50 +28,10 @@ import { DailyReminderPrompt } from '@/features/reminders/DailyReminderPrompt';
 import { ShareResultButton } from '@/features/sharing/ShareResultButton';
 import { TrainerProgressSummary } from '@/features/trainer/TrainerProgressSummary';
 import { useGameSounds } from '@/lib/audio/sound-context';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { AnimatedScore } from './AnimatedScore';
 import { CatchCombo } from '@/features/daily/CatchCombo';
 import { markStayedAtLevel, suggestedLevel } from './level-advancement';
-import type { Level } from '@/domain/quiz/level';
-
-const LevelAdvancementOffer = ({
-  currentLevel,
-  nextLevel,
-  roundSeed,
-  onTrainAgain,
-  onTryLevel,
-}: {
-  currentLevel: Level;
-  nextLevel: Level;
-  roundSeed: string;
-  onTrainAgain: () => void;
-  onTryLevel: (level: Level) => void;
-}) => {
-  return (
-    <aside
-      className="results-offer level-advancement-offer"
-      aria-label="Training suggestion"
-    >
-      <strong>
-        Ready to try <LevelLabel level={nextLevel} />?
-      </strong>
-      <div className="level-advancement-offer__actions">
-        <GameButton onClick={() => onTryLevel(nextLevel)}>
-          Try <LevelLabel level={nextLevel} />
-        </GameButton>
-        <GameButton
-          tone="quiet"
-          onClick={() => {
-            markStayedAtLevel(currentLevel, roundSeed);
-            onTrainAgain();
-          }}
-        >
-          Train <LevelLabel level={currentLevel} /> again
-        </GameButton>
-      </div>
-    </aside>
-  );
-};
 
 interface ResultStat {
   label: string;
@@ -84,7 +47,7 @@ interface ResultsScreenProps {
   settings: GameSettings;
   onNewGame: () => void;
   onTrainAgain: () => void;
-  onTryLevel: (level: Level) => void;
+  onChooseLevel: () => void;
   onStartTraining: () => void;
   onRetryLeague: () => void;
   trainingError?: string;
@@ -102,7 +65,7 @@ export const ResultsScreen = ({
   settings,
   onNewGame,
   onTrainAgain,
-  onTryLevel,
+  onChooseLevel,
   onStartTraining,
   onRetryLeague,
   trainingError,
@@ -114,12 +77,31 @@ export const ResultsScreen = ({
   const { playPerfect, playResults, playScoreCount, stopCelebration } =
     useGameSounds();
   const heading = useRef<HTMLHeadingElement>(null);
+  const levelButton = useRef<HTMLButtonElement>(null);
+  const suggestion = useRef<HTMLElement>(null);
+  const suggestionId = useId();
+  const [hiddenSuggestionSeed, setHiddenSuggestionSeed] = useState<
+    string | null
+  >(null);
   const isDaily = mode.kind === 'daily';
   const isLeague = mode.kind === 'league';
   const isTraining = mode.kind === 'training';
   const perfectRound =
     !isLeague && result.correctCount === result.questionCount;
   const nextLevel = isTraining ? suggestedLevel(result, settings.level) : null;
+  const suggestionVisible = Boolean(
+    nextLevel && hiddenSuggestionSeed !== roundSeed,
+  );
+  const trainingLevel = settings.level ?? defaultGameSettings.level!;
+  const dismissSuggestion = () => {
+    if (result.rules) markStayedAtLevel(result.rules.level, roundSeed);
+    setHiddenSuggestionSeed(roundSeed);
+    levelButton.current?.focus();
+  };
+  const chooseLevel = () => {
+    setHiddenSuggestionSeed(roundSeed);
+    onChooseLevel();
+  };
   const leagueVictory = isLeague && isLeagueVictory(result);
   const score = useMemo(
     () =>
@@ -161,6 +143,19 @@ export const ResultsScreen = ({
   useEffect(() => {
     heading.current?.focus();
   }, []);
+
+  useEffect(() => {
+    if (!suggestionVisible || !result.rules) return;
+    const dismissOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      markStayedAtLevel(result.rules!.level, roundSeed);
+      setHiddenSuggestionSeed(roundSeed);
+      if (suggestion.current?.contains(document.activeElement))
+        levelButton.current?.focus();
+    };
+    document.addEventListener('keydown', dismissOnEscape);
+    return () => document.removeEventListener('keydown', dismissOnEscape);
+  }, [suggestionVisible, result.rules, roundSeed]);
 
   useEffect(() => {
     if (progressChanges.length === 0) {
@@ -366,24 +361,61 @@ export const ResultsScreen = ({
           </ol>
         ) : null}
       </div>
-      {nextLevel && result.rules ? (
-        <LevelAdvancementOffer
-          currentLevel={result.rules.level}
-          nextLevel={nextLevel}
-          roundSeed={roundSeed}
-          onTrainAgain={onTrainAgain}
-          onTryLevel={onTryLevel}
-        />
-      ) : null}
       {trainingError ? <p role="alert">{trainingError}</p> : null}
       {!isLeague ? (
         <div
-          className={`results__actions ${nextLevel ? '' : 'results__actions--paired'}`.trim()}
+          className={`results__actions ${isTraining ? 'results__actions--training' : 'results__actions--paired'}`}
         >
-          {!nextLevel ? (
-            <GameButton onClick={isTraining ? onTrainAgain : onStartTraining}>
-              {isTraining ? 'Train again' : 'Start training'}
-            </GameButton>
+          <GameButton
+            onClick={() => {
+              if (isTraining) {
+                if (nextLevel && result.rules)
+                  markStayedAtLevel(result.rules.level, roundSeed);
+                onTrainAgain();
+              } else onStartTraining();
+            }}
+          >
+            {isTraining ? (
+              <>
+                Train <LevelLabel level={trainingLevel} /> again
+              </>
+            ) : (
+              'Start training'
+            )}
+          </GameButton>
+          {isTraining ? (
+            <div className="results__level-control">
+              <TrainingLevelButton
+                ref={levelButton}
+                level={trainingLevel}
+                aria-describedby={suggestionVisible ? suggestionId : undefined}
+                onClick={chooseLevel}
+              />
+              {suggestionVisible && nextLevel ? (
+                <aside
+                  className="level-advancement-bubble"
+                  aria-label="Training suggestion"
+                  ref={suggestion}
+                >
+                  <p id={suggestionId} role="status">
+                    Ready to try <LevelLabel level={nextLevel} />?
+                  </p>
+                  <SoundButton
+                    className="level-advancement-bubble__choose"
+                    onClick={chooseLevel}
+                  >
+                    Choose level
+                  </SoundButton>
+                  <SoundButton
+                    className="level-advancement-bubble__close"
+                    aria-label="Dismiss training suggestion"
+                    onClick={dismissSuggestion}
+                  >
+                    <XIcon aria-hidden="true" weight="bold" />
+                  </SoundButton>
+                </aside>
+              ) : null}
+            </div>
           ) : null}
           <ShareResultButton
             aria-label="Share result"
@@ -391,7 +423,9 @@ export const ResultsScreen = ({
             result={result}
             tone="quiet"
           >
-            Share
+            <span className={isTraining ? 'results__share-label' : undefined}>
+              Share
+            </span>
           </ShareResultButton>
         </div>
       ) : (

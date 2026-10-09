@@ -81,7 +81,6 @@ const useAppGame = () => {
   const training = useTrainingGame({
     catalog,
     settings,
-    setSettings,
     startGame,
   });
 
