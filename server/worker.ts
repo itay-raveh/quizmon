@@ -18,6 +18,9 @@ const reportFailure = (error: unknown) => {
 
 export default {
   async fetch(request: Request, env: Partial<AccountEnv>) {
+    const colo = (request as Request & { cf?: { colo?: unknown } }).cf?.colo;
+    if (typeof colo === 'string' && /^[A-Z]{3}$/.test(colo))
+      Sentry.getActiveSpan()?.setAttribute('cloudflare.request_colo', colo);
     if (
       !env.ACCOUNT_DB ||
       !env.AUTH_RATE_LIMIT ||

@@ -85,6 +85,10 @@ export const PokemonSearch = ({
       <div className={`${className}__controls`}>
         <SearchCombobox
           id={listboxId}
+          autoFocus={champion}
+          descriptionId={
+            champion ? 'question-title question-prompt' : undefined
+          }
           className={`${className}__${champion ? 'combobox' : 'field'}`}
           query={query}
           suggestions={suggestions}

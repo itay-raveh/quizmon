@@ -1,5 +1,5 @@
 import { Autocomplete } from '@base-ui/react/autocomplete';
-import { useState, type ReactNode, type Ref } from 'react';
+import { useState, type ReactNode } from 'react';
 import './search-combobox.css';
 
 export const SearchCombobox = <Option,>({
@@ -14,10 +14,11 @@ export const SearchCombobox = <Option,>({
   renderOption,
   placeholder,
   emptyMessage,
+  autoFocus = false,
+  descriptionId,
   disabled = false,
   invalid = false,
   hideSuggestions = false,
-  inputRef,
   exactOption,
 }: {
   id: string;
@@ -31,10 +32,11 @@ export const SearchCombobox = <Option,>({
   renderOption: (option: Option) => ReactNode;
   placeholder: string;
   emptyMessage: string;
+  autoFocus?: boolean;
+  descriptionId?: string;
   disabled?: boolean;
   invalid?: boolean;
   hideSuggestions?: boolean;
-  inputRef?: Ref<HTMLInputElement>;
   exactOption?: Option;
 }) => {
   const [open, setOpen] = useState(false);
@@ -47,7 +49,12 @@ export const SearchCombobox = <Option,>({
         itemToStringValue={getLabel}
         value={query}
         onValueChange={(value, details) => {
-          if (details.reason !== 'item-press') onQueryChange(value);
+          if (details.reason === 'item-press') {
+            const option = suggestions.find(
+              (option) => getLabel(option) === value,
+            );
+            if (option !== undefined) onChoose(option);
+          } else onQueryChange(value);
         }}
         open={expanded}
         onOpenChange={setOpen}
@@ -55,10 +62,11 @@ export const SearchCombobox = <Option,>({
         disabled={disabled}
       >
         <Autocomplete.Input
-          ref={inputRef}
           id={`${id}-input`}
           aria-labelledby={`${id}-label`}
+          aria-describedby={descriptionId}
           aria-invalid={invalid || undefined}
+          autoFocus={autoFocus}
           autoComplete="off"
           autoCapitalize="none"
           spellCheck={false}
@@ -100,7 +108,6 @@ export const SearchCombobox = <Option,>({
                     key={getKey(option)}
                     className="search-combobox__option"
                     value={option}
-                    onClick={() => onChoose(option)}
                   >
                     {renderOption(option)}
                   </Autocomplete.Item>

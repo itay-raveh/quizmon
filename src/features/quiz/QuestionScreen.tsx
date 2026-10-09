@@ -126,9 +126,10 @@ export const QuestionScreen = ({
     onFeedbackStart,
     question,
   });
+  const searchVisible = showsSearchResponse(question, cluesShown);
   useEffect(() => {
-    heading.current?.focus();
-  }, []);
+    if (!searchVisible) heading.current?.focus();
+  }, [searchVisible]);
   useEffect(() => {
     if (answered && answerFlow !== 'instant')
       advanceButton.current?.focus({ preventScroll: true });
@@ -140,7 +141,6 @@ export const QuestionScreen = ({
     [question],
   );
   const isLeague = mode.kind === 'league';
-  const searchVisible = showsSearchResponse(question, cluesShown);
   const championChoicesVisible = isChampion && !searchVisible;
   const checkAnswerAction =
     question.answer.interaction === 'multi-select' && !answered ? (

@@ -8,15 +8,18 @@ import type { SocialPlayer } from '../src/domain/social/friends.ts';
 import type { TrainerProfile } from '../src/domain/player/trainer-profile.ts';
 import { and, eq, or } from 'drizzle-orm';
 import { friend } from './schema.ts';
+import * as Sentry from '@sentry/cloudflare';
 
 type ReadContext = Context<AccountEnv>;
 
 export class SyncReadError extends Error {
   readonly status: number | 'network';
+  readonly retryAfter?: string;
 
-  constructor(status: number | 'network') {
+  constructor(status: number | 'network', retryAfter?: string) {
     super('Sync read failed');
     this.status = status;
+    this.retryAfter = retryAfter;
   }
 }
 
@@ -29,21 +32,36 @@ export async function read<T>(
   for (let attempt = 0; attempt < 5; attempt++) {
     let response: Response;
     try {
-      response = await fetch(`${context.get('sync').endpoint}/read/${path}`, {
-        method: body ? 'POST' : 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          ...(body ? { 'Content-Type': 'application/json' } : {}),
+      response = await Sentry.startSpan(
+        {
+          name: `sync.read.${path.split('/')[0]}`,
+          op: 'http.client',
+          attributes: { 'sync.attempt': attempt + 1 },
         },
-        ...(body ? { body: JSON.stringify(body) } : {}),
-        signal: AbortSignal.timeout(2_000),
-      });
+        () =>
+          fetch(`${context.get('sync').endpoint}/read/${path}`, {
+            method: body ? 'POST' : 'GET',
+            headers: {
+              Authorization: `Bearer ${token}`,
+              ...(body ? { 'Content-Type': 'application/json' } : {}),
+            },
+            ...(body ? { body: JSON.stringify(body) } : {}),
+            signal: AbortSignal.timeout(2_000),
+          }),
+      );
     } catch {
       if (attempt === 4) throw new SyncReadError('network');
       await new Promise((resolve) => setTimeout(resolve, 2 ** attempt * 1000));
       continue;
     }
     if (response.ok) return response.json() as Promise<T>;
+    const header = response.headers.get('Retry-After');
+    const retryAfter =
+      header && /^\d{1,3}$/.test(header) && Number(header) > 0
+        ? header
+        : undefined;
+    if (response.status === 429 || (response.status === 503 && retryAfter))
+      throw new SyncReadError(response.status, retryAfter);
     if (attempt === 4 || ![502, 503, 504].includes(response.status))
       throw new SyncReadError(response.status);
     await new Promise((resolve) => setTimeout(resolve, 2 ** attempt * 1000));
@@ -68,15 +86,16 @@ export async function publicPlayers(
 }
 
 export async function readTrainer(context: ReadContext, id: string) {
-  const [player] = await publicPlayers(context, [id]);
-  if (!player) return null;
   const detail = await read<{
+    player?: SocialPlayer;
     profile: TrainerProfile;
     stats: unknown;
     pokedex: unknown;
     record: unknown;
   }>(context, `trainer/${encodeURIComponent(id)}`);
-  return { player, ...detail };
+  // Image reconciliation can finish after the Worker deploys.
+  const player = detail.player ?? (await publicPlayers(context, [id]))[0];
+  return player ? { ...detail, player } : null;
 }
 
 export async function readBoard(
@@ -113,10 +132,20 @@ export async function readBoard(
     ordinal: number;
     comparable: boolean;
   };
-  const { total, page, viewer } = await read<{
+  const {
+    total,
+    page,
+    viewer,
+    players: profiles,
+  } = await read<{
     total: number;
     page: Row[];
     viewer: Row | null;
+    players?: {
+      id: string;
+      profile: TrainerProfile;
+      leagueCompleted: boolean;
+    }[];
   }>(context, 'board', {
     mode,
     visible,
@@ -124,15 +153,19 @@ export async function readBoard(
     offset,
     limit,
   });
-  const players = new Map(
-    (
-      await publicPlayers(context, [
+  const cards = profiles
+    ? profiles.map(({ id, profile, leagueCompleted }) => ({
+        id,
+        name: profile.name.trim() || 'Trainer',
+        partnerPokemon: profile.partnerPokemon,
+        leagueCompleted,
+      }))
+    : await publicPlayers(context, [
         ...new Set(
           [...page, ...(viewer ? [viewer] : [])].map((row) => row.playerId),
         ),
-      ])
-    ).map((player) => [player.id, player]),
-  );
+      ]);
+  const players = new Map(cards.map((player) => [player.id, player]));
   const entry = (row: Row) => ({
     player: players.get(row.playerId)!,
     rank: row.rank,

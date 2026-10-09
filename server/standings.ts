@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/node';
 import type { Collection, Filter } from 'mongodb';
 import type { MangoQuery, RxCollection } from 'rxdb';
 import type { PlayerDatabase } from '../src/lib/storage/rxdb-database.ts';
@@ -170,7 +171,9 @@ export async function boardPage(
   limit: number,
   day?: string,
 ) {
-  await store.settled();
+  await Sentry.startSpan({ name: 'standings.wait', op: 'queue.wait' }, () =>
+    store.settled(),
+  );
   if (mode === 'daily' && !day) return { total: 0, page: [], viewer: null };
   return store.collection.db.client.withSession(
     { snapshot: true },

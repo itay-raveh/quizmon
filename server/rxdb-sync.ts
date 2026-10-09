@@ -1,4 +1,4 @@
-import { createRemoteJWKSet, jwtVerify } from 'jose';
+import { createRemoteJWKSet, customFetch, jwtVerify } from 'jose';
 import express from 'express';
 import type { ErrorRequestHandler } from 'express';
 import * as Sentry from '@sentry/node';
@@ -49,7 +49,12 @@ export async function startSyncServer(config: {
   databaseName?: string;
   appDatabaseName?: string;
 }) {
-  const jwks = createRemoteJWKSet(new URL('/api/auth/jwks', config.origin));
+  const jwks = createRemoteJWKSet(new URL('/api/auth/jwks', config.origin), {
+    [customFetch]: (url, options) =>
+      Sentry.startSpan({ name: 'auth.jwks.fetch', op: 'http.client' }, () =>
+        fetch(url, options),
+      ),
+  });
   const connection = new URL(config.mongoUrl);
   if (config.mongoTlsCaFile)
     connection.searchParams.set('tlsCAFile', config.mongoTlsCaFile);
@@ -74,13 +79,28 @@ export async function startSyncServer(config: {
       appStorage.collection<Standing>('standings'),
     );
     const board = standings;
+    let firstVerification = true;
     const verify = async (authorization?: string) => {
       if (!authorization?.startsWith('Bearer '))
         throw new Error('Missing sync token.');
-      const { payload } = await jwtVerify(authorization.slice(7), jwks, {
-        issuer: config.origin,
-        audience: config.audience,
-      });
+      const first = firstVerification;
+      firstVerification = false;
+      const { payload } = await Sentry.startSpan(
+        {
+          name: 'auth.jwt.verify',
+          op: 'auth',
+          attributes: {
+            'jwks.cache_fresh': jwks.fresh,
+            'jwks.fetch_inflight': jwks.reloading,
+            'auth.process_first_verification': first,
+          },
+        },
+        () =>
+          jwtVerify(authorization.slice(7), jwks, {
+            issuer: config.origin,
+            audience: config.audience,
+          }),
+      );
       if (typeof payload.sub !== 'string' || !payload.exp)
         throw new Error('Invalid sync token.');
       return { ownerId: payload.sub, validUntil: payload.exp * 1000 };
@@ -182,10 +202,18 @@ export async function startSyncServer(config: {
       if (!body.success) return response.sendStatus(400);
       const { mode, visible, day, offset, limit } = body.data;
       const ownerId = accountId.parse(response.locals.ownerId as unknown);
-      void boardPage(board, mode, visible, ownerId, offset, limit, day).then(
-        (page) => response.json(page),
-        next,
-      );
+      void boardPage(board, mode, visible, ownerId, offset, limit, day)
+        .then(async (result) => {
+          const ids = [
+            ...new Set(
+              [...result.page, ...(result.viewer ? [result.viewer] : [])].map(
+                (row) => row.playerId,
+              ),
+            ),
+          ];
+          response.json({ ...result, players: await playerProfiles(db, ids) });
+        })
+        .catch(next);
     });
     server.serverApp.get('/read/export', (request, response, next) => {
       const ownerId = accountId.parse(response.locals.ownerId as unknown);
