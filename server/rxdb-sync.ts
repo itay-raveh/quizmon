@@ -13,7 +13,10 @@ import { savedSettingsSchema } from '../src/domain/player/schemas/player-data.ts
 import { trainerProfileSchema } from '../src/domain/player/trainer-profile.ts';
 import { compactRoundSchema } from '../src/domain/sync/compact-rounds.ts';
 import { openPlayerDatabase } from '../src/lib/storage/rxdb-database.ts';
-import { playerProfiles, trainerProfile } from './rxdb-read.ts';
+import {
+  startTrainerSummaries,
+  type CachedTrainer,
+} from './trainer-summaries.ts';
 import { boardPage, startStandings, type Standing } from './standings.ts';
 
 const accountId = z.string().regex(/^[A-Za-z0-9_-]{1,128}$/);
@@ -70,10 +73,16 @@ export async function startSyncServer(config: {
   );
   let client: MongoClient | undefined;
   let standings: Awaited<ReturnType<typeof startStandings>> | undefined;
+  let summaries: Awaited<ReturnType<typeof startTrainerSummaries>> | undefined;
   try {
     client = await new MongoClient(connection.toString()).connect();
     const mongoClient = client;
     const appStorage = client.db(config.appDatabaseName ?? 'quizmon_app');
+    summaries = await startTrainerSummaries(
+      client.db(`${db.name}-v${db.rounds.schema.version}`),
+      appStorage.collection<CachedTrainer>('trainer_summaries'),
+    );
+    const trainers = summaries;
     standings = await startStandings(
       db,
       appStorage.collection<Standing>('standings'),
@@ -169,8 +178,8 @@ export async function startSyncServer(config: {
     });
     server.serverApp.get('/health', (_request, response) => {
       response
-        .status(board.healthy() ? 200 : 503)
-        .send(board.healthy() ? 'ok' : 'unavailable');
+        .status(board.healthy() && trainers.healthy() ? 200 : 503)
+        .send(board.healthy() && trainers.healthy() ? 'ok' : 'unavailable');
     });
     server.serverApp.use('/read', express.json({ limit: '32kb' }));
     server.serverApp.use('/read', (request, response, next) => {
@@ -184,18 +193,16 @@ export async function startSyncServer(config: {
     server.serverApp.post('/read/players', (request, response, next) => {
       const body = idsRequest.safeParse(request.body);
       if (!body.success) return response.sendStatus(400);
-      void playerProfiles(db, body.data.ids).then(
-        (rows) => response.json(rows),
-        next,
-      );
+      void trainers
+        .players(body.data.ids)
+        .then((rows) => response.json(rows), next);
     });
     server.serverApp.get('/read/trainer/:id', (request, response, next) => {
       const id = accountId.safeParse(request.params.id);
       if (!id.success) return response.sendStatus(400);
-      void trainerProfile(db, id.data).then(
-        (profile) => response.json(profile),
-        next,
-      );
+      void trainers
+        .trainer(id.data)
+        .then((profile) => response.json(profile), next);
     });
     server.serverApp.post('/read/board', (request, response, next) => {
       const body = boardRequest.safeParse(request.body);
@@ -211,7 +218,7 @@ export async function startSyncServer(config: {
               ),
             ),
           ];
-          response.json({ ...result, players: await playerProfiles(db, ids) });
+          response.json({ ...result, players: await trainers.players(ids) });
         })
         .catch(next);
     });
@@ -250,6 +257,7 @@ export async function startSyncServer(config: {
         await player?.remove();
         await Promise.all([db.rounds.cleanup(0), db.players.cleanup(0)]);
         await board.removeOwner(ownerId);
+        await trainers.settled();
         response.sendStatus(204);
       })().catch(next);
     });
@@ -261,9 +269,10 @@ export async function startSyncServer(config: {
       next,
     ) => {
       if (response.headersSent) return next(error);
-      const { status, statusCode } = error as {
+      const { status, statusCode, retryAfter } = error as {
         status?: unknown;
         statusCode?: unknown;
+        retryAfter?: unknown;
       };
       const candidate = status ?? statusCode;
       const code =
@@ -273,17 +282,26 @@ export async function startSyncServer(config: {
         candidate <= 599
           ? candidate
           : 500;
+      if (
+        code === 503 &&
+        typeof retryAfter === 'string' &&
+        /^\d{1,3}$/.test(retryAfter) &&
+        Number(retryAfter) > 0
+      )
+        response.setHeader('Retry-After', retryAfter);
       response.status(code).json({ error: true, code });
     };
     server.serverApp.use(jsonError);
     await server.start();
-    db.onClose.push(() => {
+    db.onClose.push(async () => {
       board.close();
-      return mongoClient.close();
+      await trainers.close();
+      await mongoClient.close();
     });
     return { server, db };
   } catch (error) {
     standings?.close();
+    await summaries?.close();
     await client?.close();
     await db.close();
     throw error;

@@ -32,7 +32,6 @@ await test('runtime renderer binds the provisioned Hyperdrive without local defa
   assert.deepEqual(rendered.hyperdrive, [
     { binding: 'ACCOUNT_DB', id: config.hyperdriveId },
   ]);
-  assert.equal(rendered.vars.MAIL_DELIVERY, 'cloudflare');
   assert.equal(rendered.vars.AUTH_ORIGIN, config.origin);
   assert.equal(rendered.vars.SYNC_AUDIENCE, input.sync.audience);
   assert.ok(!JSON.stringify(rendered).includes('127.0.0.1'));

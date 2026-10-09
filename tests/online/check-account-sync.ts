@@ -281,6 +281,28 @@ try {
   const board = await json(await request('/api/leaderboards/training', a));
   assert.equal(board.total, 1);
   assert.equal((board.viewer as { player: { id: string } }).player.id, a.id);
+  const combined = await json(
+    await fetch(endpoint + '/read/board', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${a.token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        mode: 'training',
+        visible: null,
+        offset: 0,
+        limit: 1,
+      }),
+    }),
+  );
+  assert.equal(combined.total, board.total);
+  assert.deepEqual(
+    (combined.players as { id: string }[]).map((player) => player.id),
+    [a.id],
+  );
+  assert.equal((combined.viewer as { playerId: string }).playerId, a.id);
+
   const friendsBoard = await json(
     await request('/api/leaderboards/training?scope=friends', b),
   );
