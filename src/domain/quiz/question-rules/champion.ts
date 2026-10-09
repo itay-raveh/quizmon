@@ -1,36 +1,49 @@
-import type { FamilyRules } from '../questions/family-rules.ts';
 import type {
-  QuestionControlsFor,
+  FamilyRule,
+  PokemonDistractors,
+} from '../questions/family-rules.ts';
+import type {
+  QuestionControls,
   QuestionRuleRow,
-  RenderingControlsFor,
+  Renderable,
+  PokemonChoices,
+  PokemonSearch,
 } from './types.ts';
-import { silhouetteSprite, responsePresets } from './shared.ts';
+import { responsePresets } from './shared.ts';
 
 export const championClueFactors = [1, 0.75, 0.5, 0.25] as const;
 
+export type Rules = FamilyRule<
+  PokemonDistractors & {
+    /** Optional finale response and assistance rules; null uses ordinary choices. */
+    finale: null | {
+      /** Initially reveal choices, choices with types, or search. */
+      opening: 'choices-types' | 'choices' | 'search';
+      /** Allow player-requested clues. */
+      assistance: boolean;
+      /** Initial clue count used as the score penalty. */
+      penalty: number;
+    };
+  },
+  'pokemon',
+  'single' | 'adaptive'
+>;
+
+export type Rendering = {
+  subject?: Renderable<'sprite' | 'name' | 'number' | 'types'>;
+  choices?: PokemonChoices;
+  search?: PokemonSearch;
+};
+
 const controls = {
   view: { answer: { kind: 'pokemon' } },
-  distractorRankDirection: 'most-similar',
-  distractorPoolSize: 15,
-  smallPoolSimilarityRatio: 0.6,
-  distantSpeciesFraction: 0.3333333333333333,
-  similarityWeights: {
-    sharedType: 12,
-    shape: 8,
-    color: 5,
-    generation: 4,
-    evolutionStage: 3,
-    statMaximum: 3,
-    statScale: 80,
-  },
-  smallPoolPolicy: 'semantic-band',
   finale: null,
-} as const satisfies QuestionControlsFor<'champion'>;
+} satisfies QuestionControls<Rules>;
 
 const rendering = {
   subject: {
     sprite: {
-      ...silhouetteSprite,
+      silhouette: true,
       reveal: { afterClues: 4 },
     },
     name: 'after-answer',
@@ -43,10 +56,11 @@ const rendering = {
     types: 'after-answer',
   },
   search: { sprite: null, number: 'never' },
-} satisfies RenderingControlsFor<'champion'>;
+} satisfies Rendering;
 
 export const champion = {
   rendering,
+  pokemonSprites: ['subject', 'choices', 'search'],
   levels: {
     1: {
       ...controls,
@@ -86,4 +100,4 @@ export const champion = {
       response: responsePresets.adaptive,
     },
   },
-} satisfies QuestionRuleRow<FamilyRules['champion'], 'champion'>;
+} satisfies QuestionRuleRow<Rules, Rendering>;

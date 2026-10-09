@@ -1,3 +1,5 @@
+import { hasOpaqueSpriteCanvas } from '../../pokemon/sprite-source.ts';
+import type { SpriteRendering } from '../rendering.ts';
 import type { PokemonKnowledge, StatName } from '../../pokemon/types.ts';
 import { pick } from '../../../lib/random.ts';
 import type {
@@ -32,21 +34,44 @@ export const getOptionVisuals = (
     }),
   );
 
-/** Sample a sprite from the requested source, falling back to the current front. */
+/** Sample era and orientation independently, using only catalogued assets. */
 export const choosePokemonSprite = (
-  pokemon: PokemonKnowledge,
-  source: 'front' | 'all',
+  pokemon: Pick<PokemonKnowledge, 'sprite' | 'shinySprite' | 'identitySprites'>,
+  policy: Exclude<SpriteRendering, null>,
   random: () => number,
+  currentFront: string | null = pokemon.sprite,
 ): string | null => {
-  if (source === 'front') return pokemon.sprite;
-  const sprites = [
-    pokemon.sprite,
-    ...pokemon.identitySprites.generations.flatMap(({ front, back }) => [
-      ...front,
-      ...back,
-    ]),
-  ].filter((src): src is string => Boolean(src));
-  return pick(sprites, random) ?? pokemon.sprite;
+  // A builder-selected alternate color has no catalogued alternate-era/back assets.
+  if (currentFront && currentFront === pokemon.shinySprite) return currentFront;
+  const roll = (chance = 0) =>
+    chance === 1 || (chance > 0 && random() < chance);
+  const historical = roll(policy.historicalSpriteChance);
+  const back = roll(policy.backSpriteChance);
+  const available = pokemon.identitySprites.generations
+    .map((era) =>
+      policy.silhouette
+        ? {
+            ...era,
+            front: era.front.filter((src) => !hasOpaqueSpriteCanvas(src)),
+            back: era.back.filter((src) => !hasOpaqueSpriteCanvas(src)),
+          }
+        : era,
+    )
+    .filter(({ front, back }) => front.length > 0 || back.length > 0);
+  const older = available.filter(({ generation }) =>
+    ['I', 'II', 'III', 'IV', 'V'].includes(generation),
+  );
+  const era = historical ? pick(older, random) : undefined;
+  if (era)
+    return (
+      pick(back && era.back.length ? era.back : era.front, random) ??
+      currentFront
+    );
+  if (back) {
+    const latestBack = available.findLast(({ back }) => back.length > 0);
+    return pick(latestBack?.back ?? [], random) ?? currentFront;
+  }
+  return currentFront;
 };
 const getOptionDexNumbers = (
   context: QuestionContext,

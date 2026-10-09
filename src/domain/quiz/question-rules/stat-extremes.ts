@@ -1,20 +1,29 @@
-import type { FamilyRules } from '../questions/family-rules.ts';
+import type { FamilyRule } from '../questions/family-rules.ts';
 import type {
-  QuestionControlsFor,
+  QuestionControls,
   QuestionRuleRow,
-  RenderingControlsFor,
+  PokemonChoices,
 } from './types.ts';
 import { responsePresets } from './shared.ts';
+
+export type Rules = FamilyRule<
+  {
+    /** Inclusive allowed stat-point gap to each wrong Pokémon; null disables it. */
+    statGap: readonly [number, number] | null;
+  },
+  'pokemon',
+  'single'
+>;
+
+export type Rendering = { choices?: PokemonChoices };
 
 const controls = {
   view: { answer: { kind: 'pokemon' } },
   statGap: null,
-} as const satisfies QuestionControlsFor<'statExtremes'>;
-
-const rendering = {} satisfies RenderingControlsFor<'statExtremes'>;
+} satisfies QuestionControls<Rules>;
 
 export const statExtremes = {
-  rendering,
+  pokemonSprites: ['choices'],
   levels: {
     3: {
       ...controls,
@@ -32,4 +41,4 @@ export const statExtremes = {
       response: responsePresets.single,
     },
   },
-} satisfies QuestionRuleRow<FamilyRules['statExtremes'], 'statExtremes'>;
+} satisfies QuestionRuleRow<Rules, Rendering>;

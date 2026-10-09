@@ -1,22 +1,33 @@
-import type { FamilyRules } from '../questions/family-rules.ts';
+import type { FamilyRule } from '../questions/family-rules.ts';
 import type {
-  QuestionControlsFor,
+  QuestionControls,
   QuestionRuleRow,
-  RenderingControlsFor,
+  PokemonChoices,
 } from './types.ts';
 import { responsePresets } from './shared.ts';
 
+export type Rules = FamilyRule<
+  {
+    /** Restrict candidates to Pokémon with exactly one type. */
+    singleType: boolean;
+  },
+  'pokemon',
+  'multi'
+>;
+
+export type Rendering = { choices?: PokemonChoices };
+
 const controls = {
   view: { answer: { kind: 'pokemon' } },
-  singleType: false,
-} as const satisfies QuestionControlsFor<'pokemonByType'>;
+} satisfies QuestionControls<Rules>;
 
 const rendering = {
   choices: { name: 'always', types: 'after-answer' },
-} satisfies RenderingControlsFor<'pokemonByType'>;
+} satisfies Rendering;
 
 export const pokemonByType = {
   rendering,
+  pokemonSprites: ['choices'],
   levels: {
     2: {
       ...controls,
@@ -29,4 +40,4 @@ export const pokemonByType = {
     },
     5: null,
   },
-} satisfies QuestionRuleRow<FamilyRules['pokemonByType'], 'pokemonByType'>;
+} satisfies QuestionRuleRow<Rules, Rendering>;

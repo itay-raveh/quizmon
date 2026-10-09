@@ -156,6 +156,7 @@ const question = z
     optionDexNumbers: z.record(z.string(), nonnegativeInteger).optional(),
     optionStats: z.record(z.string(), nonnegativeInteger).optional(),
     optionVisuals: z.record(z.string(), sprite).optional(),
+    relatedVisuals: z.record(z.string(), sprite).optional(),
     optionGenerations: z.record(z.string(), z.enum(generations)).optional(),
     optionClassifications: z
       .record(z.string(), z.enum(['Legendary', 'Mythical', 'Neither']))

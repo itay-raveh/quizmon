@@ -26,11 +26,9 @@ export const getQuestionPokemon = (
     case 'legendaryMythicalSelection':
     case 'typeOddOneOut':
     case 'pokemonFromPixelCrop':
-    case 'pokemonFromHistoricalSprite':
+    case 'pokemonIdentification':
     case 'shinyPokemonIdentification':
-    case 'silhouetteForPokemon':
-    case 'spriteForPokemon':
-    case 'pokemonFromSilhouette':
+    case 'pokemonMatch':
     case 'statExtremes':
     case 'pokemonByType':
     case 'dualTypeMatch':

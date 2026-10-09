@@ -1,18 +1,22 @@
-import type { FamilyRules } from '../questions/family-rules.ts';
+import type { FamilyRule, NoControls } from '../questions/family-rules.ts';
 import type {
-  QuestionControlsFor,
+  QuestionControls,
   QuestionRuleRow,
-  RenderingControlsFor,
+  VisibleItem,
 } from './types.ts';
 import { itemSprite, responsePresets } from './shared.ts';
 
+export type Rules = FamilyRule<NoControls, 'type', 'single'>;
+
+export type Rendering = { subject?: VisibleItem };
+
 const controls = {
   view: { answer: { kind: 'type' } },
-} as const satisfies QuestionControlsFor<'naturalGift'>;
+} satisfies QuestionControls<Rules>;
 
 const rendering = {
   subject: { sprite: itemSprite },
-} satisfies RenderingControlsFor<'naturalGift'>;
+} satisfies Rendering;
 
 export const naturalGift = {
   active: false,
@@ -23,4 +27,4 @@ export const naturalGift = {
       response: responsePresets.shortSingle,
     },
   },
-} satisfies QuestionRuleRow<FamilyRules['naturalGift'], 'naturalGift'>;
+} satisfies QuestionRuleRow<Rules, Rendering>;

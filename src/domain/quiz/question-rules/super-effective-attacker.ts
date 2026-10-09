@@ -1,10 +1,38 @@
-import type { FamilyRules } from '../questions/family-rules.ts';
 import type {
-  QuestionControlsFor,
+  FamilyRule,
+  PokemonDistractors,
+} from '../questions/family-rules.ts';
+import type {
+  QuestionControls,
   QuestionRuleRow,
-  RenderingControlsFor,
+  Renderable,
+  PokemonChoices,
 } from './types.ts';
-import { frontSprite, answerSprite, responsePresets } from './shared.ts';
+import {
+  frontSprite,
+  answerSprite,
+  responsePresets,
+  typeSimilarityWeights,
+} from './shared.ts';
+
+export type Rules = FamilyRule<
+  PokemonDistractors & {
+    /** Restrict targets to Pokémon with exactly one type. */
+    singleType: boolean;
+    /** Attack multipliers eligible to be asked about. */
+    multipliers: readonly number[];
+  },
+  'pokemon',
+  'single'
+>;
+
+export type Rendering = {
+  subject?: Renderable<'sprite' | 'name' | 'number'> & {
+    types?: 'always' | 'after-answer';
+  };
+  choices?: PokemonChoices;
+  related?: Renderable<'sprite' | 'name' | 'number' | 'types'>;
+};
 
 const controls = {
   view: {
@@ -13,32 +41,21 @@ const controls = {
       layout: 'superEffectiveAttacker',
     },
   },
-  distractorRankDirection: 'most-similar',
-  distractorPoolSize: 15,
-  smallPoolSimilarityRatio: 0.6,
-  distantSpeciesFraction: 0.3333333333333333,
-  similarityWeights: {
-    sharedType: 12,
-    shape: 8,
-    color: 5,
-    generation: 4,
-    evolutionStage: 3,
-    statMaximum: 3,
-    statScale: 80,
-  },
-  smallPoolPolicy: 'semantic-band',
-  singleType: false,
+
+  similarityWeights: typeSimilarityWeights,
+
   multipliers: [4, 2, 0.5, 0.25],
-} as const satisfies QuestionControlsFor<'superEffectiveAttacker'>;
+} satisfies QuestionControls<Rules>;
 
 const rendering = {
   subject: { sprite: frontSprite, types: 'after-answer' },
   related: { sprite: answerSprite, name: 'never', number: 'never' },
   choices: { name: 'always', types: 'after-answer' },
-} satisfies RenderingControlsFor<'superEffectiveAttacker'>;
+} satisfies Rendering;
 
 export const superEffectiveAttacker = {
   rendering,
+  pokemonSprites: ['subject', 'choices', 'related'],
   levels: {
     2: {
       ...controls,
@@ -63,14 +80,10 @@ export const superEffectiveAttacker = {
     },
     5: {
       ...controls,
-      distractorRankDirection: 'most-similar',
       distractorPoolSize: 3,
       multipliers: [0.25, 0.5, 2, 4],
       smallPoolPolicy: 'fixed-size',
       response: responsePresets.single,
     },
   },
-} satisfies QuestionRuleRow<
-  FamilyRules['superEffectiveAttacker'],
-  'superEffectiveAttacker'
->;
+} satisfies QuestionRuleRow<Rules, Rendering>;

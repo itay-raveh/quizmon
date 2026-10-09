@@ -166,14 +166,14 @@ test('choice name visibility follows the saved rendering policy', () => {
   const question: QuestionData = {
     answer: { interaction: 'single-choice', correctOptions: ['bulbasaur'] },
     category: 'identity',
-    id: 'spriteForPokemon:bulbasaur',
+    id: 'pokemonMatch:bulbasaur',
     media: { kind: 'none' },
     options: ['bulbasaur'],
     optionVisuals: {
       bulbasaur: { dexNumber: 1, src: '/bulbasaur.png', types: ['grass'] },
     },
     prompt: { kind: 'text', text: 'Find Bulbasaur.' },
-    questionType: 'spriteForPokemon',
+    questionType: 'pokemonMatch',
     repetition: {
       identity: 'bulbasaur',
       subjects: ['pokemon/bulbasaur'],

@@ -19,6 +19,12 @@ npm run dev
 
 The [Helm chart](charts/quizmon/) packages the online services and `deploy/` contains their release tooling.
 
+## Progress migrations and backups
+
+[RxDB native schema migration](src/lib/storage/rxdb-database.ts) upgrades existing MongoDB and browser collections before reads or sync start, including queued offline facts and replication metadata. Supported older JSON exports pass through the [same transforms](src/lib/storage/rxdb-migrations.ts) on import. Completed device receipts are recovered before cleanup; unfinished lineups restart while spent Daily attempts remain claimed. Newer unsupported exports require a newer app.
+
+Native migration removes superseded collection storage after completion. Before publishing a production schema change, stop writes and verify a fresh recovery backup and its isolated restore. The backup supports rollback if a transform is wrong; normal restoration uses automatic migration.
+
 ## Derived trainer cache
 
 The [origin](server/rxdb-sync.ts) clears [derived trainer summaries](server/trainer-summaries.ts) before becoming ready on every restart, then rebuilds them lazily using the deployed rules. Normal sync and account-deletion [writes](server/trainer-summary-writes.ts) invalidate the affected trainers before acknowledgement; raw completed-round facts remain the source of truth. The origin explicitly requests majority write acknowledgement and runs as one writer. Do not add another writer without coordinating cache invalidation.

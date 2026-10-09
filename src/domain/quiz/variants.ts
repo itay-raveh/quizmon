@@ -1,9 +1,10 @@
 import { questionRules } from './question-rules/registry.ts';
-import { baseQuestionRendering } from './question-rules/shared.ts';
-import type {
-  QuestionRuleEntry,
-  QuestionRuleRow,
-} from './question-rules/types.ts';
+import {
+  baseQuestionRendering,
+  applyPokemonSpriteDifficulty,
+  pokemonSimilarityWeights,
+  questionRuleDefaults,
+} from './question-rules/shared.ts';
 import { mergeRendering, type QuestionRendering } from './rendering.ts';
 import { resolveLevelVariant, type Level } from './level.ts';
 import type { QuestionData } from './types.ts';
@@ -13,22 +14,7 @@ import type { QuestionType } from './questions/definitions.ts';
 export { baseQuestionRendering } from './question-rules/shared.ts';
 
 export const isActiveQuestionType = (type: QuestionType): boolean =>
-  !('active' in questionRules[type] && questionRules[type].active === false);
-
-const withRendering = <
-  Type extends keyof FamilyRules,
-  Rules extends { rendering: QuestionRendering; response: { kind: string } },
->(
-  row: QuestionRuleRow<Rules, Type>,
-  entry: QuestionRuleEntry<Rules, Type>,
-): Rules =>
-  ({
-    ...entry,
-    rendering: mergeRendering(
-      mergeRendering(baseQuestionRendering, row.rendering),
-      entry.rendering,
-    ),
-  }) as unknown as Rules;
+  questionRules[type].active !== false;
 
 /**
  * Resolve the highest available family level at or below `level` and
@@ -37,16 +23,32 @@ const withRendering = <
 export const getQuestionVariant = <Type extends keyof FamilyRules>(
   type: Type,
   level: Level,
-):
-  | {
-      level: Level;
-      variant: FamilyRules[Type];
-    }
-  | undefined => {
-  const row = questionRules[type] as QuestionRuleRow<FamilyRules[Type], Type>;
+) => {
+  const row = questionRules[type];
   const resolved = resolveLevelVariant(row.levels, level);
   return resolved
-    ? { level: resolved.level, variant: withRendering(row, resolved.variant) }
+    ? {
+        level: resolved.level,
+        variant: {
+          ...questionRuleDefaults,
+          ...resolved.variant,
+          similarityWeights: {
+            ...pokemonSimilarityWeights,
+            ...('similarityWeights' in resolved.variant
+              ? resolved.variant.similarityWeights
+              : {}),
+          },
+          rendering: applyPokemonSpriteDifficulty(
+            mergeRendering(
+              mergeRendering(baseQuestionRendering, row.rendering),
+              resolved.variant.rendering,
+            ),
+            row.pokemonSprites,
+            level,
+            row.pokemonBackSprites,
+          ),
+        },
+      }
     : undefined;
 };
 

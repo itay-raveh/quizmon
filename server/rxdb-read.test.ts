@@ -5,7 +5,7 @@ import { projectTrainerHistory } from './rxdb-read.ts';
 
 test('public player profiles mark only perfect League winners as Champions', () => {
   const answer = () => ({
-    type: 'pokemonFromHistoricalSprite' as const,
+    type: 'pokemonIdentification' as const,
     subject: 'pikachu',
     expected: ['pikachu'],
     selected: ['pikachu'],

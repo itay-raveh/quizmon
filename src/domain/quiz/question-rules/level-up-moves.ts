@@ -1,23 +1,38 @@
-import type { FamilyRules } from '../questions/family-rules.ts';
+import type { FamilyRule } from '../questions/family-rules.ts';
 import type {
-  QuestionControlsFor,
+  QuestionControls,
   QuestionRuleRow,
-  RenderingControlsFor,
+  RenderingControls,
 } from './types.ts';
 import { frontSprite, responsePresets } from './shared.ts';
+
+export type Rules = FamilyRule<
+  {
+    /** Prefer wrong moves learned by Pokémon sharing a target type. */
+    plausibleProperties: boolean;
+  },
+  'move',
+  'single'
+>;
+
+export type Rendering = RenderingControls<
+  'sprite' | 'name' | 'number' | 'types',
+  'types'
+>;
 
 const controls = {
   view: { answer: { kind: 'move' } },
   plausibleProperties: false,
-} as const satisfies QuestionControlsFor<'levelUpMoves'>;
+} satisfies QuestionControls<Rules>;
 
 const rendering = {
   subject: { sprite: frontSprite },
   choices: { types: 'after-answer' },
-} satisfies RenderingControlsFor<'levelUpMoves'>;
+} satisfies Rendering;
 
 export const levelUpMoves = {
   rendering,
+  pokemonSprites: ['subject'],
   levels: {
     4: {
       ...controls,
@@ -29,4 +44,4 @@ export const levelUpMoves = {
       response: responsePresets.single,
     },
   },
-} satisfies QuestionRuleRow<FamilyRules['levelUpMoves'], 'levelUpMoves'>;
+} satisfies QuestionRuleRow<Rules, Rendering>;

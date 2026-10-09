@@ -1,36 +1,42 @@
-import type { FamilyRules } from '../questions/family-rules.ts';
 import type {
-  QuestionControlsFor,
+  FamilyRule,
+  PokemonDistractors,
+} from '../questions/family-rules.ts';
+import type {
+  QuestionControls,
   QuestionRuleRow,
-  RenderingControlsFor,
+  Renderable,
+  HiddenUntilAnswer,
+  PokemonChoices,
 } from './types.ts';
-import { frontSprite, responsePresets } from './shared.ts';
+import {
+  frontSprite,
+  responsePresets,
+  typeSimilarityWeights,
+} from './shared.ts';
+
+export type Rules = FamilyRule<PokemonDistractors, 'pokemon', 'single'>;
+
+export type Rendering = {
+  subject?: Renderable<'sprite' | 'name' | 'number'> & {
+    types?: HiddenUntilAnswer;
+  };
+  choices?: PokemonChoices;
+};
 
 const controls = {
   view: { answer: { kind: 'pokemon' } },
-  distractorRankDirection: 'most-similar',
-  distractorPoolSize: 15,
-  smallPoolSimilarityRatio: 0.6,
-  distantSpeciesFraction: 0.3333333333333333,
-  similarityWeights: {
-    sharedType: 12,
-    shape: 8,
-    color: 5,
-    generation: 4,
-    evolutionStage: 3,
-    statMaximum: 3,
-    statScale: 80,
-  },
-  smallPoolPolicy: 'semantic-band',
-} as const satisfies QuestionControlsFor<'dualTypeMatch'>;
+  similarityWeights: typeSimilarityWeights,
+} satisfies QuestionControls<Rules>;
 
 const rendering = {
   subject: { sprite: frontSprite, types: 'after-answer' },
   choices: { name: 'always', types: 'after-answer' },
-} satisfies RenderingControlsFor<'dualTypeMatch'>;
+} satisfies Rendering;
 
 export const dualTypeMatch = {
   rendering,
+  pokemonSprites: ['subject', 'choices'],
   levels: {
     3: {
       ...controls,
@@ -38,4 +44,4 @@ export const dualTypeMatch = {
     },
     5: null,
   },
-} satisfies QuestionRuleRow<FamilyRules['dualTypeMatch'], 'dualTypeMatch'>;
+} satisfies QuestionRuleRow<Rules, Rendering>;

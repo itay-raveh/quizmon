@@ -20,7 +20,7 @@ import type { GameSettings } from '../settings/types.ts';
 const catalog = pokemonData as unknown as PokemonCatalog;
 
 it('explains sparse level ranges and excludes the same unavailable family from play', () => {
-  const type = 'spriteForPokemon';
+  const type = 'pokemonMatch';
   const row = questionRules[type];
   const original = row.levels;
   const variant = getQuestionVariant(type, 1)!.variant;
@@ -74,7 +74,7 @@ it('requires multiple selected generations for roundup and becomes playable when
 });
 
 it('distinguishes a filtered-out pool from insufficient eligible content', () => {
-  const type = 'spriteForPokemon';
+  const type = 'pokemonMatch';
   const settings: GameSettings = {
     ...defaultGameSettings,
     questionSelection: 'custom' as const,

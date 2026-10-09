@@ -45,7 +45,7 @@ it('omits duplicate search feedback only when the artwork reveals the answer', (
     ...question,
     category: 'identity',
     media: { kind: 'sprite', src: '/pikachu.png' },
-    questionType: 'pokemonFromHistoricalSprite',
+    questionType: 'pokemonIdentification',
   };
   expect(showsCorrectSearchAnswerInArtwork(scan)).toBe(true);
   expect(showsCorrectSearchAnswerInArtwork(question)).toBe(false);

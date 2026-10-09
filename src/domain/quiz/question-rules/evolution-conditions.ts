@@ -1,10 +1,37 @@
-import type { FamilyRules } from '../questions/family-rules.ts';
+import type { FamilyRule } from '../questions/family-rules.ts';
 import type {
-  QuestionControlsFor,
+  QuestionControls,
   QuestionRuleRow,
-  RenderingControlsFor,
+  RenderingControls,
 } from './types.ts';
 import { frontSprite, responsePresets } from './shared.ts';
+
+export type Rules = FamilyRule<
+  {
+    /** Minimum distinct true conditions required for a target. */
+    minimumEvolutionConditions: number;
+    /** Keep numeric levels and other exact values in condition labels. */
+    exactEvolutionValues: boolean;
+    /** Shorten condition labels, such as `Trade this Pokémon` to `Trade`. */
+    compactEvolutionLabels: boolean;
+    /** Include directly used evolution items as conditions. */
+    directEvolutionItems: boolean;
+    /** Include location-dependent evolution conditions. */
+    evolutionLocations: boolean;
+    /** Favor numerically nearby wrong condition values. */
+    preferCloseConditionValues: boolean;
+    /** Permit targets without a Pokémon sprite. */
+    allowMissingSprites: boolean;
+  },
+  'text',
+  'single' | 'adaptive'
+>;
+
+export type Rendering = RenderingControls<
+  never,
+  never,
+  'sprite' | 'name' | 'number' | 'types'
+>;
 
 const controls = {
   view: { answer: { kind: 'text' } },
@@ -14,15 +41,15 @@ const controls = {
   directEvolutionItems: false,
   evolutionLocations: false,
   preferCloseConditionValues: false,
-  allowMissingSprites: false,
-} as const satisfies QuestionControlsFor<'evolutionConditions'>;
+} satisfies QuestionControls<Rules>;
 
 const rendering = {
   related: { sprite: frontSprite },
-} satisfies RenderingControlsFor<'evolutionConditions'>;
+} satisfies Rendering;
 
 export const evolutionConditions = {
   rendering,
+  pokemonSprites: ['related'],
   levels: {
     3: {
       ...controls,
@@ -46,7 +73,4 @@ export const evolutionConditions = {
       response: responsePresets.adaptive,
     },
   },
-} satisfies QuestionRuleRow<
-  FamilyRules['evolutionConditions'],
-  'evolutionConditions'
->;
+} satisfies QuestionRuleRow<Rules, Rendering>;

@@ -1,31 +1,46 @@
-import type { FamilyRules } from '../questions/family-rules.ts';
 import type {
-  QuestionControlsFor,
-  QuestionRuleRow,
-  RenderingControlsFor,
-} from './types.ts';
-import { frontSprite, responsePresets } from './shared.ts';
+  FamilyRule,
+  TypeSearchResponse,
+  SimilarityWeights,
+} from '../questions/family-rules.ts';
+import type { QuestionControls, QuestionRuleRow, Renderable } from './types.ts';
+import {
+  frontSprite,
+  responsePresets,
+  typeSimilarityWeights,
+} from './shared.ts';
+
+export type Rules = FamilyRule<
+  {
+    /** Restrict targets to Pokémon with exactly one type. */
+    singleType: boolean;
+    /** Search for every type of the subject. */
+    response: TypeSearchResponse<'subject-types'>;
+    /** Score types by their closest Pokémon to rank wrong answers. */
+    similarityWeights: SimilarityWeights;
+  },
+  'type',
+  'single'
+>;
+
+export type Rendering = {
+  subject?: Renderable<'sprite' | 'name' | 'number'> & {
+    types?: 'after-answer';
+  };
+};
 
 const controls = {
-  similarityWeights: {
-    sharedType: 12,
-    shape: 8,
-    color: 5,
-    generation: 4,
-    evolutionStage: 3,
-    statMaximum: 3,
-    statScale: 80,
-  },
+  similarityWeights: typeSimilarityWeights,
   view: { answer: { kind: 'type' } },
-  singleType: false,
-} as const satisfies QuestionControlsFor<'pokemonTypes'>;
+} satisfies QuestionControls<Rules>;
 
 const rendering = {
   subject: { sprite: frontSprite, types: 'after-answer' },
-} satisfies RenderingControlsFor<'pokemonTypes'>;
+} satisfies Rendering;
 
 export const pokemonTypes = {
   rendering,
+  pokemonSprites: ['subject'],
   levels: {
     1: {
       ...controls,
@@ -43,4 +58,4 @@ export const pokemonTypes = {
     },
     5: null,
   },
-} satisfies QuestionRuleRow<FamilyRules['pokemonTypes'], 'pokemonTypes'>;
+} satisfies QuestionRuleRow<Rules, Rendering>;

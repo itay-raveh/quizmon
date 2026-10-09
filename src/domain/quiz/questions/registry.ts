@@ -1,3 +1,4 @@
+import { sampleRendering } from '../rendering.ts';
 import type { QuestionType } from './definitions.ts';
 import {
   getPokemonRecency,
@@ -22,11 +23,9 @@ import {
 import { buildGenerationRoundupQuestion } from './generations.ts';
 import {
   buildPixelPeekQuestion,
-  buildPokedexScanQuestion,
+  buildPokemonIdentificationQuestion,
   buildShinySpotterQuestion,
-  buildSilhouetteMatchQuestion,
   buildSpriteMatchQuestion,
-  buildWhosThatPokemonQuestion,
 } from './identity.ts';
 import { buildItemIdentification } from './items.ts';
 import { buildLegendHuntQuestion } from './legendaries.ts';
@@ -70,10 +69,8 @@ const questionBuilders = {
   berryFlavors: buildBerry,
   naturalGift: buildBerry,
 
-  pokemonFromHistoricalSprite: buildPokedexScanQuestion,
-  silhouetteForPokemon: buildSilhouetteMatchQuestion,
-  spriteForPokemon: buildSpriteMatchQuestion,
-  pokemonFromSilhouette: buildWhosThatPokemonQuestion,
+  pokemonIdentification: buildPokemonIdentificationQuestion,
+  pokemonMatch: buildSpriteMatchQuestion,
   pokemonFromPixelCrop: buildPixelPeekQuestion,
   shinyPokemonIdentification: buildShinySpotterQuestion,
   pokedexEntryMatch: buildDescriptionQuestion,
@@ -103,7 +100,6 @@ export const buildQuestionType = (
   const build = questionBuilders[questionType] as QuestionBuilder<
     FamilyRules[typeof questionType]
   >;
-  const rules = activeRules;
   const singleType = Boolean(
     'singleType' in activeRules && activeRules.singleType,
   );
@@ -173,7 +169,12 @@ export const buildQuestionType = (
       ? questionRepeatPolicy.candidateAttempts
       : 1;
   for (let attempt = 0; attempt < attempts; attempt++) {
-    const original = build(variantContext);
+    const rules = {
+      ...activeRules,
+      rendering: sampleRendering(activeRules.rendering, context.random),
+    };
+    const attemptContext = { ...variantContext, variant: rules };
+    const original = build(attemptContext);
     if (
       !original ||
       (rules.response.kind === 'picker' &&
@@ -184,7 +185,7 @@ export const buildQuestionType = (
       continue;
     const draft = assembleQuestion(
       original,
-      variantContext,
+      attemptContext,
       rules,
       resolved.level,
     );

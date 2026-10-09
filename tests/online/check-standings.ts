@@ -13,6 +13,7 @@ import {
   type Standing,
 } from '../../server/standings.ts';
 import { completion } from './progress-fixtures.ts';
+import { roundSchema } from '../../src/lib/storage/rxdb-schema.ts';
 import { testMongoUrl } from './account-fixture.ts';
 
 const name = `quizmon_standings_${crypto.randomUUID().replaceAll('-', '')}`;
@@ -350,7 +351,8 @@ try {
 } finally {
   standings?.close();
   await db?.close();
-  await mongo.db(`${name}-v0`).dropDatabase();
+  for (const version of new Set([0, roundSchema.version]))
+    await mongo.db(`${name}-v${version}`).dropDatabase();
   await mongo.db(`${name}_app`).dropDatabase();
   await mongo.close();
 }

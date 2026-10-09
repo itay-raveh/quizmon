@@ -1,7 +1,5 @@
 import type { FamilyRules, PokemonDistractors } from './family-rules.ts';
-import { pick } from '../../../lib/random.ts';
 import { getPixelPeekCrop } from '../../pokemon/pixel-peek.ts';
-import type { PokemonKnowledge } from '../../pokemon/types.ts';
 import { pokemonOptions } from './answers.ts';
 import type { AnswerPresentation, QuestionAssembly } from './assembly.ts';
 import { makeQuestion } from './assembly.ts';
@@ -30,65 +28,6 @@ const makeIdentityQuestion = (
     presentation,
   });
 
-const pickScanSprite = (
-  pokemon: PokemonKnowledge,
-  random: () => number,
-  backChance: number,
-  frontChance: number,
-): string | null => {
-  if (!pokemon.sprite) return null;
-
-  if (backChance > 0 && (backChance === 1 || random() < backChance)) {
-    const back = pokemon.identitySprites.generations
-      .filter(({ generation }) =>
-        ['I', 'II', 'III', 'IV', 'V'].includes(generation),
-      )
-      .flatMap(({ back }) => back);
-    const sprite = pick(back, random);
-    if (sprite) return sprite;
-  }
-  const generation = pick(
-    pokemon.identitySprites.generations.filter(({ generation }) =>
-      ['I', 'II', 'III', 'IV', 'V'].includes(generation),
-    ),
-    random,
-  );
-  if (!generation) return pokemon.sprite;
-  const preferFront = random() < frontChance;
-  const usesBack =
-    generation.back.length > 0 &&
-    (!preferFront || generation.front.length === 0);
-  const version = pick(usesBack ? generation.back : generation.front, random);
-  return version || pokemon.sprite;
-};
-
-export const buildPokedexScanQuestion: QuestionBuilder<
-  FamilyRules['pokemonFromHistoricalSprite']
-> = (context) => {
-  const target = pickTarget(context, ({ sprite }) => Boolean(sprite));
-  if (!target) return undefined;
-  const currentChance = context.variant.currentSpriteChance;
-  const source = context.variant.rendering.subject.sprite?.source ?? 'front';
-  const sprite =
-    source === 'front' ||
-    currentChance === 1 ||
-    (currentChance > 0 && context.random() < currentChance)
-      ? target.pokemon.sprite
-      : pickScanSprite(
-          target.pokemon,
-          context.random,
-          context.variant.backSpriteChance,
-          context.variant.frontSpriteChance,
-        );
-  if (!sprite) return undefined;
-  return makeIdentityQuestion(context, {
-    target,
-    options: pokemonOptions(context, { correct: target }),
-    prompt: textPrompt('Who is this Pokémon?'),
-    media: { kind: 'sprite', src: sprite },
-  });
-};
-
 const buildNamedPokemonQuestion: QuestionBuilder<PokemonDistractors> = (
   context,
 ) => {
@@ -111,11 +50,10 @@ const buildNamedPokemonQuestion: QuestionBuilder<PokemonDistractors> = (
   });
 };
 
-export const buildSilhouetteMatchQuestion = buildNamedPokemonQuestion;
 export const buildSpriteMatchQuestion = buildNamedPokemonQuestion;
 
-export const buildWhosThatPokemonQuestion: QuestionBuilder<
-  FamilyRules['pokemonFromSilhouette']
+export const buildPokemonIdentificationQuestion: QuestionBuilder<
+  FamilyRules['pokemonIdentification']
 > = (context) => {
   const target = pickTarget(context, ({ sprite }) => Boolean(sprite));
   if (!target?.pokemon.sprite) return undefined;

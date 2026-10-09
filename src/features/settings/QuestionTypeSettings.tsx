@@ -80,7 +80,7 @@ export const QuestionTypeSettings = ({
   submitted,
 }: QuestionTypeSettingsProps) => {
   const [explainedQuestionType, setExplainedQuestionType] =
-    useState<QuestionType>('pokemonFromHistoricalSprite');
+    useState<QuestionType>('pokemonIdentification');
   const [initialExpandedGroup] = useState<QuestionTypeGroup | 'custom-only'>(
     () => getInitialExpandedGroup(draft.questionTypes),
   );

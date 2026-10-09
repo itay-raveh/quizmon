@@ -12,7 +12,12 @@ import {
   savedSettingsSchema,
 } from '../../domain/player/schemas/player-data';
 import { trainerProfileSchema } from '../../domain/player/trainer-profile';
-import { compactRoundSchema } from '../../domain/sync/compact-rounds';
+import { parseRound } from '../../domain/player/schemas/round';
+import { completeRound } from '../../domain/player/game-history';
+import {
+  compactCompletion,
+  compactRoundSchema,
+} from '../../domain/sync/compact-rounds';
 import { downloadJson } from '../../lib/download';
 import { clearSaveIssue } from '../../lib/storage/save-health';
 import {
@@ -35,6 +40,11 @@ import {
   type SyncedPlayer,
   type SyncedRound,
 } from '../../lib/storage/rxdb-schema';
+import {
+  migrateDeviceV1,
+  migratePlayerV1,
+  migrateRoundV1,
+} from '../../lib/storage/rxdb-migrations';
 import { isRecord, isUtcTimestamp } from '../../lib/validation';
 import { selectedAccount } from '../account/account';
 
@@ -120,12 +130,37 @@ export function parseBackup(text: string): PlayerBackup {
   ) as (keyof typeof schemaVersions)[]) {
     if (backup.schemaVersions[name] > schemaVersions[name])
       throw new Error('This backup needs a newer version of Quizmon.');
-    if (backup.schemaVersions[name] < schemaVersions[name])
-      throw new Error('This backup is from before the question-ID cutoff.');
   }
-  const playerDocs = backup.player === null ? [] : [backup.player];
-  const roundDocs = backup.rounds;
-  const deviceDocs = backup.device;
+  // Exported backups pass through the same versioned transforms as RxDB storage.
+  // Ordinary reads and scoring only see the current identifiers.
+  const playerDocs =
+    backup.player === null
+      ? []
+      : [
+          backup.schemaVersions.players === 0
+            ? migratePlayerV1(backup.player)
+            : backup.player,
+        ];
+  const roundDocs =
+    backup.schemaVersions.rounds === 0
+      ? backup.rounds.map(migrateRoundV1)
+      : backup.rounds;
+  const deviceDocs =
+    backup.schemaVersions.device === 0
+      ? backup.device.map((value) => {
+          // Unfinished rounds are deliberately not restored from exports.
+          if (
+            isRecord(value) &&
+            typeof value.id === 'string' &&
+            (value.id.startsWith('closed:') ||
+              (value.id.startsWith('round:') &&
+                (!isRecord(value.payload) ||
+                  value.payload.completedAt === undefined)))
+          )
+            return value;
+          return migrateDeviceV1(value);
+        })
+      : backup.device;
   if (
     backup.accountId !== null &&
     !/^[A-Za-z0-9_-]{1,128}$/.test(backup.accountId)
@@ -155,6 +190,52 @@ export function parseBackup(text: string): PlayerBackup {
       throw new Error('The backup has an invalid completed round.');
     return { ...round.data, ownerId };
   });
+  // Completed device receipts can outlive a crash before their fact is committed.
+  // Recover these on import; unfinished lineups still do not resume from exports.
+  const stateRecord = deviceDocs.find(
+    (value) => isRecord(value) && value.id === 'state',
+  );
+  const restoreId = isRecord(stateRecord)
+    ? parseDeviceState(stateRecord.payload).restoreId
+    : undefined;
+  const closed = new Set(
+    deviceDocs.flatMap((value) =>
+      isRecord(value) &&
+      typeof value.id === 'string' &&
+      value.id.startsWith('closed:')
+        ? [value.id]
+        : [],
+    ),
+  );
+  for (const value of deviceDocs) {
+    if (
+      !isRecord(value) ||
+      typeof value.id !== 'string' ||
+      !value.id.startsWith('round:') ||
+      !isRecord(value.payload) ||
+      value.payload.completedAt === undefined
+    )
+      continue;
+    const receipt = parseRound(value.payload);
+    if (!receipt?.completedAt)
+      throw new Error('The backup has an invalid completed device round.');
+    if (
+      receipt.playerRestoreId !== restoreId ||
+      closed.has(`closed:${receipt.roundId}`)
+    )
+      continue;
+    const recovered = {
+      ...compactCompletion(
+        completeRound(receipt, receipt.completedAt, player?.profile.name ?? '')
+          .completion,
+      ),
+      ownerId,
+    };
+    const existing = rounds.find((round) => round.id === recovered.id);
+    if (existing && JSON.stringify(existing) !== JSON.stringify(recovered))
+      throw new Error('A completed device round differs from this backup.');
+    if (!existing) rounds.push(recovered);
+  }
   const device: DeviceRecord[] = deviceDocs.flatMap((value) => {
     if (
       isRecord(value) &&

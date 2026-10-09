@@ -1,5 +1,4 @@
 import { attackMultiplier } from '../../pokemon/type-effectiveness.ts';
-import { choosePokemonSprite } from './assembly.ts';
 import type { QuestionContext, QuestionDraft } from './context.ts';
 import type { FamilyRules } from './family-rules.ts';
 
@@ -47,11 +46,7 @@ export const applyResponseStrategy = (
       question.searchOptions = context.pool.map(({ name, pokemon }) => ({
         name,
         dexNumber: pokemon.speciesId,
-        sprite: choosePokemonSprite(
-          pokemon,
-          rules.rendering.search.sprite?.source ?? 'front',
-          context.random,
-        ),
+        sprite: pokemon.sprite,
         types: pokemon.types,
       }));
   }

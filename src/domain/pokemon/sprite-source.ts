@@ -39,3 +39,8 @@ export const fetchSpriteSource = (path: string, options?: RequestInit) => {
   if (!isSpritePath(path)) throw new Error(`Unexpected sprite path: ${path}`);
   return fetch(`${SPRITE_SOURCE}${path}`, options);
 };
+
+/** Early-game opaque canvases cannot be concealed with a silhouette filter. */
+export const hasOpaqueSpriteCanvas = (src: string): boolean =>
+  /\/versions\/generation-(?:i|ii)\//.test(src) &&
+  !src.includes('/transparent/');

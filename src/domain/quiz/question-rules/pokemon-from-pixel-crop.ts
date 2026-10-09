@@ -1,29 +1,53 @@
-import type { FamilyRules } from '../questions/family-rules.ts';
 import type {
-  QuestionControlsFor,
+  FamilyRule,
+  PokemonDistractors,
+  SearchResponse,
+} from '../questions/family-rules.ts';
+import type {
+  QuestionControls,
   QuestionRuleRow,
-  RenderingControlsFor,
+  PokemonChoices,
+  PokemonSearch,
+  RequiredSubjectSprite,
+  VisibleChoiceSprite,
 } from './types.ts';
-import { frontSprite, responsePresets } from './shared.ts';
+import {
+  frontSprite,
+  responsePresets,
+  pixelSimilarityWeights,
+} from './shared.ts';
+
+export type Rules = FamilyRule<
+  PokemonDistractors & {
+    /** Search uses the current eligible Pokémon pool. */
+    response: SearchResponse<'pool'>;
+    /** Multiplier applied to the generated pixel-crop zoom. */
+    cropScale: number;
+  },
+  'pokemon',
+  'single'
+>;
+
+type CurrentFrontSubjectSprite = RequiredSubjectSprite & {
+  sprite?: VisibleChoiceSprite & {
+    historicalSpriteChance?: 0;
+    backSpriteChance?: 0;
+  };
+};
+
+export type Rendering = {
+  subject?: CurrentFrontSubjectSprite;
+  choices?: PokemonChoices;
+  search?: PokemonSearch;
+};
 
 const controls = {
+  allowEvolutionRelatives: false,
   view: { answer: { kind: 'pokemon' } },
-  distractorRankDirection: 'most-similar',
-  distractorPoolSize: 15,
-  smallPoolSimilarityRatio: 0.6,
-  distantSpeciesFraction: 0.3333333333333333,
-  similarityWeights: {
-    sharedType: 12,
-    shape: 8,
-    color: 5,
-    generation: 4,
-    evolutionStage: 3,
-    statMaximum: 3,
-    statScale: 80,
-  },
-  smallPoolPolicy: 'semantic-band',
+  similarityWeights: pixelSimilarityWeights,
+
   cropScale: 1,
-} as const satisfies QuestionControlsFor<'pokemonFromPixelCrop'>;
+} satisfies QuestionControls<Rules>;
 
 const rendering = {
   subject: {
@@ -33,7 +57,7 @@ const rendering = {
   },
   choices: { name: 'always', sprite: null },
   search: { sprite: null },
-} satisfies RenderingControlsFor<'pokemonFromPixelCrop'>;
+} satisfies Rendering;
 
 export const pokemonFromPixelCrop = {
   rendering,
@@ -55,7 +79,8 @@ export const pokemonFromPixelCrop = {
     },
     4: {
       ...controls,
-      distractorRankDirection: 'most-similar',
+      cropScale: 0.8,
+
       distractorPoolSize: 6,
       smallPoolPolicy: 'fixed-size',
       response: responsePresets.single,
@@ -67,10 +92,7 @@ export const pokemonFromPixelCrop = {
         selection: 'single',
         candidates: 'pool',
       },
-      cropScale: 1.4,
+      cropScale: 1,
     },
   },
-} satisfies QuestionRuleRow<
-  FamilyRules['pokemonFromPixelCrop'],
-  'pokemonFromPixelCrop'
->;
+} satisfies QuestionRuleRow<Rules, Rendering>;

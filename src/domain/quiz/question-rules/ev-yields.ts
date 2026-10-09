@@ -1,24 +1,39 @@
-import type { FamilyRules } from '../questions/family-rules.ts';
+import type { FamilyRule } from '../questions/family-rules.ts';
 import type {
-  QuestionControlsFor,
+  QuestionControls,
   QuestionRuleRow,
-  RenderingControlsFor,
+  RenderingControls,
 } from './types.ts';
 import { frontSprite, responsePresets } from './shared.ts';
+
+export type Rules = FamilyRule<
+  {
+    /** Ask for the full EV yield instead of one boosted stat. */
+    completeEvYield: boolean;
+    /** Rank wrong full-yield answers by total EV distance. */
+    closeAlternatives: boolean;
+  },
+  'text',
+  'single'
+>;
+
+export type Rendering = RenderingControls<
+  'sprite' | 'name' | 'number' | 'types'
+>;
 
 const controls = {
   view: { answer: { kind: 'text' } },
   completeEvYield: false,
-  closeAlternatives: false,
-} as const satisfies QuestionControlsFor<'evYields'>;
+} satisfies QuestionControls<Rules>;
 
 const rendering = {
   subject: { sprite: frontSprite },
-} satisfies RenderingControlsFor<'evYields'>;
+} satisfies Rendering;
 
 export const evYields = {
   active: false,
   rendering,
+  pokemonSprites: ['subject'],
   levels: {
     4: {
       ...controls,
@@ -32,4 +47,4 @@ export const evYields = {
       response: responsePresets.single,
     },
   },
-} satisfies QuestionRuleRow<FamilyRules['evYields'], 'evYields'>;
+} satisfies QuestionRuleRow<Rules, Rendering>;

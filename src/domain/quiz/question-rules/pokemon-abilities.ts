@@ -1,22 +1,36 @@
-import type { FamilyRules } from '../questions/family-rules.ts';
+import type { FamilyRule } from '../questions/family-rules.ts';
 import type {
-  QuestionControlsFor,
+  QuestionControls,
   QuestionRuleRow,
-  RenderingControlsFor,
+  RenderingControls,
 } from './types.ts';
 import { frontSprite, responsePresets } from './shared.ts';
+
+export type Rules = FamilyRule<
+  {
+    /** Prefer wrong abilities found on Pokémon sharing a target type. */
+    plausibleProperties: boolean;
+  },
+  'text',
+  'single'
+>;
+
+export type Rendering = RenderingControls<
+  'sprite' | 'name' | 'number' | 'types'
+>;
 
 const controls = {
   view: { answer: { kind: 'text' } },
   plausibleProperties: false,
-} as const satisfies QuestionControlsFor<'pokemonAbilities'>;
+} satisfies QuestionControls<Rules>;
 
 const rendering = {
   subject: { sprite: frontSprite },
-} satisfies RenderingControlsFor<'pokemonAbilities'>;
+} satisfies Rendering;
 
 export const pokemonAbilities = {
   rendering,
+  pokemonSprites: ['subject'],
   levels: {
     4: {
       ...controls,
@@ -28,7 +42,4 @@ export const pokemonAbilities = {
       response: responsePresets.single,
     },
   },
-} satisfies QuestionRuleRow<
-  FamilyRules['pokemonAbilities'],
-  'pokemonAbilities'
->;
+} satisfies QuestionRuleRow<Rules, Rendering>;

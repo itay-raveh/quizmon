@@ -1,23 +1,38 @@
-import type { FamilyRules } from '../questions/family-rules.ts';
 import type {
-  QuestionControlsFor,
+  FamilyRule,
+  SimilarityWeights,
+} from '../questions/family-rules.ts';
+import type {
+  QuestionControls,
   QuestionRuleRow,
-  RenderingControlsFor,
+  RenderingControls,
 } from './types.ts';
-import { frontSprite, answerSprite, responsePresets } from './shared.ts';
+import {
+  frontSprite,
+  answerSprite,
+  responsePresets,
+  typeSimilarityWeights,
+} from './shared.ts';
+
+export type Rules = FamilyRule<
+  {
+    /** Score types by their closest Pokémon to rank wrong answers. */
+    similarityWeights: SimilarityWeights;
+  },
+  'type',
+  'single'
+>;
+
+export type Rendering = RenderingControls<
+  'sprite' | 'name' | 'number' | 'types',
+  never,
+  'sprite' | 'name' | 'number' | 'types'
+>;
 
 const controls = {
-  similarityWeights: {
-    sharedType: 12,
-    shape: 8,
-    color: 5,
-    generation: 4,
-    evolutionStage: 3,
-    statMaximum: 3,
-    statScale: 80,
-  },
+  similarityWeights: typeSimilarityWeights,
   view: { answer: { kind: 'type' } },
-} as const satisfies QuestionControlsFor<'evolutionGainedType'>;
+} satisfies QuestionControls<Rules>;
 
 const rendering = {
   subject: { sprite: frontSprite, types: 'always' },
@@ -27,10 +42,11 @@ const rendering = {
     number: 'after-answer',
     types: 'always',
   },
-} satisfies RenderingControlsFor<'evolutionGainedType'>;
+} satisfies Rendering;
 
 export const evolutionGainedType = {
   rendering,
+  pokemonSprites: ['subject', 'related'],
   levels: {
     3: {
       ...controls,
@@ -45,7 +61,4 @@ export const evolutionGainedType = {
       },
     },
   },
-} satisfies QuestionRuleRow<
-  FamilyRules['evolutionGainedType'],
-  'evolutionGainedType'
->;
+} satisfies QuestionRuleRow<Rules, Rendering>;

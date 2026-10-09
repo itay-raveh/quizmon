@@ -1,4 +1,5 @@
-import { createRxDatabase } from 'rxdb/plugins/core';
+import { addRxPlugin, createRxDatabase } from 'rxdb/plugins/core';
+import { RxDBMigrationSchemaPlugin } from 'rxdb/plugins/migration-schema';
 import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie';
 import type { RxCollection, RxDatabase, RxStorage } from 'rxdb';
 import {
@@ -9,6 +10,14 @@ import {
   type SyncedPlayer,
   type SyncedRound,
 } from './rxdb-schema.ts';
+
+import {
+  migrateDeviceV1,
+  migratePlayerV1,
+  migrateRoundV1,
+} from './rxdb-migrations.ts';
+
+addRxPlugin(RxDBMigrationSchemaPlugin);
 
 interface PlayerCollections {
   players: RxCollection<SyncedPlayer>;
@@ -30,9 +39,18 @@ export async function openPlayerDatabase(
   });
   try {
     await db.addCollections({
-      players: { schema: playerSchema },
-      rounds: { schema: roundSchema },
-      device: { schema: deviceSchema },
+      players: {
+        schema: playerSchema,
+        migrationStrategies: { 1: migratePlayerV1 },
+      },
+      rounds: {
+        schema: roundSchema,
+        migrationStrategies: { 1: migrateRoundV1 },
+      },
+      device: {
+        schema: deviceSchema,
+        migrationStrategies: { 1: migrateDeviceV1 },
+      },
     });
     return db;
   } catch (error) {

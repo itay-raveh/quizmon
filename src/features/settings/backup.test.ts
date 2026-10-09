@@ -1,3 +1,6 @@
+import { legacyProgress } from '../../../tests/legacy-progress';
+import { scoreCompactRound } from '../../domain/sync/compact-rounds';
+import { backupPreview } from './backup';
 import { emptyDeviceState } from '../../lib/storage/rxdb-game';
 import { parseBackup } from './backup';
 import { createTrainerProfile } from '../../domain/player/trainer-profile';
@@ -89,4 +92,32 @@ it('drops obsolete unfinished rounds from a backup', () => {
     }),
   );
   expect(parsed.device).toEqual(backup().device);
+});
+
+it('automatically converts an older export before preview without changing raw answers, identity or explicit preferences', () => {
+  const fixture = legacyProgress();
+  const source = {
+    ...backup(),
+    player: fixture.player,
+    rounds: [fixture.legacy],
+  };
+  const parsed = parseBackup(JSON.stringify(source));
+  expect(parsed.rounds).toEqual([fixture.current]);
+  expect(scoreCompactRound(parsed.rounds[0]!)).toEqual(
+    scoreCompactRound(fixture.current),
+  );
+  expect(parsed.player?.profile).toEqual(source.player.profile);
+  expect(parsed.player?.settings?.questionTypes).toEqual([
+    'pokemonIdentification',
+    'pokemonMatch',
+    'pokemonTypes',
+  ]);
+  expect(parsed.player?.settings?.questionSelection).toBe('custom');
+  expect(backupPreview(parsed).results.training.score?.score).toBeGreaterThan(
+    0,
+  );
+  expect(parseBackup(JSON.stringify(parsed))).toEqual(parsed);
+  expect(source.rounds[0]!.answers[0]!.type).toBe(
+    'pokemonFromHistoricalSprite',
+  );
 });

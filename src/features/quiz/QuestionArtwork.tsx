@@ -259,7 +259,9 @@ export const QuestionArtwork = ({
       visual?.kind === 'superEffectiveAttacker')
   ) {
     const answer = question.answer.correctOptions[0];
-    const answerVisual = answer ? question.optionVisuals?.[answer] : undefined;
+    const answerVisual = answer
+      ? (question.relatedVisuals?.[answer] ?? question.optionVisuals?.[answer])
+      : undefined;
     return (
       <div
         className="question-visual question-relation question-relation--matchup"

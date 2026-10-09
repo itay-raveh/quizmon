@@ -1,13 +1,50 @@
-import type { MeasurementRules } from '../measurement-comparison.ts';
 import type { QuestionRendering } from '../rendering.ts';
 import type { QuestionView } from '../presentation.ts';
 import type { ResponseStrategy } from './response-strategies.ts';
+import type { Rules as ItemIdentificationRules } from '../question-rules/item-identification.ts';
+import type { Rules as ItemUsesRules } from '../question-rules/item-uses.ts';
+import type { Rules as WeightComparisonRules } from '../question-rules/weight-comparison.ts';
+import type { Rules as HeightComparisonRules } from '../question-rules/height-comparison.ts';
+import type { Rules as MoveTypesRules } from '../question-rules/move-types.ts';
+import type { Rules as LocationRegionRules } from '../question-rules/location-region.ts';
+import type { Rules as MoveCategoryRules } from '../question-rules/move-category.ts';
+import type { Rules as PokedexCategoriesRules } from '../question-rules/pokedex-categories.ts';
+import type { Rules as EvolutionConditionsRules } from '../question-rules/evolution-conditions.ts';
+import type { Rules as AbilityEffectsRules } from '../question-rules/ability-effects.ts';
+import type { Rules as HeldItemEffectsRules } from '../question-rules/held-item-effects.ts';
+import type { Rules as HiddenAbilitiesRules } from '../question-rules/hidden-abilities.ts';
+import type { Rules as NatureEffectsRules } from '../question-rules/nature-effects.ts';
+import type { Rules as EvYieldsRules } from '../question-rules/ev-yields.ts';
+import type { Rules as EncounterLocationsRules } from '../question-rules/encounter-locations.ts';
+import type { Rules as BerryFlavorsRules } from '../question-rules/berry-flavors.ts';
+import type { Rules as NaturalGiftRules } from '../question-rules/natural-gift.ts';
+import type { Rules as PokemonIdentificationRules } from '../question-rules/pokemon-identification.ts';
+import type { Rules as PokemonMatchRules } from '../question-rules/pokemon-match.ts';
+import type { Rules as PokemonFromPixelCropRules } from '../question-rules/pokemon-from-pixel-crop.ts';
+import type { Rules as ShinyPokemonIdentificationRules } from '../question-rules/shiny-pokemon-identification.ts';
+import type { Rules as PokedexEntryMatchRules } from '../question-rules/pokedex-entry-match.ts';
+import type { Rules as PokemonTypesRules } from '../question-rules/pokemon-types.ts';
+import type { Rules as TypeOddOneOutRules } from '../question-rules/type-odd-one-out.ts';
+import type { Rules as PokemonByTypeRules } from '../question-rules/pokemon-by-type.ts';
+import type { Rules as DualTypeMatchRules } from '../question-rules/dual-type-match.ts';
+import type { Rules as LegendaryMythicalSelectionRules } from '../question-rules/legendary-mythical-selection.ts';
+import type { Rules as PokemonByGenerationRules } from '../question-rules/pokemon-by-generation.ts';
+import type { Rules as EvolutionChainRules } from '../question-rules/evolution-chain.ts';
+import type { Rules as EvolutionGainedTypeRules } from '../question-rules/evolution-gained-type.ts';
+import type { Rules as PokemonAbilitiesRules } from '../question-rules/pokemon-abilities.ts';
+import type { Rules as LevelUpMovesRules } from '../question-rules/level-up-moves.ts';
+import type { Rules as StatExtremesRules } from '../question-rules/stat-extremes.ts';
+import type { Rules as TypeMatchupRules } from '../question-rules/type-matchup.ts';
+import type { Rules as SuperEffectiveAttackerRules } from '../question-rules/super-effective-attacker.ts';
+import type { Rules as ChampionRules } from '../question-rules/champion.ts';
 
 type ChoiceResponse = Extract<ResponseStrategy, { kind: 'picker' }>;
-type SearchResponse<Candidates extends 'pool' | 'provided'> =
+export type SearchResponse<Candidates extends 'pool' | 'provided'> =
   | ChoiceResponse
   | { kind: 'search'; selection: 'single'; candidates: Candidates };
-type TypeSearchResponse<Correct extends 'subject-types' | 'effectiveness'> =
+export type TypeSearchResponse<
+  Correct extends 'subject-types' | 'effectiveness',
+> =
   | ChoiceResponse
   | {
       kind: 'search';
@@ -16,23 +53,20 @@ type TypeSearchResponse<Correct extends 'subject-types' | 'effectiveness'> =
       correct: Correct;
     };
 export type SimilarityWeights = {
-  /** Points per type shared with the target. */
-  sharedType: number;
-  /** Points when target and candidate have the same shape. */
+  /** Maximum type-overlap points, normalized by the union of both type sets. */
+  type: number;
   shape: number;
-  /** Points when target and candidate have the same color. */
   color: number;
-  /** Points when target and candidate debuted in the same generation. */
-  generation: number;
-  /** Points when both occupy the same evolution stage. */
   evolutionStage: number;
-  /** Maximum stat-proximity points before stat difference is subtracted. */
-  statMaximum: number;
-  /** Divisor for the absolute difference in total base stats. */
-  statScale: number;
+  /** Bounded similarity of front-reference alpha-bound width/height ratios. */
+  proportions: number;
+  /** Optional weak similarity of official physical heights; never changes sprite size. */
+  height: number;
 };
 
 export interface PokemonDistractors {
+  /** Allow the target’s evolution family, including branches, among wrong choices. */
+  allowEvolutionRelatives: boolean;
   /** On a short pool, use a similarity band or keep the fixed shortlist. */
   smallPoolPolicy: 'semantic-band' | 'fixed-size';
   /** Rank candidates toward or away from the target's similarity score. */
@@ -45,9 +79,13 @@ export interface PokemonDistractors {
   distantSpeciesFraction: number;
   /** Coefficients used by the shared Pokémon similarity scorer. */
   similarityWeights: SimilarityWeights;
+  /** Role whose sampled appearance governs visual distractor ranking. */
+  similarityRole?: 'subject' | 'choices';
+  /** Simple overrides for a concealed image; color cannot contribute. */
+  silhouetteWeights?: Partial<Omit<SimilarityWeights, 'color'>> & { color?: 0 };
 }
 
-interface EffectDistractors {
+export interface EffectDistractors {
   /** Inclusive lower bound on description similarity for wrong effects. */
   minimumEffectSimilarity: number;
   /** Exclusive upper bound on description similarity for wrong effects. */
@@ -67,289 +105,61 @@ export type EffectRules = EffectDistractors & {
   response: SearchResponse<'provided'>;
 };
 
-type NoControls = object;
+export type NoControls = object;
 
-interface FamilyControls {
-  itemIdentification: {
-    /** Permit the selected bag and paper items as answers and choices. */
-    allowEverydayItems: boolean;
-    /** Require wrong items from different categories. */
-    distinctItemCategories: boolean;
-    /** Restrict wrong items to the target's bag pocket. */
-    sameItemPocket: boolean;
-    /** Restrict wrong items to the target's pocket and category. */
-    sameItemCategory: boolean;
-    /** Search uses item names supplied by the builder. */
-    response: SearchResponse<'provided'>;
+/** Resolved builder input; family modules own their controls and answer kinds. */
+export type FamilyRule<
+  Controls,
+  AnswerKind extends QuestionView['answer']['kind'],
+  Selection extends ChoiceResponse['selection'],
+> = Omit<Controls, 'response'> & {
+  response: Controls extends { response: infer Strategy }
+    ? Strategy extends ChoiceResponse
+      ? Strategy & { selection: Selection }
+      : Strategy
+    : ChoiceResponse & { selection: Selection };
+  rendering: QuestionRendering;
+  view: Omit<QuestionView, 'answer'> & {
+    answer: Extract<QuestionView['answer'], { kind: AnswerKind }>;
   };
-  itemUses: EffectDistractors & {
-    /** Restrict wrong effects to items in the target's category. */
-    sameItemCategory: boolean;
-    /** Permit targets without an item sprite. */
-    allowMissingSprites: boolean;
-  };
-  weightComparison: {
-    /** Ratio and spread limits for four Pokémon weights. */
-    measurement: MeasurementRules;
-  };
-  heightComparison: {
-    /** Ratio and spread limits for four Pokémon heights. */
-    measurement: MeasurementRules;
-  };
-  moveTypes: {
-    /** Include the move's description in the prompt. */
-    showMoveDescription: boolean;
-    /** Offer every type instead of four sampled types. */
-    allOptions: boolean;
-    /** Skip move names that contain their answer type. */
-    excludeTypeHintNames: boolean;
-  };
-  locationRegion: {
-    /** Offer every eligible region instead of four sampled regions. */
-    allOptions: boolean;
-    /** Permit locations named only by a numbered land or sea route. */
-    allowNumberedRoutes: boolean;
-  };
-  moveCategory: {
-    /** Ask only about status moves. */
-    statusMovesOnly: boolean;
-    /** Choose wrong moves with the same type as the target. */
-    sameMoveType: boolean;
-  };
-  pokedexCategories: {
-    /** Require each wrong Pokémon to share the target's color or shape. */
-    sameColorOrShape: boolean;
-    /** Rank eligible wrong Pokémon by similarity before taking three. */
-    closeAlternatives: boolean;
-    /** Similarity coefficients for ranking wrong Pokémon. */
-    similarityWeights: SimilarityWeights;
-  };
-  evolutionConditions: {
-    /** Minimum distinct true conditions required for a target. */
-    minimumEvolutionConditions: number;
-    /** Keep numeric levels and other exact values in condition labels. */
-    exactEvolutionValues: boolean;
-    /** Shorten condition labels, such as `Trade this Pokémon` to `Trade`. */
-    compactEvolutionLabels: boolean;
-    /** Include directly used evolution items as conditions. */
-    directEvolutionItems: boolean;
-    /** Include location-dependent evolution conditions. */
-    evolutionLocations: boolean;
-    /** Favor numerically nearby wrong condition values. */
-    preferCloseConditionValues: boolean;
-    /** Permit targets without a Pokémon sprite. */
-    allowMissingSprites: boolean;
-  };
-  abilityEffects: EffectDistractors & {
-    /** Permit targets without a sprite. */
-    allowMissingSprites: boolean;
-    /** Search uses ability names supplied by the builder. */
-    response: SearchResponse<'provided'>;
-  };
-  heldItemEffects: EffectDistractors & {
-    /** Restrict wrong effects to items in the target's category. */
-    sameItemCategory: boolean;
-    /** Permit targets without an item sprite. */
-    allowMissingSprites: boolean;
-  };
-  hiddenAbilities: {
-    /** Source wrong abilities from Pokémon sharing a target type. */
-    sameTypeAbilityDistractors: boolean;
-    /** Permit targets without a Pokémon sprite. */
-    allowMissingSprites: boolean;
-  };
-  natureEffects: {
-    /** Choose wrong natures that share a raised or lowered stat. */
-    shareNatureStat: boolean;
-  };
-  evYields: {
-    /** Ask for the full EV yield instead of one boosted stat. */
-    completeEvYield: boolean;
-    /** Rank wrong full-yield answers by total EV distance. */
-    closeAlternatives: boolean;
-  };
-  encounterLocations: {
-    /** Include time- and weather-dependent encounter records. */
-    encounterConditions: boolean;
-    /** Rank wrong Pokémon by encounter method and similarity. */
-    closeAlternatives: boolean;
-    /** Similarity coefficients for wrong Pokémon. */
-    similarityWeights: SimilarityWeights;
-    /** Extra rank points for a wrong Pokémon using the same encounter method. */
-    sameEncounterMethodWeight: number;
-  };
-  berryFlavors: NoControls;
-  naturalGift: NoControls;
-  pokemonFromHistoricalSprite: PokemonDistractors & {
-    /** Probability of showing the current sprite instead of a historical one. */
-    currentSpriteChance: number;
-    /** Probability of taking a back sprite before sampling a generation. */
-    backSpriteChance: number;
-    /** Chance of preferring a front sprite within a sampled generation. */
-    frontSpriteChance: number;
-    /** Search uses the current eligible Pokémon pool. */
-    response: SearchResponse<'pool'>;
-  };
-  spriteForPokemon: PokemonDistractors;
-  silhouetteForPokemon: PokemonDistractors;
-  pokemonFromSilhouette: PokemonDistractors & {
-    /** Search uses the current eligible Pokémon pool. */
-    response: SearchResponse<'pool'>;
-  };
-  pokemonFromPixelCrop: PokemonDistractors & {
-    /** Search uses the current eligible Pokémon pool. */
-    response: SearchResponse<'pool'>;
-    /** Multiplier applied to the generated pixel-crop zoom. */
-    cropScale: number;
-  };
-  shinyPokemonIdentification: PokemonDistractors;
-  pokedexEntryMatch: PokemonDistractors & {
-    /** Search uses the current eligible Pokémon pool. */
-    response: SearchResponse<'pool'>;
-  };
-  pokemonTypes: {
-    /** Restrict targets to Pokémon with exactly one type. */
-    singleType: boolean;
-    /** Search for every type of the subject. */
-    response: TypeSearchResponse<'subject-types'>;
-    /** Score types by their closest Pokémon to rank wrong answers. */
-    similarityWeights: SimilarityWeights;
-  };
-  typeOddOneOut: {
-    /** Restrict candidates to Pokémon with exactly one type. */
-    singleType: boolean;
-  };
-  pokemonByType: {
-    /** Restrict candidates to Pokémon with exactly one type. */
-    singleType: boolean;
-  };
-  dualTypeMatch: PokemonDistractors;
-  legendaryMythicalSelection: NoControls;
-  pokemonByGeneration: NoControls;
-  evolutionChain: PokemonDistractors & {
-    /** Search uses the current eligible Pokémon pool. */
-    response: SearchResponse<'pool'>;
-  };
-  evolutionGainedType: {
-    /** Score types by their closest Pokémon to rank wrong answers. */
-    similarityWeights: SimilarityWeights;
-  };
-  pokemonAbilities: {
-    /** Prefer wrong abilities found on Pokémon sharing a target type. */
-    plausibleProperties: boolean;
-  };
-  levelUpMoves: {
-    /** Prefer wrong moves learned by Pokémon sharing a target type. */
-    plausibleProperties: boolean;
-  };
-  statExtremes: {
-    /** Inclusive allowed stat-point gap to each wrong Pokémon; null disables it. */
-    statGap: readonly [number, number] | null;
-  };
-  typeMatchup: {
-    /** Restrict targets to Pokémon with exactly one type. */
-    singleType: boolean;
-    /** Attack multipliers eligible to be asked about. */
-    multipliers: readonly number[];
-    /** Search for every attack type with the requested multiplier. */
-    response: TypeSearchResponse<'effectiveness'>;
-  };
-  superEffectiveAttacker: PokemonDistractors & {
-    /** Restrict targets to Pokémon with exactly one type. */
-    singleType: boolean;
-    /** Attack multipliers eligible to be asked about. */
-    multipliers: readonly number[];
-  };
-  champion: PokemonDistractors & {
-    /** Optional finale response and assistance rules; null uses ordinary choices. */
-    finale: null | {
-      /** Initially reveal choices, choices with types, or search. */
-      opening: 'choices-types' | 'choices' | 'search';
-      /** Allow player-requested clues. */
-      assistance: boolean;
-      /** Initial clue count used as the score penalty. */
-      penalty: number;
-    };
-  };
-}
-
-type FamilyAnswerKinds = {
-  itemIdentification: 'item';
-  itemUses: 'text';
-  weightComparison: 'pokemon';
-  heightComparison: 'pokemon';
-  moveTypes: 'type';
-  locationRegion: 'text';
-  moveCategory: 'move';
-  pokedexCategories: 'pokemon';
-  evolutionConditions: 'text';
-  abilityEffects: 'text';
-  heldItemEffects: 'text';
-  hiddenAbilities: 'text';
-  natureEffects: 'text';
-  evYields: 'text';
-  encounterLocations: 'pokemon';
-  berryFlavors: 'text';
-  naturalGift: 'type';
-  pokemonFromHistoricalSprite: 'pokemon';
-  spriteForPokemon: 'pokemon';
-  silhouetteForPokemon: 'pokemon';
-  pokemonFromSilhouette: 'pokemon';
-  pokemonFromPixelCrop: 'pokemon';
-  shinyPokemonIdentification: 'pokemon';
-  pokedexEntryMatch: 'pokemon';
-  pokemonTypes: 'type';
-  typeOddOneOut: 'pokemon';
-  pokemonByType: 'pokemon';
-  dualTypeMatch: 'pokemon';
-  legendaryMythicalSelection: 'pokemon';
-  pokemonByGeneration: 'pokemon';
-  evolutionChain: 'pokemon';
-  evolutionGainedType: 'type';
-  pokemonAbilities: 'text';
-  levelUpMoves: 'move';
-  statExtremes: 'pokemon';
-  typeMatchup: 'type';
-  superEffectiveAttacker: 'pokemon';
-  champion: 'pokemon';
 };
 
-type ChoiceSelectionFor<Type extends keyof FamilyControls> = Type extends
-  'evolutionConditions' | 'champion'
-  ? 'single' | 'adaptive'
-  : Type extends 'encounterLocations' | 'berryFlavors'
-    ? 'single' | 'multi'
-    : Type extends
-          'pokemonByType' | 'legendaryMythicalSelection' | 'pokemonByGeneration'
-      ? 'multi'
-      : 'single';
-
-type FamilyResponse<
-  Type extends keyof FamilyControls,
-  Strategy,
-> = Strategy extends ChoiceResponse
-  ? Strategy & { selection: ChoiceSelectionFor<Type> }
-  : Strategy;
-
-/**
- * Fully resolved builder input. Each family owns its controls and supported
- * response modes; its answer presentation kind is fixed by the family.
- */
+/** Aggregate the configuration types exported by their owning families. */
 export type FamilyRules = {
-  [Type in keyof FamilyControls]: Omit<FamilyControls[Type], 'response'> & {
-    /** Answer mode allowed for this family. */
-    response: FamilyControls[Type] extends { response: infer Strategy }
-      ? FamilyResponse<Type, Strategy>
-      : FamilyResponse<Type, ChoiceResponse>;
-    /** Fully merged visibility policy passed to the renderer. */
-    rendering: QuestionRendering;
-    /** Answer and subject layout, with the family's answer kind enforced. */
-    view: Omit<QuestionView, 'answer'> & {
-      /** Presentation kind allowed by this family. */
-      answer: Extract<
-        QuestionView['answer'],
-        { kind: FamilyAnswerKinds[Type] }
-      >;
-    };
-  };
+  itemIdentification: ItemIdentificationRules;
+  itemUses: ItemUsesRules;
+  weightComparison: WeightComparisonRules;
+  heightComparison: HeightComparisonRules;
+  moveTypes: MoveTypesRules;
+  locationRegion: LocationRegionRules;
+  moveCategory: MoveCategoryRules;
+  pokedexCategories: PokedexCategoriesRules;
+  evolutionConditions: EvolutionConditionsRules;
+  abilityEffects: AbilityEffectsRules;
+  heldItemEffects: HeldItemEffectsRules;
+  hiddenAbilities: HiddenAbilitiesRules;
+  natureEffects: NatureEffectsRules;
+  evYields: EvYieldsRules;
+  encounterLocations: EncounterLocationsRules;
+  berryFlavors: BerryFlavorsRules;
+  naturalGift: NaturalGiftRules;
+  pokemonIdentification: PokemonIdentificationRules;
+  pokemonMatch: PokemonMatchRules;
+  pokemonFromPixelCrop: PokemonFromPixelCropRules;
+  shinyPokemonIdentification: ShinyPokemonIdentificationRules;
+  pokedexEntryMatch: PokedexEntryMatchRules;
+  pokemonTypes: PokemonTypesRules;
+  typeOddOneOut: TypeOddOneOutRules;
+  pokemonByType: PokemonByTypeRules;
+  dualTypeMatch: DualTypeMatchRules;
+  legendaryMythicalSelection: LegendaryMythicalSelectionRules;
+  pokemonByGeneration: PokemonByGenerationRules;
+  evolutionChain: EvolutionChainRules;
+  evolutionGainedType: EvolutionGainedTypeRules;
+  pokemonAbilities: PokemonAbilitiesRules;
+  levelUpMoves: LevelUpMovesRules;
+  statExtremes: StatExtremesRules;
+  typeMatchup: TypeMatchupRules;
+  superEffectiveAttacker: SuperEffectiveAttackerRules;
+  champion: ChampionRules;
 };

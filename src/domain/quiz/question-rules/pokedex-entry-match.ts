@@ -1,35 +1,59 @@
-import type { FamilyRules } from '../questions/family-rules.ts';
 import type {
-  QuestionControlsFor,
+  FamilyRule,
+  PokemonDistractors,
+  SearchResponse,
+} from '../questions/family-rules.ts';
+import type {
+  QuestionControls,
+  QuestionRuleEntry,
   QuestionRuleRow,
-  RenderingControlsFor,
+  PokemonChoices,
+  PokemonSearch,
+  HiddenPokemonSubject,
 } from './types.ts';
 import { answerSprite, responsePresets } from './shared.ts';
 
+export type Rules = FamilyRule<
+  PokemonDistractors & {
+    /** Search uses the current eligible Pokémon pool. */
+    response: SearchResponse<'pool'>;
+  },
+  'pokemon',
+  'single'
+>;
+
+export type Rendering = {
+  subject?: HiddenPokemonSubject;
+  choices?: PokemonChoices;
+  search?: PokemonSearch;
+};
+
+export type Entry = Omit<
+  QuestionRuleEntry<Rules, Rendering>,
+  'rendering' | 'response'
+> &
+  (
+    | {
+        response: Extract<Rules['response'], { kind: 'search' }>;
+        rendering?: Rendering;
+      }
+    | {
+        response: Exclude<Rules['response'], { kind: 'search' }>;
+        rendering?: Omit<Rendering, 'subject'>;
+      }
+  );
+
 const controls = {
   view: { answer: { kind: 'pokemon' } },
-  distractorRankDirection: 'most-similar',
-  distractorPoolSize: 15,
-  smallPoolSimilarityRatio: 0.6,
-  distantSpeciesFraction: 0.3333333333333333,
-  similarityWeights: {
-    sharedType: 12,
-    shape: 8,
-    color: 5,
-    generation: 4,
-    evolutionStage: 3,
-    statMaximum: 3,
-    statScale: 80,
-  },
-  smallPoolPolicy: 'semantic-band',
-} as const satisfies QuestionControlsFor<'pokedexEntryMatch'>;
+} satisfies QuestionControls<Rules>;
 
 const rendering = {
   subject: { name: 'never', number: 'never' },
-} satisfies RenderingControlsFor<'pokedexEntryMatch'>;
+} satisfies Rendering;
 
 export const pokedexEntryMatch = {
   rendering,
+  pokemonSprites: ['subject', 'choices', 'search'],
   levels: {
     4: {
       ...controls,
@@ -51,7 +75,4 @@ export const pokedexEntryMatch = {
       },
     },
   },
-} satisfies QuestionRuleRow<
-  FamilyRules['pokedexEntryMatch'],
-  'pokedexEntryMatch'
->;
+} satisfies QuestionRuleRow<Rules, Rendering, Entry>;

@@ -1,61 +1,55 @@
+import type { questionRuleDefaults } from './shared.ts';
+import type { SimilarityWeights } from '../questions/family-rules.ts';
 import type { LevelRules } from '../level.ts';
 import {
   type EntityRendering,
   type QuestionRendering,
+  type RenderingRole,
   type SpriteRendering,
+  type EntityRenderingOverrides,
   type Visibility,
 } from '../rendering.ts';
-import type { FamilyRules } from '../questions/family-rules.ts';
 
-type Renderable<Fields extends keyof EntityRendering> = Partial<
-  Pick<EntityRendering, Fields>
+export type Renderable<Fields extends keyof EntityRendering> = Pick<
+  EntityRenderingOverrides,
+  Fields
 >;
-type HiddenUntilAnswer = 'after-answer' | 'never';
+export type HiddenUntilAnswer = 'after-answer' | 'never';
 type VisibleChoice = Extract<Visibility, 'always'>;
-type VisibleChoiceSprite = Exclude<SpriteRendering, null> & {
-  reveal: 'always';
-  source: 'front' | 'all';
+export type VisibleChoiceSprite = Partial<Exclude<SpriteRendering, null>> & {
+  reveal?: 'always';
 };
-type ItemSprite = Exclude<SpriteRendering, null> & {
-  silhouette: false;
-  source?: never;
+export type ItemSprite = Partial<Exclude<SpriteRendering, null>> & {
+  silhouette?: false;
+  silhouetteChance?: never;
+  historicalSpriteChance?: never;
+  backSpriteChance?: never;
 };
-type VisibleItem =
+export type VisibleItem =
   | {
       name?: Exclude<Visibility, 'never'>;
       sprite?: ItemSprite;
     }
   | { name: VisibleChoice; sprite?: ItemSprite | null }
-  | { name?: Visibility; sprite: ItemSprite & { reveal: 'always' } };
-type ItemChoices = Partial<Pick<EntityRendering, 'name' | 'sprite'>> &
+  | { name?: Visibility; sprite: ItemSprite & { reveal?: 'always' } };
+export type ItemChoices = Pick<EntityRenderingOverrides, 'name' | 'sprite'> &
   (
     | { name: VisibleChoice; sprite?: ItemSprite | null }
-    | { sprite: ItemSprite & { reveal: 'always' } }
+    | { sprite: ItemSprite & { reveal?: 'always' } }
   );
-type PokemonChoices = Partial<EntityRendering> &
+export type PokemonChoices = EntityRenderingOverrides &
   (
     | { sprite: VisibleChoiceSprite }
     | { name: VisibleChoice }
     | { number: VisibleChoice }
     | { types: VisibleChoice }
   );
-type PokemonSearch = Renderable<'sprite' | 'number' | 'types'>;
-type RequiredSubjectSprite = Omit<
+export type PokemonSearch = Renderable<'sprite' | 'number' | 'types'>;
+export type RequiredSubjectSprite = Omit<
   Renderable<'sprite' | 'name' | 'number' | 'types'>,
   'sprite'
 > & { sprite?: VisibleChoiceSprite };
-type FrontSubjectSprite = Omit<RequiredSubjectSprite, 'sprite'> & {
-  sprite?: VisibleChoiceSprite & { source: 'front' };
-};
-type FrontPokemonChoices = Partial<Omit<EntityRendering, 'sprite'>> & {
-  sprite?: (VisibleChoiceSprite & { source: 'front' }) | null;
-} & (
-    | { sprite: VisibleChoiceSprite & { source: 'front' } }
-    | { name: VisibleChoice }
-    | { number: VisibleChoice }
-    | { types: VisibleChoice }
-  );
-type HiddenPokemonSubject = {
+export type HiddenPokemonSubject = {
   name?: HiddenUntilAnswer;
   number?: HiddenUntilAnswer;
   types?: HiddenUntilAnswer;
@@ -66,7 +60,7 @@ type HiddenPokemonSubject = {
     | null;
 };
 
-type RenderingControls<
+export type RenderingControls<
   Subject extends keyof EntityRendering = never,
   Choices extends keyof EntityRendering = never,
   Related extends keyof EntityRendering = never,
@@ -82,156 +76,60 @@ type RenderingControls<
   search?: [Search] extends [never] ? never : Renderable<Search>;
 };
 
-/** Only fields with a real rendering consumer are configurable per family. */
-type FamilyRenderingControls = {
-  moveTypes: RenderingControls<'sprite'>;
-  moveCategory: RenderingControls<never, 'types'>;
-  itemIdentification: {
-    subject?: VisibleItem;
-    choices?: ItemChoices;
-    search?: { sprite?: ItemSprite | null };
-  };
-  itemUses: { subject?: VisibleItem };
-  abilityEffects: RenderingControls<'sprite'>;
-  heldItemEffects: { subject?: VisibleItem };
-  hiddenAbilities: RenderingControls<'sprite' | 'name' | 'number' | 'types'>;
-  evYields: RenderingControls<'sprite' | 'name' | 'number' | 'types'>;
-  berryFlavors: { subject?: VisibleItem };
-  naturalGift: { subject?: VisibleItem };
-  weightComparison: { choices?: PokemonChoices };
-  heightComparison: { choices?: PokemonChoices };
-  pokedexCategories: { choices?: PokemonChoices };
-  evolutionConditions: RenderingControls<
-    never,
-    never,
-    'sprite' | 'name' | 'number' | 'types'
-  >;
-  encounterLocations: { choices?: PokemonChoices };
-  shinyPokemonIdentification: { choices?: FrontPokemonChoices };
-  pokedexEntryMatch: {
-    subject?: HiddenPokemonSubject;
-    choices?: PokemonChoices;
-    search?: PokemonSearch;
-  };
-  legendaryMythicalSelection: { choices?: PokemonChoices };
-  statExtremes: { choices?: PokemonChoices };
-  pokemonFromHistoricalSprite: {
-    subject?: RequiredSubjectSprite;
-    choices?: PokemonChoices;
-    search?: PokemonSearch;
-  };
-  spriteForPokemon: {
-    subject?: Renderable<'sprite' | 'name' | 'number' | 'types'>;
-    choices?: PokemonChoices;
-  };
-  silhouetteForPokemon: {
-    subject?: Renderable<'sprite' | 'name' | 'number' | 'types'>;
-    choices?: PokemonChoices;
-  };
-  pokemonFromSilhouette: {
-    subject?: RequiredSubjectSprite;
-    choices?: PokemonChoices;
-    search?: PokemonSearch;
-  };
-  pokemonFromPixelCrop: {
-    subject?: FrontSubjectSprite;
-    choices?: PokemonChoices;
-    search?: PokemonSearch;
-  };
-  pokemonByGeneration: { choices?: PokemonChoices };
-  pokemonTypes: {
-    subject?: Renderable<'sprite' | 'name' | 'number'> & {
-      types?: 'after-answer';
-    };
-  };
-  typeOddOneOut: { choices?: PokemonChoices };
-  pokemonByType: { choices?: PokemonChoices };
-  dualTypeMatch: {
-    subject?: Renderable<'sprite' | 'name' | 'number'> & {
-      types?: HiddenUntilAnswer;
-    };
-    choices?: PokemonChoices;
-  };
-  typeMatchup: RenderingControls<'sprite' | 'name' | 'number' | 'types'>;
-  evolutionChain: {
-    subject?: Renderable<'sprite' | 'name' | 'number' | 'types'>;
-    choices?: PokemonChoices;
-    related?: Renderable<'sprite' | 'name' | 'number' | 'types'>;
-    search?: PokemonSearch;
-  };
-  evolutionGainedType: RenderingControls<
-    'sprite' | 'name' | 'number' | 'types',
-    never,
-    'sprite' | 'name' | 'number' | 'types'
-  >;
-  superEffectiveAttacker: {
-    subject?: Renderable<'sprite' | 'name' | 'number'> & {
-      types?: 'always' | 'after-answer';
-    };
-    choices?: PokemonChoices;
-    related?: Renderable<'sprite' | 'name' | 'number' | 'types'>;
-  };
-  champion: {
-    subject?: Renderable<'sprite' | 'name' | 'number' | 'types'>;
-    choices?: PokemonChoices;
-    search?: PokemonSearch;
-  };
-  pokemonAbilities: RenderingControls<'sprite' | 'name' | 'number' | 'types'>;
-  levelUpMoves: RenderingControls<
-    'sprite' | 'name' | 'number' | 'types',
-    'types'
-  >;
-};
+/** Required family facts stay required; only declared shared defaults may be omitted. */
+type AuthoredControls<Rules> = Rules extends { rendering: QuestionRendering }
+  ? Omit<
+      Rules,
+      keyof typeof questionRuleDefaults | 'rendering' | 'similarityWeights'
+    > &
+      Partial<
+        Pick<Rules, Extract<keyof Rules, keyof typeof questionRuleDefaults>>
+      > &
+      (Rules extends { similarityWeights: SimilarityWeights }
+        ? { similarityWeights?: Partial<SimilarityWeights> }
+        : unknown)
+  : never;
 
-/**
- * Rendering overrides a family can consume. Unsupported roles, fields, and
- * answer-revealing values fail at configuration time.
- */
-export type RenderingControlsFor<Type extends keyof FamilyRules> =
-  Type extends keyof FamilyRenderingControls
-    ? FamilyRenderingControls[Type]
-    : RenderingControls;
-
-/**
- * Complete controls for one level. `rendering` overrides
- * the family policy; controls do not inherit from lower levels.
- */
 export type QuestionRuleEntry<
-  Rules extends { rendering: QuestionRendering; response: { kind: string } },
-  Type extends keyof FamilyRules,
-> = Type extends 'pokedexEntryMatch'
-  ? Omit<Rules, 'rendering' | 'response'> &
-      (
-        | {
-            response: Extract<Rules['response'], { kind: 'search' }>;
-            rendering?: RenderingControlsFor<Type>;
-          }
-        | {
-            response: Exclude<Rules['response'], { kind: 'search' }>;
-            rendering?: Omit<RenderingControlsFor<Type>, 'subject'>;
-          }
-      )
-  : Omit<Rules, 'rendering'> & {
-      /** Visibility changes applied after the family policy. */
-      rendering?: RenderingControlsFor<Type>;
-    };
+  Rules extends { rendering: QuestionRendering },
+  Rendering,
+> = AuthoredControls<Rules> & { rendering?: Rendering };
 
-/**
- * One family's rules. Numeric `levels` may be sparse; resolution uses the
- * latest entry at or below the requested level.
- */
+type SupportsSpriteDifficulty<Policy> = Policy extends { sprite?: infer Sprite }
+  ? Sprite extends { backSpriteChance?: infer Chance }
+    ? number extends Chance
+      ? true
+      : false
+    : false
+  : false;
+
+type SpriteRoles<Rendering> = {
+  [Role in keyof Rendering]: true extends SupportsSpriteDifficulty<
+    Rendering[Role]
+  >
+    ? Role
+    : never;
+}[keyof Rendering];
+
 export type QuestionRuleRow<
-  Rules extends { rendering: QuestionRendering; response: { kind: string } },
-  Type extends keyof FamilyRules,
+  Rules extends { rendering: QuestionRendering },
+  Rendering,
+  Entry = QuestionRuleEntry<Rules, Rendering>,
 > = {
   active?: boolean;
-  /** Family visibility changes applied after the base policy. */
-  rendering: RenderingControlsFor<Type>;
-  /** Sparse rules. A `null` entry ends availability until another rule. */
-  levels: LevelRules<QuestionRuleEntry<Rules, Type>>;
+  /** Roles backed by Pokémon assets receive the shared level difficulty unless overridden. */
+  pokemonSprites?: readonly Extract<SpriteRoles<Rendering>, RenderingRole>[];
+  /** Back-view difficulty is opt-in; other Pokémon roles retain a zero default. */
+  pokemonBackSprites?: readonly Extract<
+    SpriteRoles<Rendering>,
+    RenderingRole
+  >[];
+  rendering?: Rendering;
+  levels: LevelRules<Entry>;
 };
 
-/** Shared controls required by one family's rule entries. */
-export type QuestionControlsFor<Type extends keyof FamilyRules> = Partial<
-  Omit<FamilyRules[Type], 'response' | 'rendering' | 'view'>
-> & { view: FamilyRules[Type]['view'] };
+export type QuestionControls<
+  Rules extends { view: unknown; rendering: QuestionRendering },
+> = Partial<Omit<AuthoredControls<Rules>, 'response' | 'view'>> & {
+  view: Rules['view'];
+};

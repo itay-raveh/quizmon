@@ -15,3 +15,36 @@ it('rejects invalid saved rendering values', () => {
     }).success,
   ).toBe(false);
 });
+
+it('rejects impossible probability values while accepting saved source policies', () => {
+  for (const probability of [-0.1, 1.1, Infinity, NaN]) {
+    for (const field of [
+      'historicalSpriteChance',
+      'backSpriteChance',
+      'silhouetteChance',
+    ]) {
+      expect(
+        questionRenderingSchema.safeParse({
+          ...baseQuestionRendering,
+          subject: {
+            ...baseQuestionRendering.subject,
+            sprite: {
+              reveal: 'always',
+              silhouette: false,
+              [field]: probability,
+            },
+          },
+        }).success,
+      ).toBe(false);
+    }
+  }
+  expect(
+    questionRenderingSchema.safeParse({
+      ...baseQuestionRendering,
+      subject: {
+        ...baseQuestionRendering.subject,
+        sprite: { reveal: 'always', silhouette: true, source: 'all' },
+      },
+    }).success,
+  ).toBe(true);
+});

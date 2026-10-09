@@ -1,3 +1,4 @@
+import { isDailyDate, isRecord } from '../validation';
 import { trackGameCompleted } from '../analytics';
 import { parseRound } from '../../domain/player/schemas/round';
 import { completeRound } from '../../domain/player/game-history';
@@ -62,13 +63,23 @@ export const discardSavedRounds = async () => {
   );
   for (const document of documents) {
     if (document.id.startsWith('round:')) {
-      const round = parseRound(document.toMutableJSON().payload);
+      const payload = document.toMutableJSON().payload;
+      const round = parseRound(payload);
+      if (isRecord(payload) && payload.completedAt !== undefined && !round)
+        throw new Error(
+          'A completed device round needs recovery before it can be discarded.',
+        );
       if (
-        round?.mode.kind === 'daily' &&
-        round.playerRestoreId === readPlayerRestoreId() &&
-        !round.completedAt
+        isRecord(payload) &&
+        isRecord(payload.mode) &&
+        payload.mode.kind === 'daily' &&
+        isDailyDate(payload.mode.date) &&
+        (typeof payload.playerRestoreId === 'string'
+          ? payload.playerRestoreId
+          : null) === readPlayerRestoreId() &&
+        !payload.completedAt
       ) {
-        const date = round.mode.date;
+        const date = payload.mode.date;
         await updateDeviceState(db, (state) => {
           state.dailyAttempts[date] = true;
         });

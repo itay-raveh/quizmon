@@ -1,18 +1,22 @@
-import type { FamilyRules } from '../questions/family-rules.ts';
+import type { FamilyRule, NoControls } from '../questions/family-rules.ts';
 import type {
-  QuestionControlsFor,
+  QuestionControls,
   QuestionRuleRow,
-  RenderingControlsFor,
+  VisibleItem,
 } from './types.ts';
 import { itemSprite, responsePresets } from './shared.ts';
 
+export type Rules = FamilyRule<NoControls, 'text', 'single' | 'multi'>;
+
+export type Rendering = { subject?: VisibleItem };
+
 const controls = {
   view: { answer: { kind: 'text' } },
-} as const satisfies QuestionControlsFor<'berryFlavors'>;
+} satisfies QuestionControls<Rules>;
 
 const rendering = {
   subject: { sprite: itemSprite },
-} satisfies RenderingControlsFor<'berryFlavors'>;
+} satisfies Rendering;
 
 export const berryFlavors = {
   active: false,
@@ -27,4 +31,4 @@ export const berryFlavors = {
       response: responsePresets.shortMulti,
     },
   },
-} satisfies QuestionRuleRow<FamilyRules['berryFlavors'], 'berryFlavors'>;
+} satisfies QuestionRuleRow<Rules, Rendering>;

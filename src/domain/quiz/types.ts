@@ -199,6 +199,8 @@ export interface QuestionData {
   optionGenerations?: Record<string, Generation>;
   optionStats?: Record<string, number>;
   optionVisuals?: Record<string, PokemonOptionVisual>;
+  /** Separately selected artwork for answer entities rendered in the related role. */
+  relatedVisuals?: Record<string, PokemonOptionVisual>;
   prompt: QuestionPrompt;
   /** Current family ID, with `champion` reserved for the League finale. */
   questionType: QuestionType | 'champion';

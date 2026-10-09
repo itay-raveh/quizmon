@@ -4,13 +4,21 @@ import pokemonData from '../../pokemon/data/pokemon.json' with { type: 'json' };
 import type { PokemonCatalog } from '../../pokemon/types.ts';
 import type { TopicCatalog } from '../topic-catalog.ts';
 import { createSeededRandom } from '../../../lib/random.ts';
+import { spriteState } from '../rendering.ts';
 import { savedQuestionSchema } from '../lineup.ts';
-import { buildLeagueQuestions } from '../question-generation.ts';
+import {
+  buildDailyQuestions,
+  buildLeagueQuestions,
+} from '../question-generation.ts';
 import { leagueStages } from '../league.ts';
 import { gameLevels } from '../level.ts';
 import { getQuestionVariant } from '../variants.ts';
 import type { QuestionData } from '../types.ts';
-import { defaultGameSettings } from '../../settings/game-settings.ts';
+import {
+  defaultGameSettings,
+  getTrainingSettings,
+  getChallengeSettings,
+} from '../../settings/game-settings.ts';
 import { questionRules } from '../question-rules/registry.ts';
 import { buildQuestionType } from './registry.ts';
 import {
@@ -93,7 +101,7 @@ it('builds every configured family with a visible saved question', () => {
 
 it('rejects image-only choices when a catalog sprite is missing', () => {
   const level = gameLevels.find((level) =>
-    getQuestionVariant('spriteForPokemon', level),
+    getQuestionVariant('pokemonMatch', level),
   )!;
   const question = buildQuestionType(
     {
@@ -103,7 +111,7 @@ it('rejects image-only choices when a catalog sprite is missing', () => {
       used: new Set(),
       level,
     },
-    'spriteForPokemon',
+    'pokemonMatch',
   )!;
   const choices = {
     ...question.rendering!.choices,
@@ -146,34 +154,52 @@ it('rejects image-only choices when a catalog sprite is missing', () => {
   ).toBe(false);
 });
 
-it('uses the configured source for choice sprites', () => {
+it('selects role sprites independently without changing answers', () => {
   const [name, pokemon] = Object.entries(catalog.pokemon).find(
     ([, value]) =>
       value.sprite &&
       value.identitySprites.generations.some(({ back }) => back.length),
   )!;
-  const back = pokemon.identitySprites.generations.flatMap(
-    ({ back }) => back,
-  )[0]!;
-  const sprites = [
-    pokemon.sprite,
-    ...pokemon.identitySprites.generations.flatMap(({ front, back }) => [
-      ...front,
-      ...back,
-    ]),
-  ].filter(Boolean);
-  const backIndex = sprites.indexOf(back);
+  const back = pokemon.identitySprites.generations.find(
+    ({ back }) => back.length,
+  )!.back[0]!;
+  const testPokemon = {
+    ...pokemon,
+    identitySprites: {
+      generations: [
+        { generation: pokemon.generation, front: [], back: [back] },
+      ],
+    },
+  };
+  const testCatalog = {
+    ...catalog,
+    pokemon: { ...catalog.pokemon, [name]: testPokemon },
+  };
   const spriteLevel = gameLevels.find((level) =>
-    getQuestionVariant('spriteForPokemon', level),
+    getQuestionVariant('pokemonMatch', level),
   )!;
-  const rules = getQuestionVariant('spriteForPokemon', spriteLevel)!.variant;
+  const rules = getQuestionVariant('pokemonMatch', spriteLevel)!.variant;
   const allSources = {
     ...rules,
     rendering: {
       ...rules.rendering,
+      related: {
+        ...rules.rendering.related,
+        sprite: {
+          reveal: 'after-answer',
+          silhouette: false,
+          historicalSpriteChance: 0,
+          backSpriteChance: 0,
+        },
+      },
       choices: {
         ...rules.rendering.choices,
-        sprite: { reveal: 'always', silhouette: false, source: 'all' },
+        sprite: {
+          reveal: 'always',
+          silhouette: false,
+          historicalSpriteChance: 1,
+          backSpriteChance: 1,
+        },
       },
     },
   } as const;
@@ -200,15 +226,17 @@ it('uses the configured source for choice sprites', () => {
   const result = assembleQuestion(
     question,
     {
-      catalog,
+      catalog: testCatalog,
       pool,
-      random: () => (backIndex + 0.1) / sprites.length,
+      random: () => 0,
       used: new Set(),
     },
     allSources,
   );
   expect(result.optionVisuals?.[name]?.src).toBe(back);
   expect(result.optionVisuals?.[name]?.src).not.toBe(pokemon.sprite);
+  expect(result.relatedVisuals?.[name]?.src).toBe(pokemon.sprite);
+  expect(result.answer).toEqual(question.answer);
 
   const searchLevel = gameLevels.find(
     (level) =>
@@ -223,18 +251,32 @@ it('uses the configured source for choice sprites', () => {
     ...searchRules,
     rendering: {
       ...searchRules.rendering,
+      search: {
+        ...searchRules.rendering.search,
+        sprite: {
+          reveal: 'always',
+          silhouette: false,
+          historicalSpriteChance: 0,
+          backSpriteChance: 0,
+        },
+      },
       subject: {
         ...searchRules.rendering.subject,
-        sprite: { reveal: 'after-answer', silhouette: false, source: 'all' },
+        sprite: {
+          reveal: 'after-answer',
+          silhouette: false,
+          historicalSpriteChance: 1,
+          backSpriteChance: 1,
+        },
       },
     },
   } as const;
   const search = assembleQuestion(
     question,
     {
-      catalog,
+      catalog: testCatalog,
       pool,
-      random: () => (backIndex + 0.1) / sprites.length,
+      random: () => 0,
       used: new Set(),
     },
     searchWithHistoricalSubject,
@@ -243,4 +285,90 @@ it('uses the configured source for choice sprites', () => {
   expect(
     search.searchOptions?.find((option) => option.name === name)?.sprite,
   ).toBe(pokemon.sprite);
+});
+
+it('keeps seeded Daily and League generation stable within the current rules', () => {
+  const settings = getTrainingSettings({
+    ...getChallengeSettings(defaultGameSettings),
+    level: 3,
+  });
+  expect(buildDailyQuestions(catalog, '2026-10-09', settings)).toEqual(
+    buildDailyQuestions(catalog, '2026-10-09', settings),
+  );
+  expect(
+    buildLeagueQuestions(catalog, 'sprite-seed', defaultGameSettings),
+  ).toEqual(buildLeagueQuestions(catalog, 'sprite-seed', defaultGameSettings));
+});
+
+it('gives a fixed Pokémon progressively tighter Pixel Peek crops without switching artwork', () => {
+  const levels = [3, 4, 5] as const;
+  const generated = levels.map((level) =>
+    buildQuestionType(
+      {
+        catalog,
+        pool,
+        random: createSeededRandom('pixel-zoom'),
+        used: new Set(),
+        level,
+      },
+      'pokemonFromPixelCrop',
+    )!,
+  );
+  const media = generated.map(({ media }) => {
+    if (media.kind !== 'pokemonFromPixelCrop') throw new Error('Missing crop');
+    return media;
+  });
+  expect(new Set(generated.map(({ subject }) => subject.name)).size).toBe(1);
+  expect(new Set(media.map(({ src }) => src)).size).toBe(1);
+  expect(media[0]!.zoom).toBeLessThan(media[1]!.zoom!);
+  expect(media[1]!.zoom).toBeLessThan(media[2]!.zoom!);
+});
+
+it('conceals all matching choices together and reveals them after answering without resampling saved questions', () => {
+  const rules = getQuestionVariant('pokemonMatch', 1)!.variant;
+  const draft = buildQuestionType(
+    {
+      catalog,
+      pool,
+      random: createSeededRandom('concealment'),
+      used: new Set(),
+      level: 1,
+    },
+    'pokemonMatch',
+  )!;
+  const generate = (roll: number) =>
+    assembleQuestion(
+      draft,
+      { catalog, pool, random: () => roll, used: new Set() },
+      rules,
+    );
+  const concealed = generate(0);
+  const visible = generate(0.99);
+  expect(concealed.answer).toEqual(visible.answer);
+  expect(concealed.options).toEqual(visible.options);
+  expect(
+    concealed.options.every((option) => concealed.optionVisuals?.[option]?.src),
+  ).toBe(true);
+  expect(
+    spriteState(concealed.rendering!.choices.sprite, {
+      answered: false,
+      cluesShown: 0,
+    }).silhouette,
+  ).toBe(true);
+  expect(
+    spriteState(visible.rendering!.choices.sprite, {
+      answered: false,
+      cluesShown: 0,
+    }).silhouette,
+  ).toBe(false);
+  expect(
+    spriteState(concealed.rendering!.choices.sprite, {
+      answered: true,
+      cluesShown: 0,
+    }).silhouette,
+  ).toBe(false);
+  expect(savedQuestionSchema.parse(concealed).rendering).toEqual(
+    concealed.rendering,
+  );
+  expect(generate(0)).toEqual(concealed);
 });

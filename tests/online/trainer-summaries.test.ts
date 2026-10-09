@@ -36,12 +36,13 @@ async function fixture() {
   const mongo = await new MongoClient(url.toString(), {
     monitorCommands: true,
   }).connect();
-  const facts = mongo.db(`${name}-v0`);
+
   const app = mongo.db(`${name}_app`);
   const cache = app.collection<CachedTrainer>('summaries');
   const writes = createTrainerSummaryWrites(cache);
   const storage = getRxStorageMongoDB({ connection: url.toString() });
   const db = await openPlayerDatabase(name, writes.wrapStorage(storage), false);
+  const facts = mongo.db(`${name}-v${db.rounds.schema.version}`);
   const store = await startTrainerSummaries(facts, cache, writes);
   return {
     mongo,
@@ -55,6 +56,7 @@ async function fixture() {
       await store.close();
       await db.close();
       await facts.dropDatabase();
+      await mongo.db(`${name}-v0`).dropDatabase();
       await app.dropDatabase();
       await mongo.close();
     },

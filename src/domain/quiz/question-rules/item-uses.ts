@@ -1,24 +1,34 @@
-import type { FamilyRules } from '../questions/family-rules.ts';
 import type {
-  QuestionControlsFor,
+  FamilyRule,
+  EffectDistractors,
+} from '../questions/family-rules.ts';
+import type {
+  QuestionControls,
   QuestionRuleRow,
-  RenderingControlsFor,
+  VisibleItem,
 } from './types.ts';
 import { itemSprite, responsePresets } from './shared.ts';
 
+export type Rules = FamilyRule<
+  EffectDistractors & {
+    /** Restrict wrong effects to items in the target's category. */
+    sameItemCategory: boolean;
+    /** Permit targets without an item sprite. */
+    allowMissingSprites: boolean;
+  },
+  'text',
+  'single'
+>;
+
+export type Rendering = { subject?: VisibleItem };
+
 const controls = {
   view: { answer: { kind: 'text' } },
-  minimumEffectSimilarity: 0,
-  maximumEffectSimilarity: 0.35,
-  preferSimilarEffects: true,
-  useFullEffectText: false,
-  sameItemCategory: false,
-  allowMissingSprites: false,
-} as const satisfies QuestionControlsFor<'itemUses'>;
+} satisfies QuestionControls<Rules>;
 
 const rendering = {
   subject: { sprite: itemSprite },
-} satisfies RenderingControlsFor<'itemUses'>;
+} satisfies Rendering;
 
 export const itemUses = {
   rendering,
@@ -26,7 +36,7 @@ export const itemUses = {
     3: {
       ...controls,
       sameItemCategory: true,
-      minimumEffectSimilarity: 0,
+
       maximumEffectSimilarity: 0.8,
       preferSimilarEffects: false,
       response: responsePresets.single,
@@ -37,7 +47,7 @@ export const itemUses = {
       sameItemCategory: true,
       minimumEffectSimilarity: 0.3,
       maximumEffectSimilarity: 0.8,
-      preferSimilarEffects: true,
+
       response: responsePresets.single,
     },
     5: {
@@ -46,10 +56,10 @@ export const itemUses = {
       sameItemCategory: true,
       minimumEffectSimilarity: 0.5,
       maximumEffectSimilarity: 0.8,
-      preferSimilarEffects: true,
+
       useFullEffectText: true,
-      allowMissingSprites: false,
+
       response: responsePresets.single,
     },
   },
-} satisfies QuestionRuleRow<FamilyRules['itemUses'], 'itemUses'>;
+} satisfies QuestionRuleRow<Rules, Rendering>;

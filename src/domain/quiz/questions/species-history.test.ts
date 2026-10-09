@@ -15,7 +15,7 @@ import { gameLevels } from '../level.ts';
 
 it('matches form repetitions across identity formats', () => {
   const level = gameLevels.find((level) =>
-    getQuestionVariant('pokemonFromHistoricalSprite', level),
+    getQuestionVariant('pokemonIdentification', level),
   )!;
   const catalog = {
     pokemon: {
@@ -28,9 +28,9 @@ it('matches form repetitions across identity formats', () => {
     pool: [],
     random: () => 0,
     used: new Set<string>(),
-    questionType: 'pokemonFromHistoricalSprite' as const,
+    questionType: 'pokemonIdentification' as const,
     level,
-    variant: getQuestionVariant('pokemonFromHistoricalSprite', level)!.variant,
+    variant: getQuestionVariant('pokemonIdentification', level)!.variant,
   };
   const topic = makeTopicQuestion(
     context,
@@ -41,7 +41,7 @@ it('matches form repetitions across identity formats', () => {
   )!;
   const question = {
     ...topic,
-    questionType: 'pokemonFromHistoricalSprite',
+    questionType: 'pokemonIdentification',
   } as QuestionData;
   const canonicalTopic = makeTopicQuestion(
     context,
@@ -52,7 +52,7 @@ it('matches form repetitions across identity formats', () => {
   )!;
   const canonical = {
     ...canonicalTopic,
-    questionType: 'pokemonFromHistoricalSprite',
+    questionType: 'pokemonIdentification',
   } as QuestionData;
   const history = rememberQuestion(emptyQuestionHistory(), question);
   const normalized = getSpeciesHistory({ ...context, history })!;
@@ -85,7 +85,7 @@ it('matches form repetitions across identity formats', () => {
     day: '2026-09-11',
     completedAt: '2026-09-11T12:00:00.000Z',
     answers: Array.from({ length: 5 }, () => ({
-      type: 'pokemonFromHistoricalSprite',
+      type: 'pokemonIdentification',
       subject: 'Mr. Mime: Mega',
       expected: ['Mr. Mime: Mega'],
       selected: ['Mr. Mime: Mega'],

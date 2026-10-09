@@ -1,6 +1,7 @@
+import type { QuestionRendering } from '../rendering.ts';
 import type { PokemonDistractors, SimilarityWeights } from './family-rules.ts';
 import { createSeededRandom, shuffle } from '../../../lib/random.ts';
-import { statNames, type PokemonKnowledge } from '../../pokemon/types.ts';
+import { type PokemonKnowledge } from '../../pokemon/types.ts';
 import {
   sampledMultiCorrectCounts,
   sampledMultiCorrectWeights,
@@ -59,42 +60,60 @@ const evolutionStage = (pokemon: PokemonKnowledge): number => {
   return 3;
 };
 
-const totalStats = (pokemon: PokemonKnowledge): number =>
-  statNames.reduce((total, stat) => total + pokemon.stats[stat], 0);
+const relativeSimilarity = (
+  left: number | undefined,
+  right: number | undefined,
+): number =>
+  left && right && left > 0 && right > 0
+    ? Math.min(left, right) / Math.max(left, right)
+    : 0;
+
+const frontReferenceProportion = (
+  pokemon: PokemonKnowledge,
+): number | undefined => {
+  const bounds = pokemon.spriteMeasurements;
+  return bounds && bounds[1] > 0 && bounds[2] > 0
+    ? bounds[1] / bounds[2]
+    : undefined;
+};
 
 export const createPokemonSimilarityScorer = (
   target: PokemonKnowledge,
   weights: SimilarityWeights,
 ): ((candidate: PokemonKnowledge) => number) => {
-  const targetStats = totalStats(target);
   const targetStage = evolutionStage(target);
-
+  const targetProportion = frontReferenceProportion(target);
   return (candidate) => {
     const sharedTypes = target.types.filter((type) =>
       candidate.types.includes(type),
     ).length;
-    const candidateStats = totalStats(candidate);
-
+    const typeCount = new Set([...target.types, ...candidate.types]).size;
     return (
-      sharedTypes * weights.sharedType +
+      (typeCount ? sharedTypes / typeCount : 0) * weights.type +
       (target.shape === candidate.shape ? weights.shape : 0) +
       (target.color === candidate.color ? weights.color : 0) +
-      (target.generation === candidate.generation ? weights.generation : 0) +
       (targetStage === evolutionStage(candidate) ? weights.evolutionStage : 0) +
-      Math.max(
-        0,
-        weights.statMaximum -
-          Math.abs(targetStats - candidateStats) / weights.statScale,
-      )
+      relativeSimilarity(
+        targetProportion,
+        frontReferenceProportion(candidate),
+      ) *
+        weights.proportions +
+      relativeSimilarity(target.height, candidate.height) * weights.height
     );
   };
 };
 
 export const pokemonOptions = (
   context: QuestionContext<
-    PokemonDistractors & { response?: { kind: string } }
+    PokemonDistractors & {
+      rendering?: QuestionRendering;
+      response?: { kind: string };
+    }
   > & {
-    variant: PokemonDistractors & { response?: { kind: string } };
+    variant: PokemonDistractors & {
+      rendering?: QuestionRendering;
+      response?: { kind: string };
+    };
   },
   {
     correct: target,
@@ -110,7 +129,9 @@ export const pokemonOptions = (
   if (variant.response?.kind === 'search') return [target.name];
   const similarityToTarget = createPokemonSimilarityScorer(
     target.pokemon,
-    variant.similarityWeights,
+    variant.rendering?.[variant.similarityRole ?? 'subject'].sprite?.silhouette
+      ? { ...variant.similarityWeights, ...variant.silhouetteWeights, color: 0 }
+      : variant.similarityWeights,
   );
   const similarityFor = (name: string) => {
     const candidate = context.catalog.pokemon[name];
@@ -123,6 +144,9 @@ export const pokemonOptions = (
         .filter(
           (candidate) =>
             !excluded.includes(candidate.name) &&
+            (variant.allowEvolutionRelatives ||
+              candidate.pokemon.evolutionFamily !==
+                target.pokemon.evolutionFamily) &&
             distinctPokemon([candidate], (value) => value, [target]).length > 0,
         )
         .map(({ name }) => name),

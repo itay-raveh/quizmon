@@ -30,7 +30,7 @@
     "db:return-auth": "node server/return-auth-to-postgres.ts",
     "test:online": "node --test tests/online/account-config.test.ts tests/online/asset-headers.test.ts tests/online/catalog-schema.test.ts tests/online/prepare-worker-deploy.test.ts tests/online/release-config.test.ts tests/online/release-inputs.test.ts tests/online/sync-errors.test.ts",
     "test:accounts": "node --test tests/online/auth-session.test.ts && node tests/online/check-account-sync.ts",
-    "test:sync": "npm run test:accounts && node tests/online/check-standings.ts && node tests/online/check-cutover-auth.ts && node tests/online/check-return-auth.ts && node --test --test-concurrency=1 tests/online/email.test.ts tests/online/email-budget.test.ts tests/online/trainer-summaries.test.ts tests/online/trainer-projection.test.ts",
+    "test:sync": "npm run test:accounts && node --test --test-concurrency=1 tests/online/rxdb-migration.test.ts && node tests/online/check-standings.ts && node tests/online/check-cutover-auth.ts && node tests/online/check-return-auth.ts && node --test --test-concurrency=1 tests/online/email.test.ts tests/online/email-budget.test.ts tests/online/trainer-summaries.test.ts tests/online/trainer-projection.test.ts",
     "generate:release-schema": "node scripts/generate-release-config-schema.ts"
   },
   "dependencies": {

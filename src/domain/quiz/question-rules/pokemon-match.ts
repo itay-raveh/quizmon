@@ -5,6 +5,7 @@ import type {
 import type {
   QuestionControls,
   QuestionRuleRow,
+  Renderable,
   PokemonChoices,
 } from './types.ts';
 import {
@@ -15,7 +16,10 @@ import {
 
 export type Rules = FamilyRule<PokemonDistractors, 'pokemon', 'single'>;
 
-export type Rendering = { choices?: PokemonChoices };
+export type Rendering = {
+  subject?: Renderable<'sprite' | 'name' | 'number' | 'types'>;
+  choices?: PokemonChoices;
+};
 
 const controls = {
   allowEvolutionRelatives: false,
@@ -25,8 +29,19 @@ const controls = {
   similarityRole: 'choices',
 } satisfies QuestionControls<Rules>;
 
-export const shinyPokemonIdentification = {
-  pokemonSprites: ['choices'],
+const rendering = {
+  subject: { sprite: null },
+  choices: {
+    sprite: { silhouetteChance: 0.5 },
+    name: 'after-answer',
+    number: 'after-answer',
+  },
+} satisfies Rendering;
+
+export const pokemonMatch = {
+  rendering,
+  pokemonSprites: ['subject', 'choices'],
+  pokemonBackSprites: ['subject', 'choices'],
   levels: {
     1: {
       ...controls,

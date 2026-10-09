@@ -132,7 +132,7 @@ try {
   assert.ok(a && b && a.id !== b.id);
   assert.equal(
     (
-      await fetch(`${endpoint}/rounds/1/push`, {
+      await fetch(`${endpoint}/rounds/${roundSchema.version + 1}/push`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${a.token}` },
       })
@@ -450,8 +450,8 @@ try {
   await postgres.close();
   jwks.close();
   await mongo.connect();
-  await mongo.db(`${mongoName}-v0`).dropDatabase();
-  await mongo.db(`${mongoName}-v${roundSchema.version}`).dropDatabase();
+  for (const version of new Set([0, roundSchema.version, playerSchema.version]))
+    await mongo.db(`${mongoName}-v${version}`).dropDatabase();
   await mongo.db(`${mongoName}_app`).dropDatabase();
   await mongo.close();
 }

@@ -97,6 +97,7 @@ it('rejects placeholder locations and aggregates valid encounter subareas', () =
         speciesName: name,
         displayName: name,
         sprite: `/${name}.png`,
+        identitySprites: { generations: [] },
         generation: 'I',
         types: ['normal'],
         stats: {

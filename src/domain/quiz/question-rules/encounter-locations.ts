@@ -1,31 +1,38 @@
-import type { FamilyRules } from '../questions/family-rules.ts';
 import type {
-  QuestionControlsFor,
+  FamilyRule,
+  SimilarityWeights,
+} from '../questions/family-rules.ts';
+import type {
+  QuestionControls,
   QuestionRuleRow,
-  RenderingControlsFor,
+  PokemonChoices,
 } from './types.ts';
 import { responsePresets } from './shared.ts';
+
+export type Rules = FamilyRule<
+  {
+    /** Include time- and weather-dependent encounter records. */
+    encounterConditions: boolean;
+    /** Rank wrong Pokémon by encounter method and similarity. */
+    closeAlternatives: boolean;
+    /** Similarity coefficients for wrong Pokémon. */
+    similarityWeights: SimilarityWeights;
+    /** Extra rank points for a wrong Pokémon using the same encounter method. */
+    sameEncounterMethodWeight: number;
+  },
+  'pokemon',
+  'single' | 'multi'
+>;
+
+export type Rendering = { choices?: PokemonChoices };
 
 const controls = {
   view: { answer: { kind: 'pokemon' } },
   sameEncounterMethodWeight: 100,
-  encounterConditions: false,
-  closeAlternatives: false,
-  similarityWeights: {
-    sharedType: 12,
-    shape: 8,
-    color: 5,
-    generation: 4,
-    evolutionStage: 3,
-    statMaximum: 3,
-    statScale: 80,
-  },
-} as const satisfies QuestionControlsFor<'encounterLocations'>;
-
-const rendering = {} satisfies RenderingControlsFor<'encounterLocations'>;
+} satisfies QuestionControls<Rules>;
 
 export const encounterLocations = {
-  rendering,
+  pokemonSprites: ['choices'],
   levels: {
     4: {
       ...controls,
@@ -38,7 +45,4 @@ export const encounterLocations = {
       response: responsePresets.multi,
     },
   },
-} satisfies QuestionRuleRow<
-  FamilyRules['encounterLocations'],
-  'encounterLocations'
->;
+} satisfies QuestionRuleRow<Rules, Rendering>;

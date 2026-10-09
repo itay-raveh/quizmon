@@ -1,21 +1,31 @@
-import type { FamilyRules } from '../questions/family-rules.ts';
+import type { FamilyRule } from '../questions/family-rules.ts';
 import type {
-  QuestionControlsFor,
+  QuestionControls,
   QuestionRuleRow,
-  RenderingControlsFor,
+  RenderingControls,
 } from './types.ts';
 import { responsePresets } from './shared.ts';
+
+export type Rules = FamilyRule<
+  {
+    /** Offer every eligible region instead of four sampled regions. */
+    allOptions: boolean;
+    /** Permit locations named only by a numbered land or sea route. */
+    allowNumberedRoutes: boolean;
+  },
+  'text',
+  'single'
+>;
+
+export type Rendering = RenderingControls;
 
 const controls = {
   view: { answer: { kind: 'text' } },
   allOptions: false,
   allowNumberedRoutes: false,
-} as const satisfies QuestionControlsFor<'locationRegion'>;
-
-const rendering = {} satisfies RenderingControlsFor<'locationRegion'>;
+} satisfies QuestionControls<Rules>;
 
 export const locationRegion = {
-  rendering,
   levels: {
     3: {
       ...controls,
@@ -29,4 +39,4 @@ export const locationRegion = {
       response: responsePresets.shortSingle,
     },
   },
-} satisfies QuestionRuleRow<FamilyRules['locationRegion'], 'locationRegion'>;
+} satisfies QuestionRuleRow<Rules, Rendering>;

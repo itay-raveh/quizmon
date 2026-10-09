@@ -1,19 +1,29 @@
-import type { FamilyRules } from '../questions/family-rules.ts';
+import type { MeasurementRules } from '../measurement-comparison.ts';
+import type { FamilyRule } from '../questions/family-rules.ts';
 import type {
-  QuestionControlsFor,
+  QuestionControls,
   QuestionRuleRow,
-  RenderingControlsFor,
+  PokemonChoices,
 } from './types.ts';
 import { responsePresets } from './shared.ts';
 
+export type Rules = FamilyRule<
+  {
+    /** Ratio and spread limits for four Pokémon weights. */
+    measurement: MeasurementRules;
+  },
+  'pokemon',
+  'single'
+>;
+
+export type Rendering = { choices?: PokemonChoices };
+
 const controls = {
   view: { answer: { kind: 'pokemon' } },
-} as const satisfies QuestionControlsFor<'weightComparison'>;
-
-const rendering = {} satisfies RenderingControlsFor<'weightComparison'>;
+} satisfies QuestionControls<Rules>;
 
 export const weightComparison = {
-  rendering,
+  pokemonSprites: ['choices'],
   levels: {
     2: {
       ...controls,
@@ -53,7 +63,4 @@ export const weightComparison = {
       response: responsePresets.single,
     },
   },
-} satisfies QuestionRuleRow<
-  FamilyRules['weightComparison'],
-  'weightComparison'
->;
+} satisfies QuestionRuleRow<Rules, Rendering>;

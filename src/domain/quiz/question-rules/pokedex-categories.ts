@@ -1,30 +1,35 @@
-import type { FamilyRules } from '../questions/family-rules.ts';
 import type {
-  QuestionControlsFor,
+  FamilyRule,
+  SimilarityWeights,
+} from '../questions/family-rules.ts';
+import type {
+  QuestionControls,
   QuestionRuleRow,
-  RenderingControlsFor,
+  PokemonChoices,
 } from './types.ts';
 import { responsePresets } from './shared.ts';
 
+export type Rules = FamilyRule<
+  {
+    /** Require each wrong Pokémon to share the target's color or shape. */
+    sameColorOrShape: boolean;
+    /** Rank eligible wrong Pokémon by similarity before taking three. */
+    closeAlternatives: boolean;
+    /** Similarity coefficients for ranking wrong Pokémon. */
+    similarityWeights: SimilarityWeights;
+  },
+  'pokemon',
+  'single'
+>;
+
+export type Rendering = { choices?: PokemonChoices };
+
 const controls = {
   view: { answer: { kind: 'pokemon' } },
-  sameColorOrShape: false,
-  closeAlternatives: false,
-  similarityWeights: {
-    sharedType: 12,
-    shape: 8,
-    color: 5,
-    generation: 4,
-    evolutionStage: 3,
-    statMaximum: 3,
-    statScale: 80,
-  },
-} as const satisfies QuestionControlsFor<'pokedexCategories'>;
-
-const rendering = {} satisfies RenderingControlsFor<'pokedexCategories'>;
+} satisfies QuestionControls<Rules>;
 
 export const pokedexCategories = {
-  rendering,
+  pokemonSprites: ['choices'],
   levels: {
     3: {
       ...controls,
@@ -38,7 +43,4 @@ export const pokedexCategories = {
       response: responsePresets.single,
     },
   },
-} satisfies QuestionRuleRow<
-  FamilyRules['pokedexCategories'],
-  'pokedexCategories'
->;
+} satisfies QuestionRuleRow<Rules, Rendering>;

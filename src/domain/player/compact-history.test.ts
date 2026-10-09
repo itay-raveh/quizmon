@@ -10,7 +10,7 @@ import { completion } from '../../../tests/online/progress-fixtures.ts';
 
 it('credits the earliest completed Daily while retaining discoveries from both attempts', () => {
   const answer = (subject: string, options: string[], responseMs = 1000) => ({
-    type: 'pokemonFromHistoricalSprite' as const,
+    type: 'pokemonIdentification' as const,
     subject,
     ...(options.length ? { options } : {}),
     expected: [subject],
@@ -119,4 +119,43 @@ it('keeps an unknown format in place without awarding points or progress', () =>
       ],
     }).success,
   ).toBe(false);
+});
+
+it('preserves retired sprite-family facts and positions while removing their score and progress', () => {
+  const current = compactCompletion(completion());
+  const old = compactRoundSchema.parse({
+    ...current,
+    answers: [
+      'pokemonFromHistoricalSprite',
+      'pokemonFromSilhouette',
+      'spriteForPokemon',
+      'silhouetteForPokemon',
+    ]
+      .map((type) => ({ ...current.answers[0]!, type }))
+      .concat(current.answers.slice(4)),
+  });
+  const raw = structuredClone(old);
+  const result = scoreCompactRound(old);
+  const projection = projectCompactRoundHistory([old], 'Trainer');
+  expect(old).toEqual(raw);
+  expect(result.answers).toHaveLength(current.answers.length);
+  expect(
+    result.answers
+      .slice(0, 4)
+      .every(
+        (answer) =>
+          !answer.correct &&
+          answer.points === 0 &&
+          answer.questionType === undefined,
+      ),
+  ).toBe(true);
+  expect(
+    result.answers
+      .slice(4)
+      .every((answer) => answer.correct && answer.points > 0),
+  ).toBe(true);
+  expect(projection.results.progress.correctQuestionTypes.pokemonTypes).toBe(
+    current.answers.length - 4,
+  );
+  expect(result.score).toBeLessThan(scoreCompactRound(current).score);
 });

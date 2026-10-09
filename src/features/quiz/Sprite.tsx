@@ -1,3 +1,4 @@
+import { hasOpaqueSpriteCanvas } from '@/domain/pokemon/sprite-source';
 interface SpriteProps {
   silhouette: boolean;
   src: string | null;
@@ -12,9 +13,7 @@ export const Sprite = ({ silhouette, src }: SpriteProps) => {
 
   const isSmoothArtwork =
     /\/other\/(?:dream-world|home|official-artwork)\//.test(src);
-  const hasOpaqueCanvas =
-    /\/versions\/generation-(?:i|ii)\//.test(src) &&
-    !src.includes('/transparent/');
+  const hasOpaqueCanvas = hasOpaqueSpriteCanvas(src);
   const className = [
     'sprite',
     silhouette ? 'sprite--silhouette' : '',

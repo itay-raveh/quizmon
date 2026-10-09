@@ -1,20 +1,33 @@
-import type { FamilyRules } from '../questions/family-rules.ts';
+import type { FamilyRule } from '../questions/family-rules.ts';
 import type {
-  QuestionControlsFor,
+  QuestionControls,
   QuestionRuleRow,
-  RenderingControlsFor,
+  RenderingControls,
 } from './types.ts';
 import { responsePresets } from './shared.ts';
+
+export type Rules = FamilyRule<
+  {
+    /** Ask only about status moves. */
+    statusMovesOnly: boolean;
+    /** Choose wrong moves with the same type as the target. */
+    sameMoveType: boolean;
+  },
+  'move',
+  'single'
+>;
+
+export type Rendering = RenderingControls<never, 'types'>;
 
 const controls = {
   view: { answer: { kind: 'move' } },
   statusMovesOnly: false,
   sameMoveType: false,
-} as const satisfies QuestionControlsFor<'moveCategory'>;
+} satisfies QuestionControls<Rules>;
 
 const rendering = {
   choices: { types: 'after-answer' },
-} satisfies RenderingControlsFor<'moveCategory'>;
+} satisfies Rendering;
 
 export const moveCategory = {
   rendering,
@@ -32,4 +45,4 @@ export const moveCategory = {
     },
     5: null,
   },
-} satisfies QuestionRuleRow<FamilyRules['moveCategory'], 'moveCategory'>;
+} satisfies QuestionRuleRow<Rules, Rendering>;

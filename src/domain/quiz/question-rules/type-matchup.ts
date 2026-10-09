@@ -1,23 +1,44 @@
-import type { FamilyRules } from '../questions/family-rules.ts';
 import type {
-  QuestionControlsFor,
+  FamilyRule,
+  TypeSearchResponse,
+} from '../questions/family-rules.ts';
+import type {
+  QuestionControls,
   QuestionRuleRow,
-  RenderingControlsFor,
+  RenderingControls,
 } from './types.ts';
 import { frontSprite, responsePresets } from './shared.ts';
 
+export type Rules = FamilyRule<
+  {
+    /** Restrict targets to Pokémon with exactly one type. */
+    singleType: boolean;
+    /** Attack multipliers eligible to be asked about. */
+    multipliers: readonly number[];
+    /** Search for every attack type with the requested multiplier. */
+    response: TypeSearchResponse<'effectiveness'>;
+  },
+  'type',
+  'single'
+>;
+
+export type Rendering = RenderingControls<
+  'sprite' | 'name' | 'number' | 'types'
+>;
+
 const controls = {
   view: { answer: { kind: 'type' } },
-  singleType: false,
+
   multipliers: [4, 2, 0.5, 0.25],
-} as const satisfies QuestionControlsFor<'typeMatchup'>;
+} satisfies QuestionControls<Rules>;
 
 const rendering = {
   subject: { sprite: frontSprite, types: 'after-answer' },
-} satisfies RenderingControlsFor<'typeMatchup'>;
+} satisfies Rendering;
 
 export const typeMatchup = {
   rendering,
+  pokemonSprites: ['subject'],
   levels: {
     1: {
       ...controls,
@@ -53,4 +74,4 @@ export const typeMatchup = {
       },
     },
   },
-} satisfies QuestionRuleRow<FamilyRules['typeMatchup'], 'typeMatchup'>;
+} satisfies QuestionRuleRow<Rules, Rendering>;

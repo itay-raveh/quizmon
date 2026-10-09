@@ -1,21 +1,36 @@
-import type { FamilyRules } from '../questions/family-rules.ts';
+import type { FamilyRule } from '../questions/family-rules.ts';
 import type {
-  QuestionControlsFor,
+  QuestionControls,
   QuestionRuleRow,
-  RenderingControlsFor,
+  RenderingControls,
 } from './types.ts';
 import { itemSprite, responsePresets } from './shared.ts';
+
+export type Rules = FamilyRule<
+  {
+    /** Include the move's description in the prompt. */
+    showMoveDescription: boolean;
+    /** Offer every type instead of four sampled types. */
+    allOptions: boolean;
+    /** Skip move names that contain their answer type. */
+    excludeTypeHintNames: boolean;
+  },
+  'type',
+  'single'
+>;
+
+export type Rendering = RenderingControls<'sprite'>;
 
 const controls = {
   view: { answer: { kind: 'type' } },
   showMoveDescription: false,
   allOptions: false,
   excludeTypeHintNames: false,
-} as const satisfies QuestionControlsFor<'moveTypes'>;
+} satisfies QuestionControls<Rules>;
 
 const rendering = {
   subject: { sprite: { ...itemSprite, reveal: 'after-answer' } },
-} satisfies RenderingControlsFor<'moveTypes'>;
+} satisfies Rendering;
 
 export const moveTypes = {
   rendering,
@@ -33,4 +48,4 @@ export const moveTypes = {
     },
     5: null,
   },
-} satisfies QuestionRuleRow<FamilyRules['moveTypes'], 'moveTypes'>;
+} satisfies QuestionRuleRow<Rules, Rendering>;

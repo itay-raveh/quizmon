@@ -20,7 +20,7 @@ const identity = {
 } as const;
 
 export const playerSchema = {
-  version: 0,
+  version: 1,
   primaryKey: 'id',
   type: 'object',
   properties: {
@@ -32,7 +32,7 @@ export const playerSchema = {
 } as const;
 
 export const roundSchema = {
-  version: 0,
+  version: 1,
   primaryKey: 'id',
   type: 'object',
   indexes: [['ownerId', 'completedAt', 'id']],
@@ -52,7 +52,7 @@ export const roundSchema = {
 } as const;
 
 export const deviceSchema = {
-  version: 0,
+  version: 1,
   primaryKey: 'id',
   type: 'object',
   properties: {

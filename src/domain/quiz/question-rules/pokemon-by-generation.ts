@@ -1,21 +1,26 @@
-import type { FamilyRules } from '../questions/family-rules.ts';
+import type { FamilyRule, NoControls } from '../questions/family-rules.ts';
 import type {
-  QuestionControlsFor,
+  QuestionControls,
   QuestionRuleRow,
-  RenderingControlsFor,
+  PokemonChoices,
 } from './types.ts';
 import { responsePresets } from './shared.ts';
 
+export type Rules = FamilyRule<NoControls, 'pokemon', 'multi'>;
+
+export type Rendering = { choices?: PokemonChoices };
+
 const controls = {
   view: { answer: { kind: 'pokemon' } },
-} as const satisfies QuestionControlsFor<'pokemonByGeneration'>;
+} satisfies QuestionControls<Rules>;
 
 const rendering = {
   choices: { name: 'always', number: 'after-answer' },
-} satisfies RenderingControlsFor<'pokemonByGeneration'>;
+} satisfies Rendering;
 
 export const pokemonByGeneration = {
   rendering,
+  pokemonSprites: ['choices'],
   levels: {
     3: {
       ...controls,
@@ -23,7 +28,4 @@ export const pokemonByGeneration = {
     },
     4: null,
   },
-} satisfies QuestionRuleRow<
-  FamilyRules['pokemonByGeneration'],
-  'pokemonByGeneration'
->;
+} satisfies QuestionRuleRow<Rules, Rendering>;
