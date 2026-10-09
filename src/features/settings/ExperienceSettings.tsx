@@ -1,3 +1,7 @@
+import { Fieldset } from '@base-ui/react/fieldset';
+import { RadioGroup } from '@base-ui/react/radio-group';
+import { Slider } from '@base-ui/react/slider';
+import { useInteractionSound } from '@/lib/audio/sound-context';
 import { SelectionTile } from './SelectionTile';
 import {
   answerFlowDelays,
@@ -33,22 +37,34 @@ export const ExperienceSettings = ({
   draft,
   onChange,
 }: ExperienceSettingsProps) => {
+  const play = useInteractionSound();
   const volumePercent = Math.round(draft.soundVolume * 100);
   const installForReminders = useDailyReminder().status === 'install-required';
 
   return (
     <div className="experience-settings">
-      <fieldset className="experience-setting">
-        <legend>Daily Challenge reminder</legend>
+      <Fieldset.Root className="experience-setting">
+        <Fieldset.Legend render={<legend />}>
+          Daily Challenge reminder
+        </Fieldset.Legend>
         <DailyReminderSetting />
-      </fieldset>
+      </Fieldset.Root>
       {installForReminders && <InstallSetting />}
-      <fieldset className="experience-setting">
-        <legend>Answer flow</legend>
-        <div className="experience-options experience-options--flow">
+      <Fieldset.Root className="experience-setting">
+        <Fieldset.Legend render={<legend />}>Answer flow</Fieldset.Legend>
+        <RadioGroup
+          className="experience-options experience-options--flow"
+          name="flow"
+          aria-label="Answer flow"
+          value={draft.answerFlow}
+          onValueChange={(value) => {
+            play('toggle-on');
+            onChange((current) => ({ ...current, answerFlow: value }));
+          }}
+        >
           {answerFlows.map((value) => (
             <SelectionTile
-              checked={draft.answerFlow === value}
+              value={value}
               description={
                 value === 'manual'
                   ? 'Use the Next button'
@@ -57,57 +73,64 @@ export const ExperienceSettings = ({
               inputType="radio"
               key={value}
               label={answerFlowLabels[value]}
-              name="answer-flow"
-              onChange={(event) => {
-                if (!event.target.checked) return;
-                onChange((current) => ({ ...current, answerFlow: value }));
-              }}
               variant="experience"
             />
           ))}
-        </div>
-      </fieldset>
+        </RadioGroup>
+      </Fieldset.Root>
 
-      <fieldset className="experience-setting">
-        <legend>Sound</legend>
-        <label className="volume-control">
+      <Fieldset.Root className="experience-setting">
+        <Fieldset.Legend render={<legend />}>Sound</Fieldset.Legend>
+        <div className="volume-control">
           <span>Sound effects</span>
           <output>{volumePercent}%</output>
-          <input
-            aria-label="Sound effects"
-            aria-valuetext={`${volumePercent}%`}
-            max="1"
-            min="0"
-            onChange={(event) => {
-              const soundVolume = Number(event.target.value);
-              onChange((current) => ({ ...current, soundVolume }));
-            }}
-            step="0.1"
-            type="range"
+          <Slider.Root
+            className="volume-slider"
+            min={0}
+            max={1}
+            step={0.1}
             value={draft.soundVolume}
-          />
-        </label>
-      </fieldset>
+            onValueChange={(soundVolume) =>
+              onChange((current) => ({ ...current, soundVolume }))
+            }
+          >
+            <Slider.Control className="volume-slider__control">
+              <Slider.Track className="volume-slider__track">
+                <Slider.Indicator className="volume-slider__indicator" />
+              </Slider.Track>
+              <Slider.Thumb
+                className="volume-slider__thumb"
+                aria-label="Sound effects"
+                getAriaValueText={(_, value) => `${Math.round(value * 100)}%`}
+              />
+            </Slider.Control>
+          </Slider.Root>
+        </div>
+      </Fieldset.Root>
 
-      <fieldset className="experience-setting">
-        <legend>Timer</legend>
-        <div className="experience-options experience-options--timer">
+      <Fieldset.Root className="experience-setting">
+        <Fieldset.Legend render={<legend />}>Timer</Fieldset.Legend>
+        <RadioGroup
+          className="experience-options experience-options--timer"
+          name="timer"
+          aria-label="Timer"
+          value={draft.timerDisplay}
+          onValueChange={(value) => {
+            play('toggle-on');
+            onChange((current) => ({ ...current, timerDisplay: value }));
+          }}
+        >
           {timerDisplays.map((value) => (
             <SelectionTile
-              checked={draft.timerDisplay === value}
+              value={value}
               inputType="radio"
               key={value}
               label={timerDisplayLabels[value]}
-              name="timer-display"
-              onChange={(event) => {
-                if (!event.target.checked) return;
-                onChange((current) => ({ ...current, timerDisplay: value }));
-              }}
               variant="experience"
             />
           ))}
-        </div>
-      </fieldset>
+        </RadioGroup>
+      </Fieldset.Root>
       {!installForReminders && <InstallSetting />}
     </div>
   );

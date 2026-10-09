@@ -1,3 +1,9 @@
+import { Radio } from '@base-ui/react/radio';
+import { RadioGroup } from '@base-ui/react/radio-group';
+import { Form } from '@base-ui/react/form';
+import { Fieldset } from '@base-ui/react/fieldset';
+import { Input } from '@base-ui/react/input';
+import { Button } from '@base-ui/react/button';
 import { useMemo, useState, type SubmitEvent } from 'react';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { GameButton } from '../../components/GameButton';
@@ -244,7 +250,7 @@ export const TrainerPassport = ({
       ) : null}
 
       {editing ? (
-        <form
+        <Form
           className="trainer-customizer"
           onSubmit={(event) => {
             void save(event);
@@ -252,7 +258,7 @@ export const TrainerPassport = ({
         >
           <div className="trainer-customizer__name">
             <label htmlFor="trainer-name">Trainer name</label>
-            <input
+            <Input
               autoComplete="nickname"
               id="trainer-name"
               maxLength={TRAINER_NAME_MAX_LENGTH}
@@ -276,29 +282,34 @@ export const TrainerPassport = ({
             <Checkbox
               checked={usePokedexProportions}
               label="Use Pokédex proportions"
-              onChange={(event) =>
-                setUsePokedexProportions(event.target.checked)
-              }
+              onCheckedChange={(checked) => setUsePokedexProportions(checked)}
             />
           </div>
-          <fieldset className="trainer-avatar-picker">
-            <legend>Trainer avatar</legend>
-            <input
+          <Fieldset.Root className="trainer-avatar-picker">
+            <Fieldset.Legend render={<legend />}>
+              Trainer avatar
+            </Fieldset.Legend>
+            <Input
               aria-label="Search trainer avatars"
               onChange={(event) => setAvatarQuery(event.target.value)}
               placeholder="Search trainer sprites"
               type="search"
               value={avatarQuery}
             />
-            <div className="trainer-avatar-picker__options">
+            <RadioGroup
+              className="trainer-avatar-picker__options"
+              aria-label="Trainer avatar"
+              value={avatar}
+              onValueChange={setAvatar}
+            >
               {matchingAvatars.map(({ id, name }) => (
-                <button
+                <Radio.Root
+                  nativeButton
+                  render={<Button type="button" />}
+                  value={id}
                   aria-label={name}
-                  aria-pressed={avatar === id}
                   key={id}
-                  onClick={() => setAvatar(id)}
                   title={name}
-                  type="button"
                 >
                   <img
                     alt=""
@@ -308,13 +319,13 @@ export const TrainerPassport = ({
                     width="80"
                   />
                   <span>{name}</span>
-                </button>
+                </Radio.Root>
               ))}
               {!matchingAvatars.length && <p>No matching trainers.</p>}
-            </div>
-          </fieldset>
+            </RadioGroup>
+          </Fieldset.Root>
           <GameButton type="submit">Save card</GameButton>
-        </form>
+        </Form>
       ) : null}
 
       <div className="trainer-passport__artifact">

@@ -1,4 +1,4 @@
-.toast[popover] {
+.toast {
   position: fixed;
   inset: auto 1rem max(1rem, env(safe-area-inset-bottom));
   width: min(28rem, calc(100% - 2rem));
@@ -13,7 +13,7 @@
   font-weight: 700;
 }
 
-.toast:popover-open {
+.toast {
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -53,13 +53,13 @@
 }
 
 @media (max-width: 50rem) {
-  .app--with-navigation .toast[popover] {
+  body:has(.app--with-navigation) .toast-viewport {
     bottom: var(--app-navigation-clearance);
   }
 }
 
 @media (max-width: 42rem) {
-  .settings-dialog .toast[popover] {
+  body:has(.settings-dialog) .toast-viewport {
     bottom: calc(5.5rem + env(safe-area-inset-bottom));
   }
 }
@@ -98,21 +98,17 @@
   width: min(26rem, calc(100% - 1rem));
 }
 
-.settings-dialog[open],
-.confirm-dialog[open],
-.share-dialog[open],
-.trainer-badge-dialog[open],
-.trainer-title-dialog[open] {
+.settings-dialog[data-open],
+.confirm-dialog[data-open],
+.share-dialog[data-open],
+.trainer-badge-dialog[data-open],
+.trainer-title-dialog[data-open] {
+  animation: surface-in 160ms ease-out both;
   display: flex;
   flex-direction: column;
-  animation: surface-in 160ms ease-out both;
 }
 
-.settings-dialog::backdrop,
-.confirm-dialog::backdrop,
-.share-dialog::backdrop,
-.trainer-badge-dialog::backdrop,
-.trainer-title-dialog::backdrop {
+.modal-backdrop {
   background: var(--modal-scrim);
 }
 
@@ -266,4 +262,56 @@
 .dialog-close svg {
   width: 1.25rem;
   height: 1.25rem;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+}
+
+[data-base-ui-portal] > [role='dialog'] {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  margin: 0;
+  translate: -50% -50%;
+  z-index: 101;
+}
+
+.help-positioner {
+  z-index: 120;
+}
+.disclosure-trigger {
+  display: flex;
+  width: 100%;
+  padding: 0;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+.disclosure-trigger::before {
+  content: '▸';
+  margin-right: 0.4rem;
+}
+.disclosure[data-open] > .disclosure-trigger::before {
+  content: '▾';
+}
+.results__settings > .disclosure-trigger::before {
+  display: none;
+}
+.toast-viewport {
+  position: fixed;
+  z-index: 130;
+  inset: auto 1rem max(1rem, env(safe-area-inset-bottom));
+  pointer-events: none;
+}
+.toast-viewport .toast {
+  position: relative;
+  inset: auto;
+  width: min(28rem, 100%);
+  pointer-events: auto;
 }

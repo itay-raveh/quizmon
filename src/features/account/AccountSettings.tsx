@@ -1,11 +1,15 @@
-import { useEffect, useState, useSyncExternalStore } from 'react';
-import { OTPInput, REGEXP_ONLY_DIGITS } from 'input-otp';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Controller, useForm } from 'react-hook-form';
+import { Dialog } from '@base-ui/react/dialog';
+import { Field } from '@base-ui/react/field';
+import { Form } from '@base-ui/react/form';
+import { Disclosure } from '@/components/Disclosure';
+import { Input } from '@base-ui/react/input';
+import { Button } from '@base-ui/react/button';
+import { ModalDialog } from '@/components/ModalDialog';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { OTPField } from '@base-ui/react/otp-field';
 import { z } from 'zod';
 import { GameButton } from '../../components/GameButton';
 import { FeedbackButton } from '../../app/FeedbackButton';
-import { useModalDialog } from '../../hooks/useModalDialog';
 import {
   ArrowsClockwiseIcon,
   MedalIcon,
@@ -41,7 +45,7 @@ const codeSchema = z.object({
   code: z
     .string()
     .length(6, 'Enter the six-digit code.')
-    .regex(new RegExp(REGEXP_ONLY_DIGITS), 'Use digits only.'),
+    .regex(/^\d+$/, 'Use digits only.'),
 });
 
 const DeleteAccountDialog = ({
@@ -51,37 +55,24 @@ const DeleteAccountDialog = ({
   onCancel: () => void;
   onConfirm: () => void;
 }) => {
-  const { dialog, dialogProps, closeDialog } = useModalDialog(onCancel);
-
   return (
-    <dialog
-      {...dialogProps}
-      aria-describedby="delete-account-description"
-      aria-labelledby="delete-account-title"
-      className="confirm-dialog"
-    >
+    <ModalDialog onClose={onCancel} className="confirm-dialog">
       <div className="confirm-dialog__body">
-        <h2 id="delete-account-title">Delete your account?</h2>
-        <p id="delete-account-description">
+        <Dialog.Title>Delete your account?</Dialog.Title>
+        <Dialog.Description>
           Your account and synced progress will be deleted. This cannot be
           undone. Other devices may retain local copies.
-        </p>
+        </Dialog.Description>
         <div className="confirm-dialog__actions">
-          <GameButton autoFocus tone="quiet" onClick={closeDialog}>
+          <Dialog.Close render={<GameButton tone="quiet" />}>
             Keep account
-          </GameButton>
-          <GameButton
-            className="confirm-dialog__confirm"
-            onClick={() => {
-              dialog.current?.close();
-              onConfirm();
-            }}
-          >
+          </Dialog.Close>
+          <GameButton className="confirm-dialog__confirm" onClick={onConfirm}>
             Delete account
           </GameButton>
         </div>
       </div>
-    </dialog>
+    </ModalDialog>
   );
 };
 
@@ -101,21 +92,14 @@ export const AccountSettings = ({
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-  const emailForm = useForm<z.input<typeof emailSchema>>({
-    resolver: zodResolver(emailSchema),
-    mode: 'onChange',
-    defaultValues: { email: '' },
-  });
-  const codeForm = useForm<z.input<typeof codeSchema>>({
-    resolver: zodResolver(codeSchema),
-    mode: 'onChange',
-    defaultValues: { code: '' },
-  });
-  const focusCode = codeForm.setFocus;
-
+  const [email, setEmail] = useState('');
+  const [code, setCode] = useState('');
+  const codeInput = useRef<HTMLInputElement>(null);
+  const emailValidation = emailSchema.safeParse({ email });
+  const codeValidation = codeSchema.safeParse({ code });
   useEffect(() => {
-    if (sent) focusCode('code');
-  }, [sent, focusCode]);
+    if (sent && !busy) codeInput.current?.focus();
+  }, [sent, busy]);
 
   const run = (work: () => Promise<void>, signIn = false) => {
     if (busy) return;
@@ -136,12 +120,10 @@ export const AccountSettings = ({
   const send = async (email: string, resend = false) => {
     await sendSignInCode(email);
     setSent(true);
-    codeForm.reset();
+    setCode('');
     setMessage(resend ? 'New code sent. Check your inbox.' : '');
-    if (resend) focusCode('code');
   };
   const showSignIn = recoverySignIn || !account.owner || reauthenticating;
-  const codeError = codeForm.formState.errors.code?.message || (sent && error);
   const syncNeedsSignIn = account.recoveryReason === 'sign-in';
   const syncPaused = !!account.error;
   const syncOffline = account.offline;
@@ -195,29 +177,25 @@ export const AccountSettings = ({
               </li>
             </ul>
           ) : null}
-          <form
+          <Form
             className={`account-settings__section${sent ? ' account-settings__verification' : ''}`}
             aria-label="Sign in"
             noValidate
-            onSubmit={(event) => {
-              void (
-                sent
-                  ? codeForm.handleSubmit(({ code }) =>
-                      run(async () => {
-                        await verifySignInCode(
-                          emailForm.getValues('email').trim(),
-                          code,
-                        );
-                        if (recoverySignIn)
-                          setMessage(
-                            'Signed in. Choose the account backup again.',
-                          );
-                      }, true),
-                    )
-                  : emailForm.handleSubmit(({ email }) =>
-                      run(() => send(email)),
-                    )
-              )(event);
+            validationMode="onChange"
+            errors={sent && error ? { code: error } : undefined}
+            onFormSubmit={(values: Record<string, unknown>) => {
+              if (sent) {
+                const parsed = codeSchema.safeParse({ code: values.code });
+                if (!parsed.success) return;
+                run(async () => {
+                  await verifySignInCode(email.trim(), parsed.data.code);
+                  if (recoverySignIn)
+                    setMessage('Signed in. Choose the account backup again.');
+                }, true);
+              } else {
+                const parsed = emailSchema.safeParse({ email: values.email });
+                if (parsed.success) run(() => send(parsed.data.email));
+              }
             }}
           >
             {sent ? (
@@ -226,111 +204,81 @@ export const AccountSettings = ({
                   <h2>Check your inbox</h2>
                   <p>We sent a six-digit code to</p>
                   <div className="account-settings__destination">
-                    <strong>{emailForm.getValues('email').trim()}</strong>
-                    <button
+                    <strong>{email.trim()}</strong>
+                    <Button
                       className="account-settings__text-action"
                       type="button"
                       disabled={busy}
                       onClick={() => {
                         setSent(false);
-                        codeForm.reset();
+                        setCode('');
                         setMessage('');
                         setError('');
                       }}
                     >
                       Change email
-                    </button>
+                    </Button>
                   </div>
                 </div>
-                <div className="account-settings__code-field">
-                  <label htmlFor="sign-in-code">Six-digit code</label>
-                  <Controller
-                    name="code"
-                    control={codeForm.control}
-                    render={({ field }) => (
-                      <OTPInput
-                        {...field}
-                        id="sign-in-code"
-                        maxLength={6}
-                        pattern={REGEXP_ONLY_DIGITS}
-                        inputMode="numeric"
-                        disabled={busy}
-                        aria-invalid={!!codeError}
-                        aria-describedby={
-                          codeError ? 'sign-in-code-error' : 'sign-in-code-hint'
+                <Field.Root
+                  name="code"
+                  className="account-settings__code-field"
+                  disabled={busy}
+                  validate={(value) =>
+                    codeSchema.safeParse({ code: value }).error?.issues[0]
+                      ?.message
+                  }
+                >
+                  <Field.Label>Six-digit code</Field.Label>
+                  <OTPField.Root
+                    value={code}
+                    length={6}
+                    className="account-settings__code-slots"
+                    onValueChange={(value) => {
+                      setCode(value);
+                      if (error) setError('');
+                    }}
+                  >
+                    {Array.from({ length: 6 }, (_, index) => (
+                      <OTPField.Input
+                        key={index}
+                        ref={index === 0 ? codeInput : undefined}
+                        className="account-settings__code-slot"
+                        aria-label={
+                          index ? `Digit ${index + 1} of 6` : undefined
                         }
-                        containerClassName="account-settings__otp"
-                        className="account-settings__otp-input"
-                        onChange={(value) => {
-                          field.onChange(value);
-                          if (error) setError('');
-                        }}
-                        render={({ slots }) => (
-                          <div
-                            className="account-settings__code-slots"
-                            aria-hidden="true"
-                          >
-                            {slots.map((slot, index) => (
-                              <span
-                                className={`account-settings__code-slot${slot.isActive ? ' account-settings__code-slot--active' : ''}`}
-                                key={index}
-                              >
-                                {slot.char}
-                                {slot.hasFakeCaret && (
-                                  <span className="account-settings__code-caret" />
-                                )}
-                              </span>
-                            ))}
-                          </div>
-                        )}
                       />
-                    )}
+                    ))}
+                  </OTPField.Root>
+                  <Field.Error
+                    className="account-settings__error"
+                    role="alert"
                   />
-                  {codeError ? (
-                    <span
-                      id="sign-in-code-error"
-                      className="account-settings__error"
-                      role="alert"
-                    >
-                      {codeError}
-                    </span>
-                  ) : (
-                    <span
-                      id="sign-in-code-hint"
-                      className="account-settings__code-hint"
-                    >
-                      Code expires in five minutes.
-                    </span>
-                  )}
-                </div>
+                  <Field.Description className="account-settings__code-hint">
+                    Code expires in five minutes.
+                  </Field.Description>
+                </Field.Root>
               </>
             ) : (
-              <div className="account-settings__field">
-                <label htmlFor="sign-in-email">Email</label>
-                <input
-                  id="sign-in-email"
+              <Field.Root
+                name="email"
+                className="account-settings__field"
+                disabled={busy}
+                validate={(value) =>
+                  emailSchema.safeParse({ email: value }).error?.issues[0]
+                    ?.message
+                }
+              >
+                <Field.Label>Email</Field.Label>
+                <Input
                   type="email"
                   autoComplete="email"
                   spellCheck={false}
-                  disabled={busy}
-                  aria-invalid={!!emailForm.formState.errors.email}
-                  aria-describedby={
-                    emailForm.formState.errors.email
-                      ? 'sign-in-email-error'
-                      : undefined
-                  }
-                  {...emailForm.register('email')}
+                  value={email}
+                  onValueChange={setEmail}
                 />
-                {emailForm.formState.errors.email && (
-                  <span
-                    id="sign-in-email-error"
-                    className="account-settings__error"
-                    role="alert"
-                  >
-                    {emailForm.formState.errors.email.message}
-                  </span>
-                )}
-              </div>
+                <Field.Error className="account-settings__error" role="alert" />
+              </Field.Root>
             )}
             {!sent && (
               <p>
@@ -346,9 +294,7 @@ export const AccountSettings = ({
                 className={sent ? 'account-settings__verify-button' : ''}
                 disabled={
                   busy ||
-                  !(sent
-                    ? codeForm.formState.isValid
-                    : emailForm.formState.isValid)
+                  !(sent ? codeValidation.success : emailValidation.success)
                 }
               >
                 {sent
@@ -377,20 +323,18 @@ export const AccountSettings = ({
             {sent && (
               <div className="account-settings__resend">
                 <span>Didn’t get the code?</span>
-                <button
+                <Button
                   className="account-settings__text-action"
                   type="button"
                   disabled={busy}
-                  onClick={() =>
-                    run(() => send(emailForm.getValues('email').trim(), true))
-                  }
+                  onClick={() => run(() => send(email.trim(), true))}
                 >
                   {busy && !preparingAccount ? 'Sending…' : 'Resend code'}
-                </button>
+                </Button>
                 {message && <span role="status">{message}</span>}
               </div>
             )}
-          </form>
+          </Form>
           {account.emailDelivery === 'test-mailbox' && (
             <aside
               className="account-settings__testing"
@@ -404,14 +348,12 @@ export const AccountSettings = ({
                   onClick={() =>
                     run(async () => {
                       const mail = await accountRequest(
-                        `/api/dev/mailbox?email=${encodeURIComponent(emailForm.getValues('email').trim())}`,
+                        `/api/dev/mailbox?email=${encodeURIComponent(email.trim())}`,
                       );
                       if (!isRecord(mail) || typeof mail.code !== 'string')
                         throw new Error('No recent code. Request a new one.');
-                      codeForm.setValue('code', mail.code, {
-                        shouldValidate: true,
-                      });
-                      codeForm.setFocus('code');
+                      setCode(mail.code);
+                      codeInput.current?.focus();
                     })
                   }
                 >
@@ -521,10 +463,12 @@ export const AccountSettings = ({
             </section>
           )}
           {(syncPaused || syncOffline) && (
-            <details className="account-settings__details">
-              <summary>Recover device changes</summary>
+            <Disclosure
+              className="account-settings__details"
+              label={<> Recover device changes </>}
+            >
               <BackupSettings accountRecovery />
-            </details>
+            </Disclosure>
           )}
         </>
       )}

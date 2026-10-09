@@ -67,7 +67,7 @@
   border-top: 1px solid var(--navy);
 }
 
-.account-screen__section summary {
+.account-screen__section .disclosure-trigger {
   padding: 0.8rem 0.2rem;
   color: var(--navy);
   font-size: var(--text-headline);
@@ -82,7 +82,7 @@
   font-weight: 700;
 }
 
-.account-screen__section summary:focus-visible {
+.account-screen__section .disclosure-trigger:focus-visible {
   outline: 3px solid var(--blue);
   outline-offset: 2px;
 }
@@ -263,15 +263,6 @@
   font-weight: 700;
 }
 
-.account-settings__otp {
-  width: 100%;
-  max-width: 24rem;
-}
-
-.account-settings__otp-input:focus-visible {
-  outline: none;
-}
-
 .account-settings__code-slots {
   display: flex;
   gap: clamp(0.25rem, 1.5vw, 0.5rem);
@@ -281,7 +272,7 @@
 .account-settings__code-slot {
   position: relative;
   display: grid;
-  place-items: center;
+  text-align: center;
   flex: 1 1 0;
   min-width: 0;
   height: clamp(2.75rem, 11vw, 3.25rem);
@@ -294,35 +285,15 @@
   box-shadow: 0 0.16rem 0 var(--yellow);
 }
 
-.account-settings__code-slot--active {
+.account-settings__code-slot:focus {
   background: var(--cream);
   outline: 2px solid var(--blue);
   outline-offset: 2px;
 }
 
-.account-settings__otp:has(input[aria-invalid='true'])
+.account-settings__code-slots[aria-invalid='true']
   .account-settings__code-slot {
   border-color: var(--error-ink);
-}
-
-.account-settings__code-caret {
-  position: absolute;
-  width: 2px;
-  height: 1.4rem;
-  background: var(--navy);
-  animation: account-code-caret 1s steps(1) infinite;
-}
-
-@keyframes account-code-caret {
-  50% {
-    opacity: 0;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .account-settings__code-caret {
-    animation: none;
-  }
 }
 
 .account-settings__code-hint {
@@ -351,7 +322,7 @@
   text-align: center;
 }
 
-.account-settings__details > summary {
+.account-settings__details > .disclosure-trigger {
   width: max-content;
   color: var(--navy);
   cursor: pointer;
@@ -359,7 +330,7 @@
   font-weight: 700;
 }
 
-.account-settings__details > summary:focus-visible {
+.account-settings__details > .disclosure-trigger:focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 2px;
 }

@@ -1,3 +1,4 @@
+import { Disclosure } from '@/components/Disclosure';
 import { GameButton } from '@/components/GameButton';
 import { LevelLabel } from '@/components/LevelLabel';
 import { CaretDownIcon, CheckIcon, MinusIcon, XIcon } from '@/components/icons';
@@ -207,20 +208,24 @@ export const ResultsScreen = ({
             <p className="results__date">{formatDailyDate(mode.date)}</p>
           ) : null}
           {result.rules ? (
-            <details className="results__settings">
-              <summary>
-                <span>
-                  <LevelLabel level={result.rules.level} /> ·{' '}
-                  {generations.every((generation) =>
-                    result.rules?.generations.includes(generation),
-                  )
-                    ? 'All generations'
-                    : result.rules.generations.length === 1
-                      ? `Gen ${result.rules.generations[0]}`
-                      : `${result.rules.generations.length} generations`}
-                </span>
-                <CaretDownIcon aria-hidden="true" weight="bold" />
-              </summary>
+            <Disclosure
+              className="results__settings"
+              label={
+                <>
+                  <span>
+                    <LevelLabel level={result.rules.level} /> ·{' '}
+                    {generations.every((generation) =>
+                      result.rules?.generations.includes(generation),
+                    )
+                      ? 'All generations'
+                      : result.rules.generations.length === 1
+                        ? `Gen ${result.rules.generations[0]}`
+                        : `${result.rules.generations.length} generations`}
+                  </span>
+                  <CaretDownIcon aria-hidden="true" weight="bold" />
+                </>
+              }
+            >
               <dl>
                 <div>
                   <dt>Generations</dt>
@@ -231,7 +236,7 @@ export const ResultsScreen = ({
                   <dd>{result.rules.formGroups.join(', ')}</dd>
                 </div>
               </dl>
-            </details>
+            </Disclosure>
           ) : null}
         </div>
         {isDaily && dailyStreak > 0 ? (

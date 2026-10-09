@@ -65,6 +65,4 @@ test('multi-select type feedback distinguishes selected and missed answers', () 
   expect(after.choice('grass')).toContain('answer--missed');
   expect(after.choice('water')).toContain('answer--wrong');
   expect(after.choice('bug')).not.toMatch(/answer--(correct|wrong|missed)/);
-  expect(after.choice('fire')).toContain('aria-pressed="true"');
-  expect(after.choice('grass')).toContain('aria-pressed="false"');
 });

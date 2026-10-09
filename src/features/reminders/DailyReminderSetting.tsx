@@ -1,3 +1,4 @@
+import { Input } from '@base-ui/react/input';
 import { Checkbox } from '@/components/Checkbox';
 import { useDailyReminder } from '@/features/reminders/daily-reminder-context';
 
@@ -31,11 +32,11 @@ export const DailyReminderSetting = () => {
         checked={status === 'enabled'}
         disabled={busy || status === 'checking'}
         label="Remind me each day"
-        onChange={(event) => void (event.target.checked ? enable() : disable())}
+        onCheckedChange={(checked) => void (checked ? enable() : disable())}
       />
       <label className="reminder-time-control">
         <span>Time</span>
-        <input
+        <Input
           aria-describedby="reminder-time-hint"
           disabled={status === 'checking' || (busy && status !== 'enabled')}
           onChange={(event) => void setTime(event.target.value)}

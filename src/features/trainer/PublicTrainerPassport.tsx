@@ -1,3 +1,5 @@
+import { Toggle } from '@base-ui/react/toggle';
+import { ToggleGroup } from '@base-ui/react/toggle-group';
 import { useState } from 'react';
 import { BackButton } from '../../components/BackButton';
 import { PlayerName } from '../../components/PlayerName';
@@ -83,13 +85,16 @@ export function PublicTrainerPassport({
         </div>
       </header>
 
-      <nav
+      <ToggleGroup
+        render={<nav />}
+        value={[view]}
         aria-label={`${name}'s Trainer profile`}
         className="trainer-passport__views"
       >
         {views.map(([nextView, label, Icon]) => (
-          <SoundButton
-            aria-pressed={view === nextView}
+          <Toggle
+            render={<SoundButton />}
+            value={nextView}
             className="trainer-passport__view"
             key={nextView}
             onClick={() => {
@@ -100,9 +105,9 @@ export function PublicTrainerPassport({
           >
             <Icon aria-hidden="true" weight="bold" />
             {label}
-          </SoundButton>
+          </Toggle>
         ))}
-      </nav>
+      </ToggleGroup>
 
       <div className="trainer-passport__artifact">
         {view === 'pokedex' ? (

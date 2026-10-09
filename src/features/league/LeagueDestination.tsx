@@ -1,3 +1,5 @@
+import { Toggle } from '@base-ui/react/toggle';
+import { ToggleGroup } from '@base-ui/react/toggle-group';
 import { useGameSounds } from '@/lib/audio/sound-context';
 import { GameButton } from '@/components/GameButton';
 import { BackButton } from '@/components/BackButton';
@@ -95,22 +97,27 @@ export const LeagueDestination = ({
       <header className="league-hall__header">
         <BackButton label="Back to home" onClick={onBack} />
         {completed && (
-          <nav className="league-hall__navigation" aria-label="League views">
-            <GameButton
-              tone="quiet"
-              aria-pressed={view === 'challenge'}
+          <ToggleGroup
+            render={<nav />}
+            value={[view]}
+            className="league-hall__navigation"
+            aria-label="League views"
+          >
+            <Toggle
+              render={<GameButton tone="quiet" />}
+              value="challenge"
               onClick={() => onViewChange('challenge')}
             >
               Challenge
-            </GameButton>
-            <GameButton
-              tone="quiet"
-              aria-pressed={view === 'hall'}
+            </Toggle>
+            <Toggle
+              render={<GameButton tone="quiet" />}
+              value="hall"
               onClick={() => onViewChange('hall')}
             >
               Hall of Fame
-            </GameButton>
-          </nav>
+            </Toggle>
+          </ToggleGroup>
         )}
       </header>
       <div ref={heading}>

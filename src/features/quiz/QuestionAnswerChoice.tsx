@@ -1,3 +1,5 @@
+import { Toggle } from '@base-ui/react/toggle';
+import { Button } from '@base-ui/react/button';
 import {
   PokemonRenderable,
   QuestionIdentity,
@@ -166,8 +168,10 @@ const QuestionAnswerChoiceInner = ({
         ? visual?.types
         : undefined
     : undefined;
+  const ChoiceButton = multiSelect ? Toggle : Button;
   const answerButton = (
-    <GameButton
+    <ChoiceButton
+      render={<GameButton sound="none" />}
       aria-label={`${
         answered || isVisible(policy.name, state)
           ? label
@@ -186,11 +190,10 @@ const QuestionAnswerChoiceInner = ({
       aria-keyshortcuts={
         question.options.length <= 9 ? String(index + 1) : undefined
       }
-      aria-pressed={multiSelect ? optionSelected : undefined}
+      pressed={multiSelect ? optionSelected : undefined}
       className={`${optionClassName} ${hasSprite ? 'answer--pokemon' : ''} ${isItemChoice && itemImage && policy.sprite !== null ? 'answer--item' : ''} ${concealed ? 'answer--concealed' : ''}`.trim()}
       disabled={answered}
       onClick={() => onSelect(option)}
-      sound="none"
     >
       {selectionMark !== null ? (
         <kbd aria-hidden="true">{selectionMark}</kbd>
@@ -292,7 +295,7 @@ const QuestionAnswerChoiceInner = ({
           ) : null}
         </span>
       )}
-    </GameButton>
+    </ChoiceButton>
   );
   return attackTypes && typeRelations ? (
     <div

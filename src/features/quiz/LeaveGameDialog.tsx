@@ -1,5 +1,6 @@
+import { Dialog } from '@base-ui/react/dialog';
+import { ModalDialog } from '@/components/ModalDialog';
 import { GameButton } from '@/components/GameButton';
-import { useModalDialog } from '@/hooks/useModalDialog';
 
 interface LeaveGameDialogProps {
   confirmLabel?: string;
@@ -14,36 +15,24 @@ export const LeaveGameDialog = ({
   onCancel,
   onConfirm,
 }: LeaveGameDialogProps) => {
-  const { dialog, dialogProps, closeDialog: cancel } = useModalDialog(onCancel);
-
-  const confirm = () => {
-    dialog.current?.close();
-    onConfirm();
-  };
-
   return (
-    <dialog
-      {...dialogProps}
-      aria-describedby="leave-game-description"
-      aria-labelledby="leave-game-title"
-      className="confirm-dialog"
-    >
+    <ModalDialog onClose={onCancel} className="confirm-dialog">
       <div className="confirm-dialog__body">
-        <h2 id="leave-game-title">Leave this game?</h2>
-        <p id="leave-game-description">
+        <Dialog.Title>Leave this game?</Dialog.Title>
+        <Dialog.Description>
           {daily
             ? 'Your Daily attempt will be forfeited.'
             : 'Your answers from this game will be lost.'}
-        </p>
+        </Dialog.Description>
         <div className="confirm-dialog__actions">
-          <GameButton autoFocus tone="quiet" onClick={cancel}>
+          <Dialog.Close render={<GameButton tone="quiet" />}>
             Keep playing
-          </GameButton>
-          <GameButton className="confirm-dialog__confirm" onClick={confirm}>
+          </Dialog.Close>
+          <GameButton className="confirm-dialog__confirm" onClick={onConfirm}>
             {confirmLabel}
           </GameButton>
         </div>
       </div>
-    </dialog>
+    </ModalDialog>
   );
 };

@@ -1,23 +1,17 @@
+import { Dialog } from '@base-ui/react/dialog';
 import { XIcon } from './icons';
 import { SoundButton } from './SoundButton';
 
 interface DialogCloseButtonProps {
-  autoFocus?: boolean;
   label: string;
-  onClick: () => void;
 }
 
-export const DialogCloseButton = ({
-  autoFocus,
-  label,
-  onClick,
-}: DialogCloseButtonProps) => (
-  <SoundButton
+export const DialogCloseButton = ({ label }: DialogCloseButtonProps) => (
+  <Dialog.Close
+    render={<SoundButton />}
     aria-label={label}
-    autoFocus={autoFocus}
     className="dialog-close"
-    onClick={onClick}
   >
     <XIcon aria-hidden="true" weight="bold" />
-  </SoundButton>
+  </Dialog.Close>
 );

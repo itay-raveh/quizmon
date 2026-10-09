@@ -1,3 +1,4 @@
+import { Progress } from '@base-ui/react/progress';
 import type { TrainerBadge } from '@/domain/player/trainer-progression';
 
 interface TrainerTierProgressProps {
@@ -21,11 +22,16 @@ export const TrainerTierProgress = ({
         <strong>{current.toLocaleString()}</strong>{' '}
         <span>/ {goal.toLocaleString()}</span>
       </div>
-      <progress
+      <Progress.Root
+        className="trainer-progress__bar"
         aria-label={`${label} progress`}
         max={goal}
         value={Math.min(current, goal)}
-      />
+      >
+        <Progress.Track>
+          <Progress.Indicator className="trainer-progress__fill" />
+        </Progress.Track>
+      </Progress.Root>
     </div>
   );
 };

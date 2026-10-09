@@ -1,3 +1,4 @@
+import { Fieldset } from '@base-ui/react/fieldset';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { GameButton } from '../../components/GameButton';
 import { Toast } from '../../components/Toast';
@@ -117,10 +118,10 @@ export const BackupSettings = ({
   };
 
   return (
-    <fieldset className="experience-setting backup-settings">
-      <legend>
+    <Fieldset.Root className="experience-setting backup-settings">
+      <Fieldset.Legend render={<legend />}>
         {accountRecovery ? 'Device recovery' : 'Backup & restore'}
-      </legend>
+      </Fieldset.Legend>
       <p>
         {accountRecovery
           ? 'Save a copy of changes waiting on this device, or recover them from a backup for this account.'
@@ -247,6 +248,6 @@ export const BackupSettings = ({
           </div>
         </div>
       )}
-    </fieldset>
+    </Fieldset.Root>
   );
 };

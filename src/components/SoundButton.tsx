@@ -1,3 +1,4 @@
+import { Button } from '@base-ui/react/button';
 import {
   useInteractionSound,
   type InteractionSound,
@@ -21,5 +22,5 @@ export const SoundButton = ({
     onClick?.(event);
   };
 
-  return <button {...props} onClick={handleClick} type={type} />;
+  return <Button {...props} onClick={handleClick} type={type} />;
 };

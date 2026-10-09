@@ -1,3 +1,4 @@
+import { Input } from '@base-ui/react/input';
 import { GameButton } from '@/components/GameButton';
 import { QuestionIcon } from '@/components/icons';
 import { PokemonIdentity } from '@/components/PokemonIdentity';
@@ -63,7 +64,7 @@ export const TrainerPokedex = ({
       </div>
       <label className="trainer-pokedex__search">
         Search Pokédex
-        <input
+        <Input
           type="search"
           placeholder="Name or Pokédex number"
           value={search}

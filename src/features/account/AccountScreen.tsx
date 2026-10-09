@@ -1,3 +1,8 @@
+import { Dialog } from '@base-ui/react/dialog';
+import { Form } from '@base-ui/react/form';
+import { Disclosure } from '@/components/Disclosure';
+import { Input } from '@base-ui/react/input';
+import { ModalDialog } from '@/components/ModalDialog';
 import {
   useEffect,
   useRef,
@@ -14,7 +19,6 @@ import { TRAINER_NAME_MAX_LENGTH } from '../../domain/player/trainer-profile';
 import type { TrainerProfile } from '../../domain/player/trainer-profile';
 import type { TrainerStats } from '../../domain/player/progress';
 import { FriendsPanel } from '../friends/FriendsPanel';
-import { useModalDialog } from '../../hooks/useModalDialog';
 import {
   readStoredValue,
   removeStoredValue,
@@ -34,36 +38,27 @@ const WelcomeTrainerDialog = ({
   onContinue: () => void;
   onEditCard: () => void;
 }) => {
-  const { dialog, dialogProps, closeDialog } = useModalDialog(onContinue);
-
   return (
-    <dialog
-      {...dialogProps}
-      aria-describedby="welcome-trainer-description"
-      aria-labelledby="welcome-trainer-title"
-      className="confirm-dialog"
-    >
+    <ModalDialog onClose={onContinue} className="confirm-dialog">
       <div className="confirm-dialog__body">
-        <h2 id="welcome-trainer-title">Welcome, Trainer!</h2>
-        <p id="welcome-trainer-description">
+        <Dialog.Title>Welcome, Trainer!</Dialog.Title>
+        <Dialog.Description>
           Other players can see your Trainer Card. Give it a name.
-        </p>
+        </Dialog.Description>
         <div className="confirm-dialog__actions">
           <GameButton
-            autoFocus
             onClick={() => {
-              dialog.current?.close();
               onEditCard();
             }}
           >
             Edit card
           </GameButton>
-          <GameButton tone="quiet" onClick={closeDialog}>
+          <GameButton tone="quiet" onClick={onContinue}>
             Continue
           </GameButton>
         </div>
       </div>
-    </dialog>
+    </ModalDialog>
   );
 };
 
@@ -83,6 +78,16 @@ export function AccountScreen({
   const trainerName = trainer.profile.name;
   const account = useSyncExternalStore(subscribeAccount, accountSnapshot);
   const navigate = useNavigate();
+  const [settingsDisclosure, setSettingsDisclosure] = useState({
+    error: account.error,
+    open: Boolean(account.error),
+  });
+  if (settingsDisclosure.error !== account.error) {
+    setSettingsDisclosure({
+      error: account.error,
+      open: Boolean(account.error),
+    });
+  }
   const signingIn = !account.owner && !account.mergeRequired;
   const hasTrainerName = Boolean(trainerName.trim());
   const [editingOwner, setEditingOwner] = useState<string | null>(null);
@@ -176,7 +181,7 @@ export function AccountScreen({
             )}
           </div>
           {editingName && !signingIn && !account.mergeRequired && (
-            <form
+            <Form
               className="account-screen__name-form"
               onKeyDown={(event) => {
                 if (event.key === 'Escape' && !savingName) {
@@ -189,7 +194,7 @@ export function AccountScreen({
               }}
             >
               <label htmlFor="account-trainer-name">Trainer name</label>
-              <input
+              <Input
                 autoComplete="nickname"
                 autoFocus
                 id="account-trainer-name"
@@ -211,7 +216,7 @@ export function AccountScreen({
                 </GameButton>
               </div>
               {nameError && <p role="alert">{nameError}</p>}
-            </form>
+            </Form>
           )}
         </header>
         {signingIn && friendInvitation && (
@@ -224,24 +229,32 @@ export function AccountScreen({
           <AccountSettings />
         ) : (
           <div className="account-screen__sections">
-            <details
+            <Disclosure
               className="account-screen__section"
-              open={Boolean(account.error)}
+              open={settingsDisclosure.open}
+              onOpenChange={(open) =>
+                setSettingsDisclosure({ error: account.error, open })
+              }
+              label={
+                <>
+                  Settings, backup & sign out
+                  {(account.error || account.offline) && (
+                    <small className="account-screen__sync-status">
+                      {account.error
+                        ? 'Sync needs attention'
+                        : 'Waiting for connection'}
+                    </small>
+                  )}
+                </>
+              }
             >
-              <summary>
-                Settings, backup & sign out
-                {(account.error || account.offline) && (
-                  <small className="account-screen__sync-status">
-                    {account.error
-                      ? 'Sync needs attention'
-                      : 'Waiting for connection'}
-                  </small>
-                )}
-              </summary>
               <AccountSettings />
-            </details>
-            <details className="account-screen__section" open>
-              <summary>Friends</summary>
+            </Disclosure>
+            <Disclosure
+              className="account-screen__section"
+              defaultOpen
+              label={<> Friends </>}
+            >
               <FriendsPanel
                 key={`${account.owner}:${friendId}`}
                 owner={account.owner}
@@ -252,7 +265,7 @@ export function AccountScreen({
                 }
                 onViewPlayer={onViewPlayer}
               />
-            </details>
+            </Disclosure>
           </div>
         )}
       </section>

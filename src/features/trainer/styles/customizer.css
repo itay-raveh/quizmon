@@ -82,7 +82,7 @@
   cursor: pointer;
 }
 
-.trainer-avatar-picker__options button[aria-pressed='true'] {
+.trainer-avatar-picker__options button[data-checked] {
   background: var(--sky);
   border-color: var(--blue);
 }

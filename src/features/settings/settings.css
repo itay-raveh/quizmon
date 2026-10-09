@@ -80,7 +80,7 @@
   transition: transform 120ms ease;
 }
 
-.question-type-group[open] .question-type-group__disclosure svg {
+.question-type-group[data-open] .question-type-group__disclosure svg {
   transform: rotate(180deg);
 }
 
@@ -194,9 +194,8 @@
   line-height: 1.25;
 }
 
-.selection-tile
-  input:checked
-  + .selection-tile__surface
+.selection-tile[data-checked]
+  .selection-tile__surface
   .selection-tile__description {
   color: var(--primary-text);
 }
@@ -267,7 +266,7 @@
   height: 100%;
 }
 
-.selection-tile input:checked + .selection-tile__surface {
+.selection-tile[data-checked] .selection-tile__surface {
   color: var(--primary-text);
   background: var(--blue);
   box-shadow:
@@ -275,14 +274,11 @@
     0 0.28rem 0 var(--navy-shadow);
 }
 
-.selection-tile
-  input:checked
-  + .selection-tile__surface
-  .selection-tile__check {
+.selection-tile[data-checked] .selection-tile__surface .selection-tile__check {
   opacity: 1;
 }
 
-.selection-tile input:focus-visible + .selection-tile__surface {
+.selection-tile:focus-visible .selection-tile__surface {
   outline: 0.2rem solid var(--focus);
   outline-offset: 0.16rem;
 }
@@ -296,7 +292,7 @@
   transform: translateY(0.12rem);
 }
 
-.selection-tile input:disabled + .selection-tile__surface {
+.selection-tile[data-disabled] .selection-tile__surface {
   cursor: not-allowed;
   filter: grayscale(0.4);
   opacity: 0.6;
@@ -392,20 +388,6 @@
   font-family: var(--font-data);
   font-size: var(--text-label);
   font-weight: 800;
-}
-
-.volume-control input {
-  width: 100%;
-  height: 2rem;
-  margin: 0;
-  accent-color: var(--blue);
-  cursor: pointer;
-  grid-column: 1 / -1;
-}
-
-.volume-control input:focus-visible {
-  outline: 0.2rem solid var(--focus);
-  outline-offset: 0.1rem;
 }
 
 .reminder-time-control {
@@ -507,7 +489,7 @@
   outline-offset: 0.14rem;
 }
 
-.question-type-help[popover] {
+.question-type-help {
   width: min(22rem, calc(100vw - 2rem));
   padding: 1rem 3.25rem 1rem 1rem;
   color: var(--ink);
@@ -577,7 +559,7 @@
   place-items: center;
 }
 
-.checkbox input:checked + .checkbox__control {
+.checkbox[data-checked] .checkbox__control {
   background: var(--blue);
 }
 
@@ -588,11 +570,11 @@
   opacity: 0;
 }
 
-.checkbox input:checked + .checkbox__control svg {
+.checkbox[data-checked] .checkbox__control svg {
   opacity: 1;
 }
 
-.checkbox input:focus-visible + .checkbox__control {
+.checkbox:focus-visible .checkbox__control {
   outline: 0.2rem solid var(--focus);
   outline-offset: 0.15rem;
 }
@@ -773,8 +755,8 @@
   overflow-wrap: anywhere;
 }
 
-.selection-tile--form input:disabled + .selection-tile__surface,
-.selection-tile--question-type input:disabled + .selection-tile__surface {
+.selection-tile--form[data-disabled] .selection-tile__surface,
+.selection-tile--question-type[data-disabled] .selection-tile__surface {
   color: var(--muted);
   background: var(--disabled-surface);
   opacity: 1;
@@ -813,7 +795,7 @@
   border-radius: 0.5rem;
 }
 
-.save-recovery::backdrop {
+.modal-backdrop:has(+ .save-recovery) {
   background: var(--modal-scrim);
 }
 
@@ -848,11 +830,11 @@
   margin-top: 1.5rem;
 }
 
-.save-recovery details {
+.save-recovery .disclosure {
   margin-top: 1.5rem;
 }
 
-.save-recovery summary {
+.save-recovery .disclosure-trigger {
   cursor: pointer;
 }
 
@@ -861,14 +843,14 @@
   border-top: 2px solid color-mix(in srgb, var(--navy) 18%, transparent);
 }
 
-.settings-backup > summary {
+.settings-backup > .disclosure-trigger {
   padding-block: 0.85rem;
   color: var(--navy);
   font-weight: 800;
   cursor: pointer;
 }
 
-.settings-backup > summary:focus-visible {
+.settings-backup > .disclosure-trigger:focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 2px;
 }
@@ -879,4 +861,32 @@
 
 .settings-dialog--level {
   width: min(26rem, calc(100% - 1rem));
+}
+
+.volume-slider {
+  grid-column: 1 / -1;
+}
+.volume-slider__control {
+  display: flex;
+  align-items: center;
+  height: 2.75rem;
+  position: relative;
+  touch-action: none;
+}
+.volume-slider__track {
+  width: 100%;
+  height: 0.45rem;
+  background: var(--muted);
+  border-radius: 1rem;
+}
+.volume-slider__indicator {
+  background: var(--blue);
+  border-radius: inherit;
+}
+.volume-slider__thumb {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid var(--navy);
+  border-radius: 50%;
+  background: var(--paper);
 }

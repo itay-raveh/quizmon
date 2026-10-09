@@ -1,6 +1,7 @@
+import { Dialog } from '@base-ui/react/dialog';
+import { ModalDialog } from '@/components/ModalDialog';
 import { DialogCloseButton } from '@/components/DialogCloseButton';
 import type { TrainerBadge } from '@/domain/player/trainer-progression';
-import { useModalDialog } from '@/hooks/useModalDialog';
 import { TrainerBadgeMark } from './TrainerBadgeMark';
 import { TrainerTierProgress } from './TrainerTierProgress';
 
@@ -13,23 +14,15 @@ export const TrainerBadgeDialog = ({
   badge,
   onClose,
 }: TrainerBadgeDialogProps) => {
-  const { dialogProps, closeDialog } = useModalDialog(onClose, {
-    dismissOnBackdrop: true,
-  });
-
   return (
-    <dialog
-      {...dialogProps}
-      aria-labelledby="trainer-badge-title"
+    <ModalDialog
+      onClose={onClose}
+      dismissOnBackdrop
       className="trainer-badge-dialog"
     >
       <header>
-        <h2 id="trainer-badge-title">{badge.label}</h2>
-        <DialogCloseButton
-          autoFocus
-          label="Close badge details"
-          onClick={closeDialog}
-        />
+        <Dialog.Title>{badge.label}</Dialog.Title>
+        <DialogCloseButton label="Close badge details" />
       </header>
       <div className="trainer-badge-dialog__body">
         <TrainerBadgeMark tier={badge.tier} id={badge.id} />
@@ -38,6 +31,6 @@ export const TrainerBadgeDialog = ({
           <TrainerTierProgress progress={badge} />
         </div>
       </div>
-    </dialog>
+    </ModalDialog>
   );
 };

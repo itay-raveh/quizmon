@@ -1,3 +1,6 @@
+import { Fieldset } from '@base-ui/react/fieldset';
+import { RadioGroup } from '@base-ui/react/radio-group';
+import { useInteractionSound } from '@/lib/audio/sound-context';
 import { GenerationLabel } from '@/components/GenerationLabel';
 import { LevelNumber } from '@/components/LevelLabel';
 import { SelectionTile } from './SelectionTile';
@@ -44,6 +47,7 @@ export const TrainingSettings = ({
   submitted,
   trainingChangesApplyNextGame,
 }: TrainingSettingsProps) => {
+  const play = useInteractionSound();
   const allGenerationsSelected =
     draft.generations.length === generations.length;
   const customized = draft.questionSelection === 'custom';
@@ -58,15 +62,23 @@ export const TrainingSettings = ({
       ) : null}
 
       {section === 'level' && (
-        <fieldset className="level-settings">
-          <legend>Level</legend>
-          <div className="level-control">
+        <Fieldset.Root className="level-settings">
+          <Fieldset.Legend render={<legend />}>Level</Fieldset.Legend>
+          <RadioGroup
+            className="level-control"
+            name="level"
+            aria-label="Level"
+            value={draft.level}
+            onValueChange={(level) => {
+              play('toggle-on');
+              onChange((current) => ({ ...current, level }));
+            }}
+          >
             {gameLevels.map((level) => (
               <SelectionTile
                 key={level}
-                checked={draft.level === level}
+                value={level}
                 inputType="radio"
-                name="level"
                 variant="training-mode"
                 label={
                   <>
@@ -76,11 +88,10 @@ export const TrainingSettings = ({
                     </span>
                   </>
                 }
-                onChange={() => onChange((current) => ({ ...current, level }))}
               />
             ))}
-          </div>
-        </fieldset>
+          </RadioGroup>
+        </Fieldset.Root>
       )}
 
       {section === 'generations' && (
@@ -123,13 +134,13 @@ export const TrainingSettings = ({
                       variant="numeral"
                     />
                   }
-                  onChange={(event) =>
+                  onCheckedChange={(checked) =>
                     onChange((current) => ({
                       ...current,
                       generations: toggleValue(
                         current.generations,
                         generation,
-                        event.target.checked,
+                        checked,
                       ),
                     }))
                   }
@@ -183,13 +194,13 @@ export const TrainingSettings = ({
                           : `Needs Gen ${formGroupGenerations[group].join(' or ')}.`
                         : undefined
                     }
-                    onChange={(event) =>
+                    onCheckedChange={(checked) =>
                       onChange((current) => ({
                         ...current,
                         formGroups: toggleValue(
                           current.formGroups,
                           group,
-                          event.target.checked,
+                          checked,
                         ),
                       }))
                     }
@@ -212,12 +223,10 @@ export const TrainingSettings = ({
             <SelectionTile
               checked={customized}
               label="Customize questions"
-              onChange={(event) =>
+              onCheckedChange={(checked) =>
                 onChange((current) => ({
                   ...current,
-                  questionSelection: event.target.checked
-                    ? 'custom'
-                    : 'automatic',
+                  questionSelection: checked ? 'custom' : 'automatic',
                 }))
               }
             />

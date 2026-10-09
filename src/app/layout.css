@@ -111,7 +111,7 @@
 }
 
 @media (max-width: 50rem) {
-  .app--with-navigation {
+  :root {
     --app-safe-bottom-max: env(safe-area-max-inset-bottom, 0px);
     /* Firefox 150+ reports a false bottom inset: https://bugzilla.mozilla.org/show_bug.cgi?id=2057232 */
     --app-safe-bottom: min(
@@ -119,6 +119,8 @@
       var(--app-safe-bottom-max)
     );
     --app-navigation-clearance: calc(6.25rem + var(--app-safe-bottom));
+  }
+  .app--with-navigation {
     padding-bottom: calc(6.25rem + var(--app-safe-bottom-max));
   }
 
@@ -337,11 +339,11 @@
 
   .question--enter,
   .results,
-  .settings-dialog[open],
-  .confirm-dialog[open],
-  .share-dialog[open],
-  .trainer-badge-dialog[open],
-  .trainer-title-dialog[open],
+  .settings-dialog[data-open],
+  .confirm-dialog[data-open],
+  .share-dialog[data-open],
+  .trainer-badge-dialog[data-open],
+  .trainer-title-dialog[data-open],
   .trainer-card__polish::before {
     animation: none !important;
   }

@@ -1,3 +1,6 @@
+import { Dialog } from '@base-ui/react/dialog';
+import { Input } from '@base-ui/react/input';
+import { ModalDialog } from '@/components/ModalDialog';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import Skeleton from 'react-loading-skeleton';
@@ -6,7 +9,6 @@ import { GameButton } from '../../components/GameButton';
 import { PlayerName } from '../../components/PlayerName';
 import { Toast } from '../../components/Toast';
 import { EyeIcon, ShareNetworkIcon, TrashIcon } from '../../components/icons';
-import { useModalDialog } from '../../hooks/useModalDialog';
 import {
   friendInvitePath,
   type FriendRelation,
@@ -88,36 +90,24 @@ function RemoveFriendDialog({
   onCancel: () => void;
   onConfirm: () => void;
 }) {
-  const { dialog, dialogProps, closeDialog } = useModalDialog(onCancel);
   return (
-    <dialog
-      {...dialogProps}
-      aria-describedby="remove-friend-description"
-      aria-labelledby="remove-friend-title"
-      className="confirm-dialog"
-    >
+    <ModalDialog onClose={onCancel} className="confirm-dialog">
       <div className="confirm-dialog__body">
-        <h2 id="remove-friend-title">Remove {name}?</h2>
-        <p id="remove-friend-description">
+        <Dialog.Title>Remove {name}?</Dialog.Title>
+        <Dialog.Description>
           You will no longer see each other in Friends standings. You can send a
           new request later.
-        </p>
+        </Dialog.Description>
         <div className="confirm-dialog__actions">
-          <GameButton autoFocus tone="quiet" onClick={closeDialog}>
+          <Dialog.Close render={<GameButton tone="quiet" />}>
             Keep friend
-          </GameButton>
-          <GameButton
-            className="confirm-dialog__confirm"
-            onClick={() => {
-              dialog.current?.close();
-              onConfirm();
-            }}
-          >
+          </Dialog.Close>
+          <GameButton className="confirm-dialog__confirm" onClick={onConfirm}>
             Remove friend
           </GameButton>
         </div>
       </div>
-    </dialog>
+    </ModalDialog>
   );
 }
 
@@ -307,7 +297,7 @@ export function FriendsPanel({
           {showLink && (
             <label className="friends-field">
               Invite link
-              <input
+              <Input
                 readOnly
                 value={link}
                 onFocus={(event) => event.target.select()}

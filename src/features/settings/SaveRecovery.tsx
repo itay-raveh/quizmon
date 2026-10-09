@@ -1,3 +1,6 @@
+import { Dialog } from '@base-ui/react/dialog';
+import { Disclosure } from '@/components/Disclosure';
+import { ModalDialog } from '@/components/ModalDialog';
 import {
   canRecoverAccountSave,
   canRecoverGuestSave,
@@ -9,7 +12,6 @@ import { site } from '@/app/site';
 import { GameButton } from '@/components/GameButton';
 import { AccountSettings } from '@/features/account/AccountSettings';
 import { AutomaticUpdate } from '@/features/installation/AutomaticUpdate';
-import { useModalDialog } from '@/hooks/useModalDialog';
 import { downloadJson } from '@/lib/download';
 import {
   getSaveIssue,
@@ -20,7 +22,13 @@ import {
   createRecoveryExport,
   resetSavedData,
 } from '@/lib/storage/save-recovery';
-import { useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
+import {
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type ReactNode,
+} from 'react';
 import {
   backupPreview,
   parseBackup,
@@ -63,9 +71,15 @@ const SaveRecoveryDialog = ({
   const [notice, setNotice] = useState('');
   const [busy, setBusy] = useState(false);
   const [needsSignIn, setNeedsSignIn] = useState(false);
-  const { dialog, dialogProps } = useModalDialog(() => {}, {
-    initialFocus: heading,
-  });
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const feedbackLifecycle = useMemo(
+    () => ({
+      onFormOpen: () => setFeedbackOpen(true),
+      onFormClose: () => setFeedbackOpen(false),
+      onFormSubmitted: () => setFeedbackOpen(false),
+    }),
+    [],
+  );
   const copy = messages[issue.kind];
   const act = async (action: () => void | Promise<void>) => {
     setError('');
@@ -114,17 +128,15 @@ const SaveRecoveryDialog = ({
     }
   };
   return (
-    <dialog
-      {...dialogProps}
-      onCancel={(event) => event.preventDefault()}
+    <ModalDialog
+      initialFocus={heading}
+      open={!feedbackOpen}
       className="save-recovery"
-      aria-labelledby="save-recovery-title"
-      aria-describedby="save-recovery-message"
     >
-      <h1 id="save-recovery-title" tabIndex={-1} ref={heading}>
+      <Dialog.Title render={<h1 />} tabIndex={-1} ref={heading}>
         {copy.title}
-      </h1>
-      <p id="save-recovery-message">{copy.message}</p>
+      </Dialog.Title>
+      <Dialog.Description>{copy.message}</Dialog.Description>
       {issue.kind !== 'unavailable' && (
         <p>
           You can{' '}
@@ -157,7 +169,7 @@ const SaveRecoveryDialog = ({
         <GameButton tone="quiet" disabled={busy} onClick={onRetry}>
           Try again
         </GameButton>
-        <FeedbackButton showLabel modalDialog={dialog} />
+        <FeedbackButton showLabel feedbackLifecycle={feedbackLifecycle} />
         {issue.kind !== 'unavailable' &&
           (canRecoverGuestSave() || canRecoverAccountSave()) && (
             <GameButton
@@ -258,11 +270,10 @@ const SaveRecoveryDialog = ({
             )}
           </section>
         )}
-      <details>
-        <summary>Save details</summary>
+      <Disclosure label={<> Save details </>}>
         <p>{issue.message}</p>
-      </details>
-    </dialog>
+      </Disclosure>
+    </ModalDialog>
   );
 };
 

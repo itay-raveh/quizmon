@@ -59,7 +59,7 @@
   font-size: var(--text-status);
 }
 
-.results__settings summary {
+.results__settings .disclosure-trigger {
   display: flex;
   width: fit-content;
   min-height: 32px;
@@ -70,24 +70,20 @@
   list-style: none;
 }
 
-.results__settings summary::-webkit-details-marker {
-  display: none;
-}
-
-.results__settings summary:hover {
+.results__settings .disclosure-trigger:hover {
   color: var(--blue);
 }
 
-.results__settings summary:focus-visible {
+.results__settings .disclosure-trigger:focus-visible {
   outline: 2px solid var(--navy);
   outline-offset: 2px;
 }
 
-.results__settings summary svg {
+.results__settings .disclosure-trigger svg {
   flex-shrink: 0;
 }
 
-.results__settings[open] summary svg {
+.results__settings[data-open] .disclosure-trigger svg {
   transform: rotate(180deg);
 }
 

@@ -19,7 +19,6 @@ export const SearchCombobox = <Option,>({
   disabled = false,
   invalid = false,
   hideSuggestions = false,
-  exactOption,
 }: {
   id: string;
   className: string;
@@ -37,7 +36,6 @@ export const SearchCombobox = <Option,>({
   disabled?: boolean;
   invalid?: boolean;
   hideSuggestions?: boolean;
-  exactOption?: Option;
 }) => {
   const [open, setOpen] = useState(false);
   const expanded = open && !disabled && !hideSuggestions;
@@ -45,6 +43,7 @@ export const SearchCombobox = <Option,>({
     <div className={className}>
       <Autocomplete.Root
         items={suggestions}
+        autoHighlight
         filter={null}
         itemToStringValue={getLabel}
         value={query}
@@ -72,18 +71,6 @@ export const SearchCombobox = <Option,>({
           spellCheck={false}
           placeholder={placeholder}
           onFocus={() => setOpen(true)}
-          onKeyDown={(event) => {
-            if (event.nativeEvent.isComposing || !expanded) return;
-            if (
-              event.key === 'Enter' &&
-              exactOption !== undefined &&
-              !event.currentTarget.getAttribute('aria-activedescendant')
-            ) {
-              event.preventDefault();
-              onChoose(exactOption);
-              setOpen(false);
-            }
-          }}
         />
         <Autocomplete.Status className="visually-hidden">
           {expanded && suggestions.length > 0

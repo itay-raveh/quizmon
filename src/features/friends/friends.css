@@ -622,7 +622,7 @@ button.friends-icon-button.game-button:active:not(:disabled) {
   outline-offset: 0.14rem;
 }
 
-.leaderboard-version-help[popover] {
+.leaderboard-version-help {
   width: min(22rem, calc(100vw - 2rem));
   padding: 1rem 3.25rem 1rem 1rem;
   color: var(--ink);

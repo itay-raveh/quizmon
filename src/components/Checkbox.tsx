@@ -1,35 +1,54 @@
-import { useToggleSound } from '@/lib/audio/sound-context';
-import type { InputHTMLAttributes, ReactNode } from 'react';
+import { Field } from '@base-ui/react/field';
+import { Checkbox as BaseCheckbox } from '@base-ui/react/checkbox';
+import { useInteractionSound } from '@/lib/audio/sound-context';
+import type { ComponentProps, ReactNode } from 'react';
 import { CheckIcon } from './icons';
 
-interface CheckboxProps extends Omit<
-  InputHTMLAttributes<HTMLInputElement>,
-  'type'
-> {
+type CheckboxProps = ComponentProps<typeof BaseCheckbox.Root> & {
   description?: ReactNode;
   label: ReactNode;
-}
+};
 
 export const Checkbox = ({
   description,
   label,
-  onChange,
+  onCheckedChange,
   ...props
 }: CheckboxProps) => {
-  const handleChange = useToggleSound(onChange);
-
+  const play = useInteractionSound();
   return (
-    <label className="checkbox">
-      <input {...props} onChange={handleChange} type="checkbox" />
+    <Field.Root
+      render={
+        <BaseCheckbox.Root
+          {...props}
+          onCheckedChange={(checked, details) => {
+            play(checked ? 'toggle-on' : 'toggle-off');
+            onCheckedChange?.(checked, details);
+          }}
+        />
+      }
+      className="checkbox"
+    >
       <span className="checkbox__control" aria-hidden="true">
         <CheckIcon weight="bold" />
       </span>
       <span className="checkbox__copy">
-        <span className="checkbox__label">{label}</span>
+        <Field.Label
+          className="checkbox__label"
+          render={<span />}
+          nativeLabel={false}
+        >
+          {label}
+        </Field.Label>
         {description ? (
-          <span className="checkbox__description">{description}</span>
+          <Field.Description
+            className="checkbox__description"
+            render={<span />}
+          >
+            {description}
+          </Field.Description>
         ) : null}
       </span>
-    </label>
+    </Field.Root>
   );
 };

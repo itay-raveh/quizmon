@@ -72,9 +72,6 @@ export const TrainerTitlePicker = ({ titles, value, onChange }: Props) => {
           )}
           placeholder="Search earned titles"
           emptyMessage="No earned titles found."
-          exactOption={suggestions.find(
-            (title) => title.label.toLowerCase() === query.trim().toLowerCase(),
-          )}
         />
       </div>
     </div>

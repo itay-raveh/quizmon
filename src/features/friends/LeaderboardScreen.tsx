@@ -1,3 +1,8 @@
+import { Toggle } from '@base-ui/react/toggle';
+import { ToggleGroup } from '@base-ui/react/toggle-group';
+import { Popover } from '@base-ui/react/popover';
+import { Input } from '@base-ui/react/input';
+import { Button } from '@base-ui/react/button';
 import {
   useEffect,
   useLayoutEffect,
@@ -181,219 +186,228 @@ function Standings({
     ? Array.from({ length: scope === 'friends' ? 3 : pageSize }, () => null)
     : (data?.items ?? []);
   const pastDaily = mode === 'daily' && date < getUtcDate();
-  const versionHelpId = `leaderboard-version-help-${scope}`;
   return (
-    <section
-      className="leaderboard-standings"
-      aria-label={`${scope === 'global' ? 'Global' : 'Friends'} ${mode === 'daily' ? 'Daily' : 'Training'} standings`}
-      aria-busy={busy || checkingFriends}
-      inert={!active}
-    >
-      {(data || showSkeleton) && (
-        <>
-          {showSkeleton && (
-            <p className="visually-hidden" role="status">
-              Loading standings
-            </p>
-          )}
-          {showSkeleton && (
-            <div className="leaderboard-viewer" aria-hidden="true">
-              <span>
-                <Skeleton width="9ch" />
-              </span>
-              <strong>
-                <Skeleton width="3ch" />
-              </strong>
-            </div>
-          )}
-          {!showSkeleton && data?.viewer && (
-            <div className="leaderboard-viewer">
-              <PlayerName trainer={data.viewer.player} />
-              <strong>#{data.viewer.rank}</strong>
-            </div>
-          )}
-          {showSkeleton || data?.items.length ? (
-            <>
-              <table
-                className="leaderboard-table"
-                aria-hidden={showSkeleton || undefined}
-              >
-                <caption className="visually-hidden">
-                  {mode === 'daily'
-                    ? `Daily standings for ${date}`
-                    : 'Training standings'}
-                </caption>
-                <thead>
-                  <tr>
-                    <th scope="col">Rank</th>
-                    <th scope="col">Trainer</th>
-                    <th scope="col">Score / time</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {visibleRows.map((row, index) => (
-                    <tr
-                      key={row?.player.id ?? index}
-                      data-comparable={row?.comparable}
-                      aria-current={
-                        row?.player.id === owner && row.comparable
-                          ? 'true'
-                          : undefined
-                      }
-                    >
-                      <td>
-                        {!row ? (
-                          <Skeleton width="2ch" />
-                        ) : row.comparable ? (
-                          row.rank
-                        ) : (
-                          <SoundButton
-                            aria-label={`Why is ${row.player.name}'s score unranked?`}
-                            className="leaderboard-version-button"
-                            popoverTarget={versionHelpId}
-                            popoverTargetAction="show"
-                          >
-                            <QuestionIcon aria-hidden="true" weight="bold" />
-                          </SoundButton>
-                        )}
-                      </td>
-                      <th scope="row">
-                        <span className="leaderboard-player">
-                          {row ? (
-                            <span>
-                              <PlayerName trainer={row.player} />
-                              {row.player.id === owner ? ' (you)' : ''}
-                            </span>
-                          ) : (
-                            <span>
-                              <Skeleton width="8ch" />
-                            </span>
-                          )}
-                          {!row ? (
-                            <span className="friends-icon-button game-button game-button--quiet">
-                              <Skeleton circle width="1.3rem" height="1.3rem" />
-                            </span>
-                          ) : row.player.id !== owner ? (
-                            <GameButton
-                              aria-label={`View ${row.player.name}'s profile`}
-                              className="friends-icon-button"
-                              onClick={() => onViewPlayer(row.player.id)}
-                              title={`View ${row.player.name}'s profile`}
-                              tone="quiet"
-                            >
-                              <EyeIcon aria-hidden="true" weight="bold" />
-                            </GameButton>
-                          ) : null}
-                        </span>
-                      </th>
-                      <td>
-                        <strong>
-                          {row ? (
-                            row.score.toLocaleString()
-                          ) : (
-                            <Skeleton width="6ch" />
-                          )}
-                        </strong>
-                        <small>
-                          {row ? (
-                            `${(row.elapsedMilliseconds / 1000).toFixed(3)}s`
-                          ) : (
-                            <Skeleton width="5ch" />
-                          )}
-                        </small>
-                      </td>
+    <Popover.Root>
+      <section
+        className="leaderboard-standings"
+        aria-label={`${scope === 'global' ? 'Global' : 'Friends'} ${mode === 'daily' ? 'Daily' : 'Training'} standings`}
+        aria-busy={busy || checkingFriends}
+        inert={!active}
+      >
+        {(data || showSkeleton) && (
+          <>
+            {showSkeleton && (
+              <p className="visually-hidden" role="status">
+                Loading standings
+              </p>
+            )}
+            {showSkeleton && (
+              <div className="leaderboard-viewer" aria-hidden="true">
+                <span>
+                  <Skeleton width="9ch" />
+                </span>
+                <strong>
+                  <Skeleton width="3ch" />
+                </strong>
+              </div>
+            )}
+            {!showSkeleton && data?.viewer && (
+              <div className="leaderboard-viewer">
+                <PlayerName trainer={data.viewer.player} />
+                <strong>#{data.viewer.rank}</strong>
+              </div>
+            )}
+            {showSkeleton || data?.items.length ? (
+              <>
+                <table
+                  className="leaderboard-table"
+                  aria-hidden={showSkeleton || undefined}
+                >
+                  <caption className="visually-hidden">
+                    {mode === 'daily'
+                      ? `Daily standings for ${date}`
+                      : 'Training standings'}
+                  </caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">Rank</th>
+                      <th scope="col">Trainer</th>
+                      <th scope="col">Score / time</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-              {!showSkeleton && mode === 'daily' && (
-                <div
-                  className="leaderboard-version-help"
-                  id={versionHelpId}
-                  popover="auto"
-                  role="note"
-                >
-                  <SoundButton
-                    aria-label="Close puzzle version explanation"
-                    className="leaderboard-version-help__close"
-                    popoverTarget={versionHelpId}
-                    popoverTargetAction="hide"
+                  </thead>
+                  <tbody>
+                    {visibleRows.map((row, index) => (
+                      <tr
+                        key={row?.player.id ?? index}
+                        data-comparable={row?.comparable}
+                        aria-current={
+                          row?.player.id === owner && row.comparable
+                            ? 'true'
+                            : undefined
+                        }
+                      >
+                        <td>
+                          {!row ? (
+                            <Skeleton width="2ch" />
+                          ) : row.comparable ? (
+                            row.rank
+                          ) : (
+                            <Popover.Trigger
+                              render={<SoundButton />}
+                              aria-label={`Why is ${row.player.name}'s score unranked?`}
+                              className="leaderboard-version-button"
+                            >
+                              <QuestionIcon aria-hidden="true" weight="bold" />
+                            </Popover.Trigger>
+                          )}
+                        </td>
+                        <th scope="row">
+                          <span className="leaderboard-player">
+                            {row ? (
+                              <span>
+                                <PlayerName trainer={row.player} />
+                                {row.player.id === owner ? ' (you)' : ''}
+                              </span>
+                            ) : (
+                              <span>
+                                <Skeleton width="8ch" />
+                              </span>
+                            )}
+                            {!row ? (
+                              <span className="friends-icon-button game-button game-button--quiet">
+                                <Skeleton
+                                  circle
+                                  width="1.3rem"
+                                  height="1.3rem"
+                                />
+                              </span>
+                            ) : row.player.id !== owner ? (
+                              <GameButton
+                                aria-label={`View ${row.player.name}'s profile`}
+                                className="friends-icon-button"
+                                onClick={() => onViewPlayer(row.player.id)}
+                                title={`View ${row.player.name}'s profile`}
+                                tone="quiet"
+                              >
+                                <EyeIcon aria-hidden="true" weight="bold" />
+                              </GameButton>
+                            ) : null}
+                          </span>
+                        </th>
+                        <td>
+                          <strong>
+                            {row ? (
+                              row.score.toLocaleString()
+                            ) : (
+                              <Skeleton width="6ch" />
+                            )}
+                          </strong>
+                          <small>
+                            {row ? (
+                              `${(row.elapsedMilliseconds / 1000).toFixed(3)}s`
+                            ) : (
+                              <Skeleton width="5ch" />
+                            )}
+                          </small>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {!showSkeleton && mode === 'daily' && (
+                  <Popover.Portal>
+                    <Popover.Positioner
+                      className="help-positioner"
+                      sideOffset={8}
+                    >
+                      <Popover.Popup
+                        className="leaderboard-version-help"
+                        aria-label="Puzzle version explanation"
+                      >
+                        <Popover.Close
+                          render={<SoundButton />}
+                          aria-label="Close puzzle version explanation"
+                          className="leaderboard-version-help__close"
+                        >
+                          <XIcon aria-hidden="true" weight="bold" />
+                        </Popover.Close>
+                        <strong>Another puzzle version</strong>
+                        <p>
+                          An update can change the Daily puzzle. Scores from
+                          different versions stay visible, but do not share a
+                          rank.
+                        </p>
+                      </Popover.Popup>
+                    </Popover.Positioner>
+                  </Popover.Portal>
+                )}
+              </>
+            ) : (
+              <div className="leaderboard-empty">
+                <strong>
+                  {noFriends
+                    ? 'Invite friends to compare scores'
+                    : mode === 'daily'
+                      ? 'No scores for this date'
+                      : 'No Training scores yet'}
+                </strong>
+                {noFriends && (
+                  <span>Share your link to bring a friend here.</span>
+                )}
+                {!noFriends && !pastDaily && (
+                  <Link
+                    className="game-button leaderboard-empty__action"
+                    to="/"
+                    onClick={(event) => {
+                      if (
+                        event.metaKey ||
+                        event.ctrlKey ||
+                        event.shiftKey ||
+                        event.altKey
+                      )
+                        return;
+                      playSound('tap');
+                    }}
                   >
-                    <XIcon aria-hidden="true" weight="bold" />
-                  </SoundButton>
-                  <strong>Another puzzle version</strong>
-                  <p>
-                    An update can change the Daily puzzle. Scores from different
-                    versions stay visible, but do not share a rank.
-                  </p>
-                </div>
-              )}
-            </>
-          ) : (
-            <div className="leaderboard-empty">
-              <strong>
-                {noFriends
-                  ? 'Invite friends to compare scores'
-                  : mode === 'daily'
-                    ? 'No scores for this date'
-                    : 'No Training scores yet'}
-              </strong>
-              {noFriends && (
-                <span>Share your link to bring a friend here.</span>
-              )}
-              {!noFriends && !pastDaily && (
-                <Link
-                  className="game-button leaderboard-empty__action"
-                  to="/"
-                  onClick={(event) => {
-                    if (
-                      event.metaKey ||
-                      event.ctrlKey ||
-                      event.shiftKey ||
-                      event.altKey
-                    )
-                      return;
-                    playSound('tap');
-                  }}
-                >
-                  {`Open ${mode === 'daily' ? 'today’s Daily Challenge' : 'Training'}`}
-                </Link>
-              )}
-            </div>
-          )}
-          {data && !showSkeleton && data.items.length > 0 && (
-            <p className="social-screen__note">
-              {data.total} {data.total === 1 ? 'trainer' : 'trainers'}
-            </p>
-          )}
-          {data && !showSkeleton && (after || data.nextCursor) && (
-            <div className="leaderboard-pagination">
-              {after && (
-                <GameButton
-                  tone="quiet"
-                  disabled={busy}
-                  onClick={() => load(page - 1)}
-                >
-                  Previous
-                </GameButton>
-              )}
-              <span>
-                Page {page} of {Math.ceil(data.total / pageSize)}
-              </span>
-              {data.nextCursor && (
-                <GameButton
-                  tone="quiet"
-                  disabled={busy}
-                  onClick={() => load(page + 1)}
-                >
-                  Next
-                </GameButton>
-              )}
-            </div>
-          )}
-        </>
-      )}
-    </section>
+                    {`Open ${mode === 'daily' ? 'today’s Daily Challenge' : 'Training'}`}
+                  </Link>
+                )}
+              </div>
+            )}
+            {data && !showSkeleton && data.items.length > 0 && (
+              <p className="social-screen__note">
+                {data.total} {data.total === 1 ? 'trainer' : 'trainers'}
+              </p>
+            )}
+            {data && !showSkeleton && (after || data.nextCursor) && (
+              <div className="leaderboard-pagination">
+                {after && (
+                  <GameButton
+                    tone="quiet"
+                    disabled={busy}
+                    onClick={() => load(page - 1)}
+                  >
+                    Previous
+                  </GameButton>
+                )}
+                <span>
+                  Page {page} of {Math.ceil(data.total / pageSize)}
+                </span>
+                {data.nextCursor && (
+                  <GameButton
+                    tone="quiet"
+                    disabled={busy}
+                    onClick={() => load(page + 1)}
+                  >
+                    Next
+                  </GameButton>
+                )}
+              </div>
+            )}
+          </>
+        )}
+      </section>
+    </Popover.Root>
   );
 }
 
@@ -500,47 +514,47 @@ export function LeaderboardScreen({
         {account.owner && !account.mergeRequired ? (
           <>
             <div className="leaderboard-toolbar">
-              <div
+              <ToggleGroup
                 className="leaderboard-modes"
-                role="group"
+                value={[mode]}
                 aria-label="Game mode"
               >
-                <button
-                  type="button"
-                  aria-pressed={mode === 'daily'}
+                <Toggle
+                  render={<Button />}
+                  value="daily"
                   onClick={() => chooseMode('daily')}
                 >
                   Daily
-                </button>
-                <button
-                  type="button"
-                  aria-pressed={mode === 'training'}
+                </Toggle>
+                <Toggle
+                  render={<Button />}
+                  value="training"
                   onClick={() => chooseMode('training')}
                 >
                   Training
-                </button>
-              </div>
+                </Toggle>
+              </ToggleGroup>
               <div className="leaderboard-filter">
-                <div
+                <ToggleGroup
                   className="leaderboard-scopes"
-                  role="group"
+                  value={[scope]}
                   aria-label="Leaderboard players"
                 >
-                  <button
-                    type="button"
-                    aria-pressed={scope === 'friends'}
+                  <Toggle
+                    render={<Button />}
+                    value="friends"
                     onClick={() => chooseScope('friends')}
                   >
                     Friends
-                  </button>
-                  <button
-                    type="button"
-                    aria-pressed={scope === 'global'}
+                  </Toggle>
+                  <Toggle
+                    render={<Button />}
+                    value="global"
                     onClick={() => chooseScope('global')}
                   >
                     Global
-                  </button>
-                </div>
+                  </Toggle>
+                </ToggleGroup>
               </div>
               {mode === 'daily' && (
                 <div className="leaderboard-filter leaderboard-date">
@@ -551,7 +565,7 @@ export function LeaderboardScreen({
                   >
                     <ArrowLeftIcon aria-hidden="true" weight="bold" />
                   </GameButton>
-                  <input
+                  <Input
                     type="date"
                     value={date}
                     max={today}
@@ -579,7 +593,7 @@ export function LeaderboardScreen({
                 {shareFallbackLink && (
                   <label className="friends-field">
                     Invite link
-                    <input
+                    <Input
                       readOnly
                       value={shareFallbackLink}
                       onFocus={(event) => event.target.select()}

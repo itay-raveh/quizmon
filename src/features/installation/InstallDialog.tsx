@@ -1,8 +1,7 @@
+import { Dialog } from '@base-ui/react/dialog';
+import { ModalDialog } from '@/components/ModalDialog';
 import { DialogCloseButton } from '@/components/DialogCloseButton';
 import type { InstallGuide } from '@/features/installation/install-platform';
-import { useModalDialog } from '@/hooks/useModalDialog';
-import { useId, useRef } from 'react';
-import { createPortal } from 'react-dom';
 
 const instructions: Record<InstallGuide, readonly string[]> = {
   ios: [
@@ -35,34 +34,15 @@ export const InstallDialog = ({
   guide: InstallGuide;
   onClose: () => void;
 }) => {
-  const heading = useRef<HTMLHeadingElement>(null);
-  const titleId = useId();
-  const { dialogProps, closeDialog } = useModalDialog(onClose, {
-    initialFocus: heading,
-    dismissOnBackdrop: true,
-  });
-  return createPortal(
-    <dialog
-      {...dialogProps}
+  return (
+    <ModalDialog
+      onClose={onClose}
+      dismissOnBackdrop
       className="share-dialog install-dialog"
-      aria-labelledby={titleId}
-      onCancel={(event) => {
-        event.stopPropagation();
-        dialogProps.onCancel(event);
-      }}
-      onPointerDown={(event) => {
-        event.stopPropagation();
-        dialogProps.onPointerDown?.(event);
-      }}
     >
       <header className="share-dialog__header">
-        <h2 id={titleId} ref={heading} tabIndex={-1}>
-          Install Quizmon
-        </h2>
-        <DialogCloseButton
-          label="Close installation instructions"
-          onClick={closeDialog}
-        />
+        <Dialog.Title>Install Quizmon</Dialog.Title>
+        <DialogCloseButton label="Close installation instructions" />
       </header>
       <div className="share-dialog__body install-dialog__body">
         {guide === 'ios' || guide === 'safari-mac' ? (
@@ -78,7 +58,6 @@ export const InstallDialog = ({
           ))}
         </ol>
       </div>
-    </dialog>,
-    document.body,
+    </ModalDialog>
   );
 };

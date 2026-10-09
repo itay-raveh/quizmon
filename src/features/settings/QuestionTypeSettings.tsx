@@ -1,8 +1,9 @@
+import { Accordion } from '@base-ui/react/accordion';
+import { Popover } from '@base-ui/react/popover';
 import { getQuestionTypeMultiplier } from '@/domain/quiz/training-scoring';
 import { CaretDownIcon, QuestionIcon, XIcon } from '@/components/icons';
 import { SelectionTile } from './SelectionTile';
 import { SoundButton } from '@/components/SoundButton';
-import { useInteractionSound } from '@/lib/audio/sound-context';
 import {
   questionDefinitions,
   questionTypeGroups,
@@ -78,7 +79,6 @@ export const QuestionTypeSettings = ({
   const [initialExpandedGroup] = useState<QuestionTypeGroup | 'custom-only'>(
     () => getInitialExpandedGroup(draft.questionTypes),
   );
-  const playInteractionSound = useInteractionSound();
   const selectedQuestionTypes = new Set(draft.questionTypes);
   const available = new Set(availableQuestionTypes);
   const availableCurrent = availableQuestionTypes.filter(isActiveQuestionType);
@@ -107,34 +107,33 @@ export const QuestionTypeSettings = ({
               ? 'Unavailable'
               : formatScoreMultiplier(factor)
           }
-          onChange={(event) =>
+          onCheckedChange={(checked) =>
             onChange((current) => ({
               ...current,
               questionTypes: toggleValue(
                 current.questionTypes,
                 questionType,
-                event.target.checked,
+                checked,
               ),
             }))
           }
         />
-        <SoundButton
+        <Popover.Trigger
+          render={<SoundButton />}
           aria-label={`About ${label}`}
           className="question-type-tile__help"
           onClick={() => setExplainedQuestionType(questionType)}
-          popoverTarget="question-type-help"
-          popoverTargetAction="show"
         >
           <span aria-hidden="true">
             <QuestionIcon weight="bold" />
           </span>
-        </SoundButton>
+        </Popover.Trigger>
       </div>
     );
   };
 
   return (
-    <>
+    <Popover.Root>
       <section
         className="question-type-settings"
         aria-labelledby="question-types-title"
@@ -183,108 +182,116 @@ export const QuestionTypeSettings = ({
                   : 'No questions are available for this configuration. Change your selections.'}
           </p>
         ) : null}
-        {groupedQuestionTypes.map((group) => {
-          const availableCount = group.types.filter((type) =>
-            available.has(type),
-          ).length;
-          const selectedCount = group.types.filter(
-            (type) => available.has(type) && selectedQuestionTypes.has(type),
-          ).length;
-          const titleId = `question-type-group-${group.id}-title`;
+        <Accordion.Root defaultValue={[initialExpandedGroup]}>
+          {groupedQuestionTypes.map((group) => {
+            const availableCount = group.types.filter((type) =>
+              available.has(type),
+            ).length;
+            const selectedCount = group.types.filter(
+              (type) => available.has(type) && selectedQuestionTypes.has(type),
+            ).length;
+            const titleId = `question-type-group-${group.id}-title`;
 
-          return (
-            <details
-              className="question-type-group"
-              aria-labelledby={titleId}
-              key={group.id}
-              name="question-types"
-              open={initialExpandedGroup === group.id}
-            >
-              <summary
-                className="question-type-group__disclosure"
-                onClick={() => playInteractionSound('tap')}
+            return (
+              <Accordion.Item
+                className="question-type-group"
+                aria-labelledby={titleId}
+                key={group.id}
+                value={group.id}
               >
-                <h4 id={titleId}>{group.label}</h4>
+                <Accordion.Trigger
+                  render={<SoundButton />}
+                  className="question-type-group__disclosure"
+                >
+                  <h4 id={titleId}>{group.label}</h4>
+                  <span className="question-type-group__count">
+                    {selectedCount} / {availableCount}
+                    <span className="visually-hidden"> selected</span>
+                  </span>
+                  <CaretDownIcon aria-hidden="true" weight="bold" />
+                </Accordion.Trigger>
+                <Accordion.Panel
+                  keepMounted
+                  className="question-type-group__panel"
+                >
+                  <div
+                    aria-label={`${group.label} question types`}
+                    className="selection-grid selection-grid--question-types"
+                    role="group"
+                  >
+                    {group.types.map(renderQuestionType)}
+                  </div>
+                </Accordion.Panel>
+              </Accordion.Item>
+            );
+          })}
+          {customOnlyQuestionTypes.length ? (
+            <Accordion.Item
+              className="question-type-group"
+              aria-labelledby="question-type-group-custom-only-title"
+              value="custom-only"
+            >
+              <Accordion.Trigger
+                render={<SoundButton />}
+                className="question-type-group__disclosure"
+              >
+                <h4 id="question-type-group-custom-only-title">Custom only</h4>
                 <span className="question-type-group__count">
-                  {selectedCount} / {availableCount}
+                  {
+                    customOnlyQuestionTypes.filter(
+                      (type) =>
+                        available.has(type) && selectedQuestionTypes.has(type),
+                    ).length
+                  }{' '}
+                  /{' '}
+                  {
+                    customOnlyQuestionTypes.filter((type) =>
+                      available.has(type),
+                    ).length
+                  }
                   <span className="visually-hidden"> selected</span>
                 </span>
                 <CaretDownIcon aria-hidden="true" weight="bold" />
-              </summary>
-              <div className="question-type-group__panel">
+              </Accordion.Trigger>
+              <Accordion.Panel
+                keepMounted
+                className="question-type-group__panel"
+              >
+                <p className="question-type-settings__note">
+                  These formats do not appear in automatic games. They score
+                  normally when selected here.
+                </p>
                 <div
-                  aria-label={`${group.label} question types`}
+                  aria-label="Custom only question types"
                   className="selection-grid selection-grid--question-types"
                   role="group"
                 >
-                  {group.types.map(renderQuestionType)}
+                  {customOnlyQuestionTypes.map(renderQuestionType)}
                 </div>
-              </div>
-            </details>
-          );
-        })}
-        {customOnlyQuestionTypes.length ? (
-          <details
-            className="question-type-group"
-            aria-labelledby="question-type-group-custom-only-title"
-            name="question-types"
-            open={initialExpandedGroup === 'custom-only'}
-          >
-            <summary
-              className="question-type-group__disclosure"
-              onClick={() => playInteractionSound('tap')}
-            >
-              <h4 id="question-type-group-custom-only-title">Custom only</h4>
-              <span className="question-type-group__count">
-                {
-                  customOnlyQuestionTypes.filter(
-                    (type) =>
-                      available.has(type) && selectedQuestionTypes.has(type),
-                  ).length
-                }{' '}
-                /{' '}
-                {
-                  customOnlyQuestionTypes.filter((type) => available.has(type))
-                    .length
-                }
-                <span className="visually-hidden"> selected</span>
-              </span>
-              <CaretDownIcon aria-hidden="true" weight="bold" />
-            </summary>
-            <div className="question-type-group__panel">
-              <p className="question-type-settings__note">
-                These formats do not appear in automatic games. They score
-                normally when selected here.
-              </p>
-              <div
-                aria-label="Custom only question types"
-                className="selection-grid selection-grid--question-types"
-                role="group"
-              >
-                {customOnlyQuestionTypes.map(renderQuestionType)}
-              </div>
-            </div>
-          </details>
-        ) : null}
+              </Accordion.Panel>
+            </Accordion.Item>
+          ) : null}
+        </Accordion.Root>
       </section>
 
-      <div
-        className="question-type-help"
-        id="question-type-help"
-        popover="auto"
-        role="note"
-      >
-        <SoundButton
-          aria-label="Close question type explanation"
-          className="question-type-help__close"
-          popoverTarget="question-type-help"
-          popoverTargetAction="hide"
-        >
-          <XIcon aria-hidden="true" weight="bold" />
-        </SoundButton>
-        <strong>{questionDefinitions[explainedQuestionType].label}</strong>
-        <p>{questionDefinitions[explainedQuestionType].description}</p>
-      </div>
-    </>
+      <Popover.Portal>
+        <Popover.Positioner className="help-positioner" sideOffset={8}>
+          <Popover.Popup
+            className="question-type-help"
+            aria-label="Question type explanation"
+          >
+            <Popover.Close
+              render={<SoundButton />}
+              aria-label="Close question type explanation"
+              className="question-type-help__close"
+            >
+              <XIcon aria-hidden="true" weight="bold" />
+            </Popover.Close>
+            <strong>{questionDefinitions[explainedQuestionType].label}</strong>
+            <p>{questionDefinitions[explainedQuestionType].description}</p>
+          </Popover.Popup>
+        </Popover.Positioner>
+      </Popover.Portal>
+    </Popover.Root>
   );
 };

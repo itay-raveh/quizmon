@@ -1,7 +1,8 @@
+import { Dialog } from '@base-ui/react/dialog';
+import { ModalDialog } from '@/components/ModalDialog';
 import { DialogCloseButton } from '@/components/DialogCloseButton';
 import { GameButton } from '@/components/GameButton';
 import type { TrainerTitle } from '@/domain/player/trainer-progression';
-import { useModalDialog } from '@/hooks/useModalDialog';
 import { TrainerTierProgress } from './TrainerTierProgress';
 import { TrainerTitleMark } from './TrainerTitleMark';
 
@@ -18,28 +19,20 @@ export const TrainerTitleDialog = ({
   onUnequip,
   title,
 }: TrainerTitleDialogProps) => {
-  const { dialogProps, closeDialog } = useModalDialog(onClose, {
-    dismissOnBackdrop: true,
-  });
-
   const changeTitle = async () => {
     const saved = title.equipped ? await onUnequip?.() : await onEquip?.(title);
-    if (saved) closeDialog();
+    if (saved) onClose();
   };
 
   return (
-    <dialog
-      {...dialogProps}
-      aria-labelledby="trainer-title-dialog-heading"
+    <ModalDialog
+      onClose={onClose}
+      dismissOnBackdrop
       className="trainer-title-dialog"
     >
       <header>
-        <h2 id="trainer-title-dialog-heading">{title.label}</h2>
-        <DialogCloseButton
-          autoFocus
-          label="Close title details"
-          onClick={closeDialog}
-        />
+        <Dialog.Title>{title.label}</Dialog.Title>
+        <DialogCloseButton label="Close title details" />
       </header>
       <div className="trainer-title-dialog__body">
         <TrainerTitleMark tier={title.tier} specialty={title.specialty} />
@@ -59,6 +52,6 @@ export const TrainerTitleDialog = ({
           ) : null}
         </div>
       </div>
-    </dialog>
+    </ModalDialog>
   );
 };

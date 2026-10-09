@@ -1,37 +1,24 @@
+import { Button } from '@base-ui/react/button';
 import { ChatTextIcon } from '@phosphor-icons/react/ssr';
-import { useEffect, useRef, type RefObject } from 'react';
+import { useEffect, useRef } from 'react';
 import { attachFeedback, feedbackLabel, sentryEnabled } from '../lib/sentry.ts';
 
 export const FeedbackButton = ({
   showLabel,
-  modalDialog,
+  feedbackLifecycle,
 }: {
   showLabel?: boolean;
-  modalDialog?: RefObject<HTMLDialogElement | null>;
+  feedbackLifecycle?: Parameters<typeof attachFeedback>[1];
 }) => {
   const button = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     if (!button.current) return;
-    const reopen = () => {
-      if (modalDialog?.current && !modalDialog.current.open)
-        modalDialog.current.showModal();
-    };
-    return attachFeedback(
-      button.current,
-      modalDialog
-        ? {
-            // Sentry mounts its form outside native dialogs, which occupy the top layer.
-            onFormOpen: () => modalDialog.current?.close(),
-            onFormClose: reopen,
-            onFormSubmitted: reopen,
-          }
-        : undefined,
-    );
-  }, [modalDialog]);
+    return attachFeedback(button.current, feedbackLifecycle);
+  }, [feedbackLifecycle]);
 
   if (!sentryEnabled) return null;
   return (
-    <button
+    <Button
       ref={button}
       className="game-button game-button--quiet feedback-button"
       type="button"
@@ -43,6 +30,6 @@ export const FeedbackButton = ({
       ) : (
         <ChatTextIcon size={22} weight="bold" aria-hidden="true" />
       )}
-    </button>
+    </Button>
   );
 };

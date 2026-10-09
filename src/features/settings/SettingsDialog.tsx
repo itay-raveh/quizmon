@@ -1,10 +1,13 @@
+import { Dialog } from '@base-ui/react/dialog';
+import { Form } from '@base-ui/react/form';
+import { Disclosure } from '@/components/Disclosure';
+import { ModalDialog } from '@/components/ModalDialog';
 import { useMemo, useRef, useState } from 'react';
 import { DialogCloseButton } from '../../components/DialogCloseButton';
 import { GameButton } from '../../components/GameButton';
 import type { PokemonCatalog } from '../../domain/pokemon/types';
 import { savedSettingsSchema } from '../../domain/player/schemas/player-data';
 import type { GameSettings } from '../../domain/settings/types';
-import { useModalDialog } from '../../hooks/useModalDialog';
 import { selectedAccount } from '../account/account';
 import {
   readUpdateState,
@@ -52,10 +55,6 @@ export const SettingsDialog = ({
   useUpdateSnapshot('settings-draft', draft);
   const [submitted, setSubmitted] = useUpdateState('settings-submitted', false);
   const dialogTitle = useRef<HTMLHeadingElement>(null);
-  const { dialogProps, closeDialog } = useModalDialog(onClose, {
-    initialFocus: dialogTitle,
-    dismissOnBackdrop: true,
-  });
   const generationsHeading = useRef<HTMLHeadingElement>(null);
   const formGroupsHeading = useRef<HTMLHeadingElement>(null);
   const questionTypesHeading = useRef<HTMLHeadingElement>(null);
@@ -120,22 +119,20 @@ export const SettingsDialog = ({
   };
 
   return (
-    <dialog
-      {...dialogProps}
+    <ModalDialog
+      onClose={onClose}
+      initialFocus={dialogTitle}
+      dismissOnBackdrop
       className={`settings-dialog${section === 'level' ? ' settings-dialog--level' : ''}`}
-      aria-labelledby="settings-title"
     >
       <header className="settings-dialog__header">
-        <h2 id="settings-title" ref={dialogTitle} tabIndex={-1}>
+        <Dialog.Title ref={dialogTitle} tabIndex={-1}>
           {sectionTitles[section]}
-        </h2>
-        <DialogCloseButton
-          label={`Close ${sectionTitles[section]}`}
-          onClick={closeDialog}
-        />
+        </Dialog.Title>
+        <DialogCloseButton label={`Close ${sectionTitles[section]}`} />
       </header>
 
-      <form
+      <Form
         className="settings-form"
         onSubmit={(event) => {
           event.preventDefault();
@@ -172,27 +169,28 @@ export const SettingsDialog = ({
             <>
               <ExperienceSettings draft={draft} onChange={setDraft} />
               {!selectedAccount() && (
-                <details
+                <Disclosure
                   className="settings-backup"
-                  onToggle={(event) => setBackupOpen(event.currentTarget.open)}
+                  open={backupOpen}
+                  onOpenChange={setBackupOpen}
+                  label={<> Backup &amp; restore </>}
                 >
-                  <summary>Backup &amp; restore</summary>
                   {backupOpen && <BackupSettings />}
-                </details>
+                </Disclosure>
               )}
             </>
           )}
         </div>
 
         <div className="settings-form__actions">
-          <GameButton tone="quiet" onClick={closeDialog}>
+          <Dialog.Close render={<GameButton tone="quiet" />}>
             Cancel
-          </GameButton>
+          </Dialog.Close>
           <GameButton type="submit" disabled={saving}>
             {saving ? 'Saving…' : 'Save'}
           </GameButton>
         </div>
-      </form>
-    </dialog>
+      </Form>
+    </ModalDialog>
   );
 };

@@ -1,3 +1,4 @@
+import { Form } from '@base-ui/react/form';
 import { PokemonRenderable } from './PokemonRenderable';
 import { baseQuestionRendering } from '@/domain/quiz/question-rules/shared';
 import type { QuestionRendering, RevealState } from '@/domain/quiz/rendering';
@@ -51,7 +52,7 @@ export const PokemonSearch = ({
   const playInteractionSound = useInteractionSound();
   const champion = mode === 'champion';
   const className = champion ? 'champion-search' : 'pokemon-picker';
-  const Root = champion ? 'form' : 'div';
+  const Root = champion ? Form : 'div';
   const entries = useMemo(
     () => options.map(createPokemonSearchEntry),
     [options],
