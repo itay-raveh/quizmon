@@ -12,6 +12,7 @@ import {
 } from '../src/domain/sync/compact-rounds.ts';
 import { isLeagueVictory } from '../src/domain/quiz/league.ts';
 import pokemonGenerations from '../src/domain/pokemon/data/pokemon-generations.json' with { type: 'json' };
+import * as Sentry from '@sentry/node';
 
 export async function playerProfiles(db: PlayerDatabase, ids: string[]) {
   const players = await db.players.findByIds(ids).exec();
@@ -39,14 +40,25 @@ export async function trainerProfile(db: PlayerDatabase, id: string) {
   const profile =
     (await db.players.findOne(id).exec())?.profile ?? createTrainerProfile();
   const rounds = await db.rounds.find({ selector: { ownerId: id } }).exec();
-  const projection = projectCompactRoundHistory(
-    rounds.map((round) => compactRoundSchema.parse(round.toMutableJSON())),
-    profile.name,
+  const projection = Sentry.startSpan(
+    { name: 'trainer.project', op: 'function' },
+    () =>
+      projectCompactRoundHistory(
+        rounds.map((round) => compactRoundSchema.parse(round.toMutableJSON())),
+        profile.name,
+      ),
   );
   const pokedex = projection.pokedex;
+  const stats = getTrainerStats(projection.results, pokedex);
   return {
+    player: {
+      id,
+      name: profile.name.trim() || 'Trainer',
+      partnerPokemon: profile.partnerPokemon,
+      leagueCompleted: stats.leagueCompleted,
+    },
     profile,
-    stats: getTrainerStats(projection.results, pokedex),
+    stats,
     pokedex,
     record: {
       dayCombo: getDailyStreak(

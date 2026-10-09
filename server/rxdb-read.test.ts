@@ -4,7 +4,7 @@ import { expect, test } from 'vitest';
 import { createTrainerProfile } from '../src/domain/player/trainer-profile.ts';
 import { LEAGUE_QUESTION_COUNT } from '../src/domain/quiz/league.ts';
 import { openPlayerDatabase } from '../src/lib/storage/rxdb-database.ts';
-import { playerProfiles } from './rxdb-read.ts';
+import { playerProfiles, trainerProfile } from './rxdb-read.ts';
 
 test('public player profiles mark only perfect League winners as Champions', async () => {
   const db = await openPlayerDatabase(
@@ -54,6 +54,12 @@ test('public player profiles mark only perfect League winners as Champions', asy
       false,
       false,
     ]);
+    for (const { id, leagueCompleted } of profiles) {
+      const trainer = await trainerProfile(db, id);
+      expect(trainer.player.leagueCompleted).toBe(leagueCompleted);
+      expect(trainer.player.name).toBe(id);
+      expect(trainer.stats.leagueCompleted).toBe(leagueCompleted);
+    }
   } finally {
     await db.remove();
   }

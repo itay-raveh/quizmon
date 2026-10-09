@@ -1,4 +1,5 @@
 import type { Collection } from 'mongodb';
+import * as Sentry from '@sentry/node';
 import type { MangoQuery, RxCollection } from 'rxdb';
 import type { PlayerDatabase } from '../src/lib/storage/rxdb-database.ts';
 import type { CompactRound } from '../src/domain/sync/compact-rounds.ts';
@@ -167,7 +168,9 @@ export async function boardRows(
   visible: string[] | null,
   day?: string,
 ) {
-  await store.settled();
+  await Sentry.startSpan({ name: 'standings.wait', op: 'queue.wait' }, () =>
+    store.settled(),
+  );
   if (mode === 'daily' && !day) return [];
   const rows = await store.collection
     .find({

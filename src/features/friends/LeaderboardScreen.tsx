@@ -41,6 +41,7 @@ import {
 import { friendsPageQuery } from './social-queries';
 import { canShareFriendLink, shareFriendLink } from './friend-sharing';
 import './friends.css';
+import { useQueryReadySpan } from '../../hooks/use-query-ready-span';
 
 function InviteFriends({
   owner,
@@ -167,6 +168,14 @@ function Standings({
     friends.data?.pages[0]?.items.length === 0;
   const checkingFriends =
     scope === 'friends' && data?.items.length === 0 && friends.isPending;
+  useQueryReadySpan(
+    'rankings.ready',
+    `${owner}/${mode}/${dailyDate}/${scope}/${after}`,
+    active,
+    Boolean(data) && !checkingFriends,
+    Boolean(board.error || (scope === 'friends' && friends.error)),
+    Boolean(data),
+  );
   const showSkeleton = (busy && !data) || checkingFriends;
   const visibleRows = showSkeleton
     ? Array.from({ length: scope === 'friends' ? 3 : pageSize }, () => null)
