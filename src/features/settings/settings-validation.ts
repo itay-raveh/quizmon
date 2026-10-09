@@ -1,4 +1,5 @@
-import { getAvailableTrainingQuestionTypes } from '@/domain/quiz/question-generation';
+import { getTrainingQuestionAvailability } from '@/domain/quiz/question-generation';
+import { questionTypes } from '@/domain/quiz/questions/definitions';
 import { getFormGroupGenerations } from '@/domain/pokemon/forms';
 import type { PokemonCatalog } from '@/domain/pokemon/types';
 import { formGroups } from '@/domain/pokemon/types';
@@ -32,9 +33,12 @@ export const getTrainingSettingsValidation = (
   );
   const generationsAreValid = settings.generations.length > 0;
   const training = { ...defaultGameSettings, ...settings };
-  const availableQuestionTypes = getAvailableTrainingQuestionTypes(
+  const questionAvailability = getTrainingQuestionAvailability(
     catalog,
     training,
+  );
+  const availableQuestionTypes = questionTypes.filter(
+    (type) => !questionAvailability[type],
   );
   const eligibleQuestionTypes = getTrainingSettings(
     training,
@@ -49,6 +53,7 @@ export const getTrainingSettingsValidation = (
     formGroupGenerations,
     availableFormGroups,
     availableQuestionTypes,
+    questionAvailability,
     isValid:
       generationsAreValid &&
       formGroupsAreValid &&

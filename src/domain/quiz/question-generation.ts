@@ -14,7 +14,11 @@ import {
 } from './league.ts';
 import { type QuestionHistory } from './history.ts';
 import type { QuestionContext } from './questions/context.ts';
-import { questionTypes } from './questions/definitions.ts';
+import {
+  getMinimumQuestionGenerations,
+  questionTypes,
+} from './questions/definitions.ts';
+import { gameLevels, type Level } from './level.ts';
 import { buildQuestionType } from './questions/registry.ts';
 import type { QuestionData, QuestionType } from './types.ts';
 import { getQuestionVariant, isActiveQuestionType } from './variants.ts';
@@ -222,24 +226,53 @@ export const buildDailyQuestions = (
   );
 };
 
-export const getAvailableTrainingQuestionTypes = (
+export type TrainingQuestionUnavailableReason =
+  | { kind: 'choose-level' }
+  | { kind: 'levels'; levels: Level[] }
+  | { kind: 'generations'; minimum: number }
+  | { kind: 'no-pokemon' }
+  | { kind: 'content' };
+
+export const getTrainingQuestionAvailability = (
   catalog: PokemonCatalog,
   settings: GameSettings,
-): QuestionType[] =>
-  settings.level
-    ? questionTypes.filter((type) =>
-        Boolean(
-          buildQuestionType(
-            createQuestionContext(
-              catalog,
-              settings,
-              createSeededRandom(`availability:${type}`),
-            ),
-            type,
-          ),
-        ),
-      )
-    : [];
+): Record<QuestionType, TrainingQuestionUnavailableReason | undefined> =>
+  Object.fromEntries(
+    questionTypes.map((type) => {
+      let reason: TrainingQuestionUnavailableReason | undefined;
+      if (!settings.level) reason = { kind: 'choose-level' };
+      else if (!getQuestionVariant(type, settings.level)) {
+        reason = {
+          kind: 'levels',
+          levels: gameLevels.filter((level) => getQuestionVariant(type, level)),
+        };
+      } else if (
+        settings.generations.length < getMinimumQuestionGenerations(type)
+      ) {
+        reason = {
+          kind: 'generations',
+          minimum: getMinimumQuestionGenerations(type),
+        };
+      } else {
+        const context = createQuestionContext(
+          catalog,
+          settings,
+          createSeededRandom(`availability:${type}`),
+        );
+        if (!buildQuestionType(context, type))
+          reason = { kind: context.pool.length ? 'content' : 'no-pokemon' };
+      }
+      return [type, reason];
+    }),
+  ) as Record<QuestionType, TrainingQuestionUnavailableReason | undefined>;
+
+const getAvailableTrainingQuestionTypes = (
+  catalog: PokemonCatalog,
+  settings: GameSettings,
+): QuestionType[] => {
+  const availability = getTrainingQuestionAvailability(catalog, settings);
+  return questionTypes.filter((type) => !availability[type]);
+};
 
 export const resolveTrainingSettings = (
   catalog: PokemonCatalog,

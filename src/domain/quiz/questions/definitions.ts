@@ -11,6 +11,7 @@ interface QuestionDefinition {
   label: string;
   specialty: TrainerSpecialty;
   league?: boolean;
+  minimumGenerations?: number;
 }
 
 export const questionTypeGroups = [
@@ -296,6 +297,7 @@ export const questionDefinitions = {
     group: 'knowledge',
   },
   pokemonByGeneration: {
+    minimumGenerations: 2,
     category: 'identity',
     subjectKind: 'pokemon',
     answerIsPokemon: true,
@@ -377,6 +379,8 @@ export type QuestionType = keyof typeof questionDefinitions;
 export const questionTypes = Object.keys(questionDefinitions) as QuestionType[];
 export const isQuestionType = (type: string): type is QuestionType =>
   Object.hasOwn(questionDefinitions, type);
+export const getMinimumQuestionGenerations = (type: QuestionType): number =>
+  (questionDefinitions[type] as QuestionDefinition).minimumGenerations ?? 1;
 export const getQuestionTitle = (question: {
   questionType: QuestionType | 'champion';
 }): string =>

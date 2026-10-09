@@ -35,6 +35,7 @@ export const TrainingSettings = ({
   draft,
   availableFormGroups,
   availableQuestionTypes,
+  questionAvailability,
   formGroupGenerations,
   formGroupsAreValid,
   formGroupsHeading,
@@ -241,6 +242,7 @@ export const TrainingSettings = ({
           {!customized ? null : (
             <QuestionTypeSettings
               availableQuestionTypes={availableQuestionTypes}
+              questionAvailability={questionAvailability}
               draft={draft}
               heading={questionTypesHeading}
               matchingCount={matchingCount}

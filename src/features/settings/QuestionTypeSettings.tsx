@@ -13,6 +13,7 @@ import {
 import type { QuestionType } from '@/domain/quiz/types';
 import { isActiveQuestionType } from '@/domain/quiz/variants';
 import { formatScoreMultiplier } from '@/domain/quiz/format';
+import { formatQuestionUnavailableReason } from './question-availability';
 import type { GameSettings } from '@/domain/settings/types';
 import {
   useState,
@@ -27,7 +28,10 @@ import {
 
 interface QuestionTypeSettingsProps extends Pick<
   TrainingSettingsValidation,
-  'availableQuestionTypes' | 'matchingCount' | 'questionTypesAreValid'
+  | 'availableQuestionTypes'
+  | 'questionAvailability'
+  | 'matchingCount'
+  | 'questionTypesAreValid'
 > {
   draft: GameSettings;
   heading: RefObject<HTMLHeadingElement | null>;
@@ -67,6 +71,7 @@ const getInitialExpandedGroup = (
 
 export const QuestionTypeSettings = ({
   availableQuestionTypes,
+  questionAvailability,
   draft,
   heading,
   matchingCount,
@@ -93,6 +98,7 @@ export const QuestionTypeSettings = ({
       : undefined;
     const selectable = available.has(questionType);
     const checked = selectable && selectedQuestionTypes.has(questionType);
+    const reason = questionAvailability[questionType];
     return (
       <div
         className={`question-type-tile${checked ? ' question-type-tile--selected' : ''}${!selectable ? ' question-type-tile--unavailable' : ''}`}
@@ -103,9 +109,11 @@ export const QuestionTypeSettings = ({
           disabled={!selectable}
           label={label}
           description={
-            !selectable || factor === undefined
-              ? 'Unavailable'
-              : formatScoreMultiplier(factor)
+            reason
+              ? formatQuestionUnavailableReason(reason)
+              : factor === undefined
+                ? undefined
+                : formatScoreMultiplier(factor)
           }
           onCheckedChange={(checked) =>
             onChange((current) => ({
@@ -173,8 +181,10 @@ export const QuestionTypeSettings = ({
         {hasError ? (
           <p className="form-error" id="question-types-error" role="alert">
             {selectedQuestionTypes.has('pokemonByGeneration') &&
-            draft.generations.length < 2
-              ? 'Select at least two generations for Generation roundup.'
+            questionAvailability.pokemonByGeneration?.kind === 'generations'
+              ? formatQuestionUnavailableReason(
+                  questionAvailability.pokemonByGeneration,
+                )
               : questionTypesAreValid
                 ? 'Choose a different generation or question type combination.'
                 : draft.questionTypes.length === 0
@@ -289,6 +299,13 @@ export const QuestionTypeSettings = ({
             </Popover.Close>
             <strong>{questionDefinitions[explainedQuestionType].label}</strong>
             <p>{questionDefinitions[explainedQuestionType].description}</p>
+            {questionAvailability[explainedQuestionType] ? (
+              <p>
+                {formatQuestionUnavailableReason(
+                  questionAvailability[explainedQuestionType],
+                )}
+              </p>
+            ) : null}
           </Popover.Popup>
         </Popover.Positioner>
       </Popover.Portal>

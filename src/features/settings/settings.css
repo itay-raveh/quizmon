@@ -222,6 +222,16 @@
   text-align: right;
 }
 
+.question-type-tile--unavailable .selection-tile__description {
+  grid-column: 2 / -1;
+  grid-row: 2;
+  text-align: left;
+}
+
+.question-type-tile--unavailable .selection-tile__surface {
+  row-gap: 0.2rem;
+}
+
 .selection-grid--question-types .selection-tile__label {
   overflow-wrap: anywhere;
 }

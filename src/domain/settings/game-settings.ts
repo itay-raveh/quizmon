@@ -6,11 +6,14 @@ import {
   type PokemonCatalog,
 } from '../pokemon/types.ts';
 import type { Candidate } from '../quiz/questions/context.ts';
-import { questionTypes } from '../quiz/questions/definitions.ts';
+import {
+  getMinimumQuestionGenerations,
+  questionTypes,
+} from '../quiz/questions/definitions.ts';
 import { type ExperienceSettings, type GameSettings } from './types.ts';
 
 export const defaultGameSettings: GameSettings = {
-  level: 1,
+  level: 3,
   questionSelection: 'automatic',
   answerFlow: 'manual',
   formGroups: [...formGroups],
@@ -52,7 +55,7 @@ export const getTrainingSettings = (settings: GameSettings): GameSettings => ({
       ).filter(
         (type) =>
           getQuestionVariant(type, settings.level!) &&
-          (type !== 'pokemonByGeneration' || settings.generations.length > 1),
+          settings.generations.length >= getMinimumQuestionGenerations(type),
       )
     : [],
 });
