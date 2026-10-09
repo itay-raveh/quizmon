@@ -259,12 +259,14 @@
 
 .account-settings__code-field {
   display: grid;
+  min-width: 0;
   gap: 0.55rem;
   font-weight: 700;
 }
 
 .account-settings__code-slots {
   display: flex;
+  min-width: 0;
   gap: clamp(0.25rem, 1.5vw, 0.5rem);
   width: 100%;
 }
