@@ -36,13 +36,18 @@ export interface AccountServices {
   mail: AccountMail;
 }
 
-const createAuth = (db: NodePgDatabase, services: AccountServices) => {
+const createAuth = (
+  db: NodePgDatabase<typeof schema>,
+  services: AccountServices,
+) => {
   let deliveryError: EmailDeliveryError | undefined;
   const auth = betterAuth({
     baseURL: services.origin,
     secret: services.secret,
     database: drizzleAdapter(db, { provider: 'pg', schema, transaction: true }),
-    advanced: { database: { generateId: () => crypto.randomUUID() } },
+    advanced: {
+      database: { generateId: () => crypto.randomUUID(), joins: true },
+    },
     trustedOrigins: [services.origin],
     telemetry: { enabled: false },
     user: {
@@ -125,7 +130,7 @@ const createAuth = (db: NodePgDatabase, services: AccountServices) => {
 
 export interface AccountEnv {
   Variables: {
-    db: NodePgDatabase;
+    db: NodePgDatabase<typeof schema>;
     auth: ReturnType<typeof createAuth>;
     accountId: string;
     origin: string;
@@ -146,6 +151,16 @@ export function createAccountApi(services: AccountServices) {
     await next();
   });
   app.onError((error, context) => {
+    if (
+      error instanceof SyncReadError &&
+      (error.status === 429 || (error.status === 503 && error.retryAfter))
+    ) {
+      if (error.retryAfter) context.header('Retry-After', error.retryAfter);
+      return context.json(
+        { error: 'Sync service is busy. Try again shortly.' },
+        error.status,
+      );
+    }
     if (error instanceof FriendshipError)
       return context.json({ error: error.code }, error.status);
     if (error instanceof HTTPException) {
@@ -184,7 +199,7 @@ export function createAccountApi(services: AccountServices) {
     const client = new Client({ connectionString: services.connectionString });
     await client.connect();
     try {
-      const db = drizzle(client);
+      const db = drizzle(client, { schema });
       context.set('db', db);
       context.set('auth', createAuth(db, services));
       context.set('origin', services.origin);
@@ -211,7 +226,11 @@ export function createAccountApi(services: AccountServices) {
   const signedIn = new Hono<AccountEnv>();
   signedIn.use('*', async (context, next) => {
     const { response: session, headers } = await Sentry.startSpan(
-      { name: 'auth.session+jwt', op: 'auth' },
+      {
+        name: 'auth.session+jwt',
+        op: 'auth',
+        attributes: { 'auth.query_strategy': 'joined' },
+      },
       () =>
         context.get('auth').api.getSession({
           headers: context.req.raw.headers,

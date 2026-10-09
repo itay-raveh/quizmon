@@ -1,4 +1,5 @@
-import type { Collection } from 'mongodb';
+import * as Sentry from '@sentry/node';
+import type { Collection, Filter } from 'mongodb';
 import type { MangoQuery, RxCollection } from 'rxdb';
 import type { PlayerDatabase } from '../src/lib/storage/rxdb-database.ts';
 import type { CompactRound } from '../src/domain/sync/compact-rounds.ts';
@@ -161,46 +162,123 @@ export async function startStandings(
   };
 }
 
-export async function boardRows(
+export async function boardPage(
   store: Awaited<ReturnType<typeof startStandings>>,
   mode: 'daily' | 'training',
   visible: string[] | null,
+  ownerId: string,
+  offset: number,
+  limit: number,
   day?: string,
 ) {
-  await store.settled();
-  if (mode === 'daily' && !day) return [];
-  const rows = await store.collection
-    .find({
-      mode,
-      ...(mode === 'daily' ? { day } : {}),
-      ...(visible ? { ownerId: { $in: visible } } : {}),
-    })
-    .sort({
-      score: -1,
-      elapsedMilliseconds: 1,
-      completedAt: 1,
-      roundId: 1,
-      ownerId: 1,
-    })
-    .toArray();
-  let rank = 0;
-  return rows.map((row, index) => {
-    const previous = rows[index - 1];
-    if (
-      !previous ||
-      previous.score !== row.score ||
-      previous.elapsedMilliseconds !== row.elapsedMilliseconds
-    )
-      rank = index + 1;
-    return {
-      playerId: row.ownerId,
-      roundId: row.roundId,
-      completedAt: row.completedAt,
-      score: row.score,
-      elapsedMilliseconds: row.elapsedMilliseconds,
-      comparable: true,
-      rank,
-      ordinal: index + 1,
-    };
-  });
+  await Sentry.startSpan({ name: 'standings.wait', op: 'queue.wait' }, () =>
+    store.settled(),
+  );
+  if (mode === 'daily' && !day) return { total: 0, page: [], viewer: null };
+  return store.collection.db.client.withSession(
+    { snapshot: true },
+    async (session) => {
+      const filter: Filter<Standing> = {
+        mode,
+        ...(mode === 'daily' ? { day } : {}),
+        ...(visible ? { ownerId: { $in: visible } } : {}),
+      };
+      const options = { session };
+      // The first read pins the snapshot; every dependent read uses that same session.
+      const total = await store.collection.countDocuments(filter, options);
+      const rows = await store.collection
+        .find(filter, options)
+        .sort({
+          score: -1,
+          elapsedMilliseconds: 1,
+          completedAt: 1,
+          roundId: 1,
+          ownerId: 1,
+        })
+        .skip(offset)
+        .limit(limit)
+        .toArray();
+      const viewer = await store.collection.findOne(
+        {
+          ...filter,
+          _id:
+            mode === 'daily'
+              ? `daily/${ownerId}/${day}`
+              : `training/${ownerId}`,
+        },
+        options,
+      );
+      const before = (row: Standing, ordinal = false): Filter<Standing> => ({
+        $and: [
+          filter,
+          {
+            $or: [
+              { score: { $gt: row.score } },
+              {
+                score: row.score,
+                elapsedMilliseconds: { $lt: row.elapsedMilliseconds },
+              },
+              ...(ordinal
+                ? [
+                    {
+                      score: row.score,
+                      elapsedMilliseconds: row.elapsedMilliseconds,
+                      completedAt: { $lt: row.completedAt },
+                    },
+                    {
+                      score: row.score,
+                      elapsedMilliseconds: row.elapsedMilliseconds,
+                      completedAt: row.completedAt,
+                      roundId: { $lt: row.roundId },
+                    },
+                    {
+                      score: row.score,
+                      elapsedMilliseconds: row.elapsedMilliseconds,
+                      completedAt: row.completedAt,
+                      roundId: row.roundId,
+                      ownerId: { $lt: row.ownerId },
+                    },
+                  ]
+                : []),
+            ],
+          },
+        ],
+      });
+      const entry = (row: Standing, rank: number, ordinal: number) => ({
+        playerId: row.ownerId,
+        roundId: row.roundId,
+        completedAt: row.completedAt,
+        score: row.score,
+        elapsedMilliseconds: row.elapsedMilliseconds,
+        comparable: true,
+        rank,
+        ordinal,
+      });
+      // Count ahead of the first row so a page can start inside a competition tie.
+      let rank = rows[0]
+        ? (await store.collection.countDocuments(before(rows[0]), options)) + 1
+        : 0;
+      const page = rows.map((row, index) => {
+        const previous = rows[index - 1];
+        if (
+          previous &&
+          (previous.score !== row.score ||
+            previous.elapsedMilliseconds !== row.elapsedMilliseconds)
+        )
+          rank = offset + index + 1;
+        return entry(row, rank, offset + index + 1);
+      });
+      const onPage = page.find((row) => row.playerId === ownerId);
+      if (onPage || !viewer) return { total, page, viewer: onPage ?? null };
+      const ahead = await store.collection.countDocuments(
+        before(viewer),
+        options,
+      );
+      const preceding = await store.collection.countDocuments(
+        before(viewer, true),
+        options,
+      );
+      return { total, page, viewer: entry(viewer, ahead + 1, preceding + 1) };
+    },
+  );
 }

@@ -1,4 +1,4 @@
-import { createRemoteJWKSet, jwtVerify } from 'jose';
+import { createRemoteJWKSet, customFetch, jwtVerify } from 'jose';
 import express from 'express';
 import type { ErrorRequestHandler } from 'express';
 import * as Sentry from '@sentry/node';
@@ -17,7 +17,7 @@ import {
   startTrainerSummaries,
   type CachedTrainer,
 } from './trainer-summaries.ts';
-import { boardRows, startStandings, type Standing } from './standings.ts';
+import { boardPage, startStandings, type Standing } from './standings.ts';
 
 const accountId = z.string().regex(/^[A-Za-z0-9_-]{1,128}$/);
 addRxPlugin(RxDBCleanupPlugin);
@@ -52,7 +52,12 @@ export async function startSyncServer(config: {
   databaseName?: string;
   appDatabaseName?: string;
 }) {
-  const jwks = createRemoteJWKSet(new URL('/api/auth/jwks', config.origin));
+  const jwks = createRemoteJWKSet(new URL('/api/auth/jwks', config.origin), {
+    [customFetch]: (url, options) =>
+      Sentry.startSpan({ name: 'auth.jwks.fetch', op: 'http.client' }, () =>
+        fetch(url, options),
+      ),
+  });
   const connection = new URL(config.mongoUrl);
   if (config.mongoTlsCaFile)
     connection.searchParams.set('tlsCAFile', config.mongoTlsCaFile);
@@ -83,13 +88,28 @@ export async function startSyncServer(config: {
       appStorage.collection<Standing>('standings'),
     );
     const board = standings;
+    let firstVerification = true;
     const verify = async (authorization?: string) => {
       if (!authorization?.startsWith('Bearer '))
         throw new Error('Missing sync token.');
-      const { payload } = await jwtVerify(authorization.slice(7), jwks, {
-        issuer: config.origin,
-        audience: config.audience,
-      });
+      const first = firstVerification;
+      firstVerification = false;
+      const { payload } = await Sentry.startSpan(
+        {
+          name: 'auth.jwt.verify',
+          op: 'auth',
+          attributes: {
+            'jwks.cache_fresh': jwks.fresh,
+            'jwks.fetch_inflight': jwks.reloading,
+            'auth.process_first_verification': first,
+          },
+        },
+        () =>
+          jwtVerify(authorization.slice(7), jwks, {
+            issuer: config.origin,
+            audience: config.audience,
+          }),
+      );
       if (typeof payload.sub !== 'string' || !payload.exp)
         throw new Error('Invalid sync token.');
       return { ownerId: payload.sub, validUntil: payload.exp * 1000 };
@@ -189,17 +209,18 @@ export async function startSyncServer(config: {
       if (!body.success) return response.sendStatus(400);
       const { mode, visible, day, offset, limit } = body.data;
       const ownerId = accountId.parse(response.locals.ownerId as unknown);
-      void boardRows(board, mode, visible, day).then(
-        (rows) =>
-          response.json({
-            total: rows.length,
-            page: rows.slice(offset, offset + limit),
-            viewer:
-              rows.find((row) => row.playerId === ownerId && row.comparable) ??
-              null,
-          }),
-        next,
-      );
+      void boardPage(board, mode, visible, ownerId, offset, limit, day)
+        .then(async (result) => {
+          const ids = [
+            ...new Set(
+              [...result.page, ...(result.viewer ? [result.viewer] : [])].map(
+                (row) => row.playerId,
+              ),
+            ),
+          ];
+          response.json({ ...result, players: await trainers.players(ids) });
+        })
+        .catch(next);
     });
     server.serverApp.get('/read/export', (request, response, next) => {
       const ownerId = accountId.parse(response.locals.ownerId as unknown);

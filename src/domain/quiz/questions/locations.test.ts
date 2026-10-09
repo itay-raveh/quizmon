@@ -77,7 +77,7 @@ it('asks only about distinct named places in Name that region', () => {
   }
 });
 
-it('uses the whole location and selects every offered encounter for multi-select', () => {
+it('rejects placeholder locations and aggregates valid encounter subareas', () => {
   const singleLevel = gameLevels.find(
     (level) =>
       getQuestionVariant('encounterLocations', level)?.variant.response
@@ -148,6 +148,33 @@ it('uses the whole location and selects every offered encounter for multi-select
     random: () => 0,
     used: new Set<string>(),
   };
+  for (const label of [
+    'Unknown; all bugs (Unknown Area; all bugs)',
+    'Unknown: all bugs',
+    'Unknown Dungeon',
+    '??? (North)',
+    ' (North)',
+  ]) {
+    for (const level of [singleLevel, multiLevel]) {
+      expect(
+        buildQuestionType(
+          {
+            ...base,
+            level,
+            catalog: {
+              ...catalog,
+              topics: {
+                ...catalog.topics!,
+                encounters: [encounter('placeholder', label, ['a'], true)],
+              },
+            },
+          },
+          'encounterLocations',
+        ),
+        label,
+      ).toBeUndefined();
+    }
+  }
   const single = buildQuestionType(
     { ...base, level: singleLevel },
     'encounterLocations',

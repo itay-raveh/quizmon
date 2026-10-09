@@ -1,7 +1,14 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { read, SyncReadError } from '../../server/read.ts';
+import {
+  read,
+  readBoard,
+  readTrainer,
+  SyncReadError,
+} from '../../server/read.ts';
+import { createAccountApi } from '../../server/api.ts';
 import { syncAdapter } from '../../server/rxdb-sync.ts';
+import { createTrainerProfile } from '../../src/domain/player/trainer-profile.ts';
 
 void test('sync reads retry temporary failures and preserve the final status', async () => {
   const originalFetch = globalThis.fetch;
@@ -65,4 +72,163 @@ void test('expired SSE authentication closes an already-started stream', () => {
   } as unknown as Parameters<typeof syncAdapter.closeConnection>[0];
   syncAdapter.closeConnection(response, 401, 'Unauthorized');
   assert.equal(ended, true);
+});
+
+void test('combined social reads preserve cards, viewer, pagination, and rollout responses', async () => {
+  const originalFetch = globalThis.fetch;
+  const profile = { ...createTrainerProfile(), name: '  Fixture Trainer  ' };
+  const player = {
+    id: 'fixture',
+    name: 'Fixture Trainer',
+    partnerPokemon: profile.partnerPokemon,
+    leagueCompleted: true,
+  };
+  const row = {
+    playerId: player.id,
+    rank: 2,
+    score: 100,
+    elapsedMilliseconds: 5000,
+    ordinal: 1,
+    comparable: true,
+  };
+  const detail = { profile, stats: {}, pokedex: [], record: {} };
+  const context = {
+    get(name: string) {
+      if (name === 'sync') return { endpoint: 'https://sync.test' };
+      if (name === 'accountId') return player.id;
+      return 'signed';
+    },
+  } as unknown as Parameters<typeof read>[0];
+  try {
+    for (const combined of [true, false]) {
+      const calls: string[] = [];
+      globalThis.fetch = (url, init) => {
+        const path = new URL(
+          typeof url === 'string'
+            ? url
+            : url instanceof URL
+              ? url.href
+              : url.url,
+        ).pathname;
+        calls.push(path);
+        assert.equal(
+          new Headers(init?.headers).get('Authorization'),
+          'Bearer signed',
+        );
+        if (path.endsWith('/players'))
+          return Promise.resolve(
+            Response.json([{ id: player.id, profile, leagueCompleted: true }]),
+          );
+        if (path.endsWith('/board'))
+          return Promise.resolve(
+            Response.json({
+              total: 3,
+              page: [row],
+              viewer: row,
+              ...(combined
+                ? {
+                    players: [
+                      { id: player.id, profile, leagueCompleted: true },
+                    ],
+                  }
+                : {}),
+            }),
+          );
+        return Promise.resolve(
+          Response.json({ ...detail, ...(combined ? { player } : {}) }),
+        );
+      };
+      const board = await readBoard(context, 'training', 'global', 0, 1);
+      assert.deepEqual(board.items[0]?.player, player);
+      assert.deepEqual(board.viewer?.player, player);
+      assert.equal(board.nextCursor, '1');
+      assert.equal(calls.length, combined ? 1 : 2);
+      calls.length = 0;
+      assert.deepEqual(await readTrainer(context, player.id), {
+        ...detail,
+        player,
+      });
+      assert.equal(calls.length, combined ? 1 : 2);
+    }
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+void test('sync reads preserve overload status and retry delay without retrying busy work', async () => {
+  const originalFetch = globalThis.fetch;
+  const context = {
+    get: (name: string) =>
+      name === 'sync' ? { endpoint: 'https://sync.test' } : 'signed',
+  } as unknown as Parameters<typeof read>[0];
+  try {
+    for (const [status, retryAfter] of [
+      [429, undefined],
+      [429, '30'],
+      [503, '30'],
+    ] as const) {
+      let busy = true;
+      globalThis.fetch = () => {
+        if (!busy)
+          return Promise.resolve(Response.json({ incorrectlyRetried: true }));
+        busy = false;
+        return Promise.resolve(
+          new Response(null, {
+            status,
+            headers: retryAfter ? { 'Retry-After': retryAfter } : undefined,
+          }),
+        );
+      };
+      await assert.rejects(read(context, 'export'), (error) => {
+        assert.ok(error instanceof SyncReadError);
+        assert.equal(error.status, status);
+        assert.equal(error.retryAfter, retryAfter);
+        return true;
+      });
+    }
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+void test('account responses preserve upstream overload status and Retry-After', async () => {
+  const originalFetch = globalThis.fetch;
+  const origin = 'https://game.example.test';
+  const sync = { endpoint: 'https://sync.example.test', audience: 'quizmon' };
+  const api = createAccountApi({
+    origin,
+    sync,
+    secret: 'x'.repeat(32),
+    connectionString: 'postgresql://unavailable.invalid/test',
+    mail: { mode: 'cloudflare', deliver: async () => {} },
+  });
+  api.get('/overload', async (context) => {
+    context.set('sync', sync);
+    context.set('syncToken', 'signed');
+    return context.json(await read(context, 'export'));
+  });
+  try {
+    for (const [status, header, expected] of [
+      [429, undefined, null],
+      [429, '1', '1'],
+      [503, '30', '30'],
+      [429, 'invalid', null],
+    ] as const) {
+      globalThis.fetch = () =>
+        Promise.resolve(
+          new Response(null, {
+            status,
+            headers: header ? { 'Retry-After': header } : undefined,
+          }),
+        );
+      const response = await api.request(origin + '/overload');
+      assert.equal(response.status, status);
+      assert.equal(response.headers.get('Retry-After'), expected);
+      assert.equal(response.headers.get('Cache-Control'), 'no-store');
+      const body = (await response.json()) as { error: unknown };
+      assert.equal(typeof body.error, 'string');
+    }
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
 });

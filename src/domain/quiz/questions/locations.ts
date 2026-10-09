@@ -17,6 +17,9 @@ import {
   topicSubject,
 } from './topic-support.ts';
 
+const hasNamedLocation = (label: string) =>
+  label.trim().length > 0 && !/^(?:\?+|unknown\b.*)$/i.test(label.trim());
+
 export const buildRegion: QuestionBuilder<FamilyRules['locationRegion']> = (
   context,
 ) => {
@@ -34,7 +37,8 @@ export const buildRegion: QuestionBuilder<FamilyRules['locationRegion']> = (
         regions.some((region) => region.name === location.region) &&
         (context.variant.allowNumberedRoutes ||
           !/^(?:sea )?route \d+[a-z]?$/i.test(location.label)) &&
-        !/^(?:\?+|unknown\b.*|caf[eé]|restaurant)$/i.test(location.label) &&
+        hasNamedLocation(location.label) &&
+        !/^(?:caf[eé]|restaurant)$/i.test(location.label) &&
         !/^(?:north|south|east|west) province \(area \w+\)$/i.test(
           location.label,
         ) &&
@@ -90,6 +94,7 @@ export const buildEncounter: QuestionBuilder<
   const encounters = topics.encounters.filter(
     (target) =>
       target.complete &&
+      hasNamedLocation(target.label.split(' (')[0]!) &&
       (context.generations ?? generations).includes(target.generation) &&
       target.pokemon.some((name) => eligible.has(name)) &&
       (context.variant.encounterConditions ||
