@@ -67,20 +67,27 @@ export function createTrainerSummaryWrites(cache: Collection<CachedTrainer>) {
     current(ids: string[], generations: number[]) {
       check();
       return ids.every(
-        (id, index) => state(id).generation === generations[index],
+        (id, index) =>
+          state(id).generation === generations[index] &&
+          state(id).writes.size === 0,
       );
     },
     publish(owner: string, generation: number, value: CachedTrainer) {
       return locked(owner, async () => {
         check();
-        if (state(owner).generation !== generation) return false;
+        if (state(owner).generation !== generation || state(owner).writes.size)
+          return false;
         try {
           await cache.updateOne(
             { _id: owner },
             { $set: value },
             { ...io, upsert: true },
           );
-          if (state(owner).generation === generation) return true;
+          if (
+            state(owner).generation === generation &&
+            !state(owner).writes.size
+          )
+            return true;
           await cache.deleteOne({ _id: owner }, io);
           return false;
         } catch (error) {

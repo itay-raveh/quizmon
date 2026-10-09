@@ -115,6 +115,68 @@ await test('normal replication, preferences, partial conflicts and deletion inva
   }
 });
 
+await test('a write starting between settling and generation capture is never considered a current cache read', async () => {
+  const f = await fixture();
+  const release = Promise.withResolvers<void>();
+  const started = Promise.withResolvers<void>();
+  let pending: Promise<unknown> | undefined;
+  const storage = getRxStorageMongoDB({ connection: testMongoUrl(f.db.name) });
+  const create = storage.createStorageInstance.bind(storage);
+  storage.createStorageInstance = async (params) => {
+    const instance = await create(params);
+    const bulkWrite = instance.bulkWrite.bind(instance);
+    instance.bulkWrite = async (rows, context) => {
+      started.resolve();
+      await release.promise;
+      return bulkWrite(rows, context);
+    };
+    return instance;
+  };
+  const instance = await f.writes.wrapStorage(storage).createStorageInstance({
+    databaseName: f.db.name,
+    collectionName: 'rounds',
+    schema: f.db.rounds.schema.jsonSchema,
+    options: {},
+    multiInstance: false,
+    databaseInstanceToken: f.db.token,
+    devMode: false,
+  });
+  try {
+    const round = await f.db.rounds.insert({
+      ...compactCompletion(completion('training')),
+      ownerId: 'fixture',
+    });
+    await f.store.trainer('fixture');
+    const capture = f.writes.snapshot(['fixture']);
+    const previous = round.toMutableJSON(true);
+    // bulkWrite marks the owner synchronously while snapshot is awaiting settled().
+    pending = instance.bulkWrite(
+      [
+        {
+          previous,
+          document: {
+            ...previous,
+            _deleted: true,
+            _rev: `2-${crypto.randomUUID()}`,
+          },
+        },
+      ],
+      'fixture-snapshot-gap',
+    );
+    await started.promise;
+    const generations = await capture;
+    assert.equal(f.writes.current(['fixture'], generations), false);
+    release.resolve();
+    await pending;
+    assert.equal((await f.store.trainer('fixture')).stats.masteryRounds, 0);
+  } finally {
+    release.resolve();
+    await pending?.catch(() => {});
+    await instance.close();
+    await f.close();
+  }
+});
+
 await test('a write racing cache publication cannot publish stale facts, and warm readers wait for that owner only', async () => {
   const f = await fixture();
   const original = f.cache.updateOne.bind(f.cache);
