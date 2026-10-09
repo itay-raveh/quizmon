@@ -146,6 +146,16 @@ export function createAccountApi(services: AccountServices) {
     await next();
   });
   app.onError((error, context) => {
+    if (
+      error instanceof SyncReadError &&
+      (error.status === 429 || (error.status === 503 && error.retryAfter))
+    ) {
+      if (error.retryAfter) context.header('Retry-After', error.retryAfter);
+      return context.json(
+        { error: 'Sync service is busy. Try again shortly.' },
+        error.status,
+      );
+    }
     if (error instanceof FriendshipError)
       return context.json({ error: error.code }, error.status);
     if (error instanceof HTTPException) {
