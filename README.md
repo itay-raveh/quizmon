@@ -19,6 +19,12 @@ npm run dev
 
 The [Helm chart](charts/quizmon/) packages the online services and `deploy/` contains their release tooling.
 
+## Derived trainer cache
+
+The [origin](server/rxdb-sync.ts) clears [derived trainer summaries](server/trainer-summaries.ts) before becoming ready on every restart, then rebuilds them lazily using the deployed rules. Normal sync and account-deletion [writes](server/trainer-summary-writes.ts) invalidate the affected trainers before acknowledgement; raw completed-round facts remain the source of truth. The origin explicitly requests majority write acknowledgement and runs as one writer. Do not add another writer without coordinating cache invalidation.
+
+For exceptional raw MongoDB edits, restores, or fact migrations, stop the origin first, perform the maintenance, then restart it to clear derived values before serving reads. An ambiguous fact write or failed cache invalidation makes trainer reads and readiness unavailable until a restart.
+
 ## Sentry
 
 Production releases send browser errors, player feedback, traces, and game metrics to Sentry.

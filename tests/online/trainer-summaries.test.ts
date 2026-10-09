@@ -8,17 +8,15 @@ import {
   type Socket,
 } from 'node:net';
 import { Hono } from 'hono';
-import {
-  MongoClient,
-  MongoNetworkError,
-  MongoServerError,
-  ObjectId,
-  UUID,
-} from 'mongodb';
+import { MongoClient } from 'mongodb';
 import {
   startTrainerSummaries,
   type CachedTrainer,
 } from '../../server/trainer-summaries.ts';
+import { getRxStorageMongoDB } from 'rxdb/plugins/storage-mongodb';
+import { openPlayerDatabase } from '../../src/lib/storage/rxdb-database.ts';
+import { createTrainerSummaryWrites } from '../../server/trainer-summary-writes.ts';
+import { getReplicationHandlerByCollection } from 'rxdb/plugins/replication-websocket';
 import { compactCompletion } from '../../src/domain/sync/compact-rounds.ts';
 import { createTrainerProfile } from '../../src/domain/player/trainer-profile.ts';
 import { completion } from './progress-fixtures.ts';
@@ -31,77 +29,233 @@ import {
   type ProjectionMessage,
 } from '../../server/trainer-projection.ts';
 
-await test('external ownership updates, replacements and deletion races invalidate previous owners and in-flight summaries', async () => {
-  const name = `trainer_ownership_${crypto.randomUUID().replaceAll('-', '')}`;
-  const mongo = await new MongoClient(testMongoUrl(name)).connect();
-  const facts = mongo.db(name);
-  const rounds = facts.collection('rounds');
-  const cache = mongo.db(`${name}_app`).collection<CachedTrainer>('summaries');
-  let store: Awaited<ReturnType<typeof startTrainerSummaries>> | undefined;
-  const updateOne = cache.updateOne.bind(cache);
-  const round = {
-    ...compactCompletion(completion('training')),
-    ownerId: 'old',
-    _deleted: false,
+async function fixture() {
+  const name = `trainer_writes_${crypto.randomUUID().replaceAll('-', '')}`;
+  const url = new URL(testMongoUrl(name));
+  url.searchParams.set('w', 'majority');
+  const mongo = await new MongoClient(url.toString(), {
+    monitorCommands: true,
+  }).connect();
+  const facts = mongo.db(`${name}-v0`);
+  const app = mongo.db(`${name}_app`);
+  const cache = app.collection<CachedTrainer>('summaries');
+  const writes = createTrainerSummaryWrites(cache);
+  const storage = getRxStorageMongoDB({ connection: url.toString() });
+  const db = await openPlayerDatabase(name, writes.wrapStorage(storage), false);
+  const store = await startTrainerSummaries(facts, cache, writes);
+  return {
+    mongo,
+    facts,
+    app,
+    cache,
+    writes,
+    db,
+    store,
+    async close() {
+      await store.close();
+      await db.close();
+      await facts.dropDatabase();
+      await app.dropDatabase();
+      await mongo.close();
+    },
   };
-  try {
-    await rounds.insertOne(round);
-    store = await startTrainerSummaries(facts, cache);
-    assert.equal((await store.trainer('old')).stats.masteryRounds, 1);
-    assert.equal((await store.trainer('new')).stats.masteryRounds, 0);
-    await rounds.updateOne({ id: round.id }, { $set: { ownerId: 'new' } });
-    assert.equal((await store.trainer('old')).stats.masteryRounds, 0);
-    assert.equal((await store.trainer('new')).stats.masteryRounds, 1);
-    await rounds.replaceOne({ id: round.id }, round);
-    assert.equal((await store.trainer('old')).stats.masteryRounds, 1);
-    assert.equal((await store.trainer('new')).stats.masteryRounds, 0);
+}
 
-    for (const action of ['reassign', 'delete'] as const) {
-      await cache.deleteOne({ _id: 'old' });
-      let raced = false;
-      cache.updateOne = async (...args: Parameters<typeof cache.updateOne>) => {
-        if (!raced && args[0]?._id === 'old') {
-          raced = true;
-          if (action === 'reassign')
-            await rounds.updateOne(
-              { id: round.id },
-              { $set: { ownerId: 'new' } },
-            );
-          else await rounds.deleteOne({ id: round.id });
-          // Drain the committed change before this stale publication lands.
-          await store!.settled();
-        }
-        return updateOne(...args);
-      };
-      assert.equal((await store.trainer('old')).stats.masteryRounds, 0);
-      assert.equal(
-        (await cache.findOne({ _id: 'old' }))?.detail?.stats.masteryRounds,
-        0,
+await test('normal replication, preferences, partial conflicts and deletion invalidate affected summaries before acknowledgement', async () => {
+  const f = await fixture();
+  try {
+    await f.db.players.insert({
+      id: 'fixture',
+      profile: createTrainerProfile(),
+      settings: null,
+    });
+    const handler = getReplicationHandlerByCollection(f.db, 'rounds');
+    const first = {
+      ...compactCompletion(completion('training')),
+      ownerId: 'fixture',
+    };
+    assert.deepEqual(
+      await handler.masterWrite([
+        { newDocumentState: { ...first, _deleted: false } },
+      ]),
+      [],
+    );
+    assert.equal((await f.store.trainer('fixture')).stats.masteryRounds, 1);
+    assert.equal((await f.store.trainer('unrelated')).stats.masteryRounds, 0);
+    await f.db.players
+      .findOne('fixture')
+      .exec()
+      .then((player) =>
+        player!.incrementalPatch({
+          profile: { ...createTrainerProfile(), name: 'Updated' },
+        }),
       );
-      assert.equal(
-        (await store.trainer('new')).stats.masteryRounds,
-        action === 'reassign' ? 1 : 0,
-      );
-      cache.updateOne = updateOne;
-      if (action === 'reassign')
-        await rounds.replaceOne({ id: round.id }, round);
-    }
-    assert.equal(await rounds.countDocuments(), 0);
-    await facts
-      .collection('players')
-      .insertOne({ id: 'malformed', profile: null, _deleted: false });
-    await assert.rejects(store.trainer('malformed'));
-    assert.equal(await cache.findOne({ _id: 'malformed' }), null);
+    assert.equal((await f.store.trainer('fixture')).profile.name, 'Updated');
+    assert(await f.cache.findOne({ _id: 'unrelated' }));
+    const second = {
+      ...compactCompletion(completion('training')),
+      ownerId: 'fixture',
+    };
+    const partial = await f.db.rounds.bulkInsert([first, second]);
+    assert.equal(partial.error.length, 1);
+    assert.equal(partial.success.length, 1);
+    assert.equal((await f.store.trainer('fixture')).stats.masteryRounds, 2);
+    await f.db.rounds.bulkRemove(
+      await f.db.rounds.find({ selector: { ownerId: 'fixture' } }).exec(),
+    );
+    await f.db.players
+      .findOne('fixture')
+      .exec()
+      .then((player) => player!.remove());
+    assert.equal((await f.store.trainer('fixture')).stats.masteryRounds, 0);
+    assert.notEqual((await f.store.trainer('fixture')).profile.name, 'Updated');
+    assert(await f.cache.findOne({ _id: 'unrelated' }));
+  } finally {
+    await f.close();
+  }
+});
+
+await test('a write racing cache publication cannot publish stale facts, and warm readers wait for that owner only', async () => {
+  const f = await fixture();
+  const original = f.cache.updateOne.bind(f.cache);
+  const started = Promise.withResolvers<void>();
+  const release = Promise.withResolvers<void>();
+  let read: ReturnType<typeof f.store.trainer> | undefined;
+  let write: Promise<unknown> | undefined;
+  try {
+    await f.db.rounds.insert({
+      ...compactCompletion(completion('training')),
+      ownerId: 'fixture',
+    });
+    await f.store.trainer('warm');
+    let armed = true;
+    f.cache.updateOne = async (
+      ...args: Parameters<typeof f.cache.updateOne>
+    ) => {
+      if (armed && args[0]?._id === 'fixture') {
+        armed = false;
+        started.resolve();
+        await release.promise;
+      }
+      return original(...args);
+    };
+    read = f.store.trainer('fixture');
+    await started.promise;
+    write = f.db.rounds.insert({
+      ...compactCompletion(completion('training')),
+      ownerId: 'fixture',
+    });
+    // The storage wrapper marks the generation before the asynchronous Mongo write.
+    await new Promise<void>((resolve) => setImmediate(resolve));
+    assert.equal((await f.store.trainer('warm')).stats.masteryRounds, 0);
+    let returned = false;
+    const warm = f.store.players(['fixture']).then((value) => {
+      returned = true;
+      return value;
+    });
+    await new Promise<void>((resolve) => setImmediate(resolve));
+    assert.equal(returned, false);
+    release.resolve();
+    await write;
+    assert.equal((await read).stats.masteryRounds, 2);
+    assert.equal((await warm)[0]?.leagueCompleted, false);
     assert.equal(
-      (await facts.collection('players').findOne({ id: 'malformed' }))?.profile,
-      null,
+      (await f.cache.findOne({ _id: 'fixture' }))?.detail?.stats.masteryRounds,
+      2,
     );
   } finally {
-    cache.updateOne = updateOne;
-    await store?.close();
-    await facts.dropDatabase();
-    await mongo.db(`${name}_app`).dropDatabase();
-    await mongo.close();
+    release.resolve();
+    await write?.catch(() => {});
+    await read?.catch(() => {});
+    f.cache.updateOne = original;
+    await f.close();
+  }
+});
+
+await test('a cache invalidation failure fails writes and reads closed until restart', async () => {
+  const f = await fixture();
+  const original = f.cache.deleteOne.bind(f.cache);
+  try {
+    await f.store.trainer('fixture');
+    f.cache.deleteOne = () =>
+      Promise.reject(new Error('Fixture cache failure'));
+    await assert.rejects(
+      f.db.rounds.insert({
+        ...compactCompletion(completion('training')),
+        ownerId: 'fixture',
+      }),
+      { status: 503 },
+    );
+    f.cache.deleteOne = original;
+    assert.equal(f.store.healthy(), false);
+    await assert.rejects(f.store.trainer('fixture'), { status: 503 });
+    await assert.rejects(f.store.players(['fixture']), { status: 503 });
+    assert.equal(await f.facts.collection('rounds').countDocuments(), 1);
+  } finally {
+    f.cache.deleteOne = original;
+    await f.close();
+  }
+});
+
+await test('an ambiguous partial storage failure blocks summaries even after cache deletion succeeds', async () => {
+  const f = await fixture();
+  try {
+    await f.store.trainer('fixture');
+    const storage = getRxStorageMongoDB({
+      connection: testMongoUrl(f.db.name),
+    });
+    const original = storage.createStorageInstance.bind(storage);
+    storage.createStorageInstance = async (params) => {
+      const instance = await original(params);
+      const bulkWrite = instance.bulkWrite.bind(instance);
+      instance.bulkWrite = async (rows, context) => {
+        await bulkWrite(rows, context);
+        throw new Error('Fixture acknowledgement lost after commit');
+      };
+      return instance;
+    };
+    const failing = await f.writes.wrapStorage(storage).createStorageInstance({
+      databaseName: f.db.name,
+      collectionName: 'rounds',
+      schema: f.db.rounds.schema.jsonSchema,
+      options: {},
+      multiInstance: false,
+      databaseInstanceToken: f.db.token,
+      devMode: false,
+    });
+    try {
+      const existing = await f.db.rounds.insert({
+        ...compactCompletion(completion('training')),
+        ownerId: 'fixture',
+      });
+      const previous = existing.toMutableJSON(true);
+      await assert.rejects(
+        failing.bulkWrite(
+          [
+            {
+              previous,
+              document: {
+                ...previous,
+                _deleted: true,
+                _rev: `2-${crypto.randomUUID()}`,
+              },
+            },
+          ],
+          'fixture-ambiguous',
+        ),
+      );
+      assert.equal(f.store.healthy(), false);
+      await assert.rejects(f.store.trainer('fixture'), { status: 503 });
+      assert.equal(
+        (await f.facts.collection('rounds').findOne({ id: previous.id }))
+          ?._deleted,
+        true,
+      );
+    } finally {
+      await failing.close();
+    }
+  } finally {
+    await f.close();
   }
 });
 
@@ -140,7 +294,12 @@ await test('warm reads remain responsive during cold CPU work, and a worker cras
           _deleted: false,
         })),
       );
-    store = await startTrainerSummaries(facts, cache, projector);
+    store = await startTrainerSummaries(
+      facts,
+      cache,
+      createTrainerSummaryWrites(cache),
+      projector,
+    );
     await store.trainer('warm');
     armed = true;
     let finished = false;
@@ -169,258 +328,79 @@ await test('warm reads remain responsive during cold CPU work, and a worker cras
   }
 });
 
-await test('lazy summaries coalesce, persist, invalidate external facts, and fail closed', async (context) => {
-  const name = `trainer_summary_${crypto.randomUUID().replaceAll('-', '')}`;
-  const mongo = await new MongoClient(testMongoUrl(name), {
-    monitorCommands: true,
-  }).connect();
-  const facts = mongo.db(`${name}-v0`);
-  const app = mongo.db(`${name}_app`);
-  const cache = app.collection<CachedTrainer>('trainer_summaries');
-  const originalWatch = facts.watch.bind(facts);
-  let loseHistory = false;
-  let disconnectOnce = false;
-  let flood = false;
-  facts.watch = ((...args: Parameters<typeof facts.watch>) => {
-    const stream = originalWatch(...args);
-    const next = stream.tryNext.bind(stream);
-    stream.tryNext = async () => {
-      if (flood) {
-        await new Promise((resolve) => setTimeout(resolve, 5));
-        return {
-          _id: { fixture: true },
-          operationType: 'insert',
-          collectionUUID: new UUID(),
-          ns: { db: facts.databaseName, coll: 'rounds' },
-          documentKey: { _id: new ObjectId() },
-          fullDocument: { ownerId: 'unrelated' },
-        };
-      }
-      if (disconnectOnce) {
-        disconnectOnce = false;
-        throw new MongoNetworkError('Fixture disconnection');
-      }
-      if (loseHistory) {
-        loseHistory = false;
-        throw new MongoServerError({
-          code: 286,
-          codeName: 'ChangeStreamHistoryLost',
-          message: 'Fixture expired cursor',
-        });
-      }
-      return next();
-    };
-    return stream;
-  }) as typeof facts.watch;
-  let store: Awaited<ReturnType<typeof startTrainerSummaries>> | undefined;
-  let roundReads = 0;
-  const pendingReads = new Set<number>();
-  let peakReads = 0;
-  let markerWrites = 0;
-  mongo.on('commandStarted', (event) => {
+await test('lazy summaries coalesce; warm profile/card reads perform no writes or history replay; restart clears derived values', async (context) => {
+  const f = await fixture();
+  let histories = 0;
+  let writes = 0;
+  f.mongo.on('commandStarted', (event) => {
+    if (event.commandName === 'find' && event.command.find === 'rounds')
+      histories++;
     if (
-      (event.commandName === 'insert' &&
-        event.command.insert === 'trainer_summary_barriers') ||
-      (event.commandName === 'delete' &&
-        event.command.delete === 'trainer_summary_barriers')
+      ['insert', 'update', 'delete', 'findAndModify'].includes(
+        event.commandName,
+      )
     )
-      markerWrites++;
-    if (event.commandName === 'find' && event.command.find === 'rounds') {
-      roundReads++;
-      pendingReads.add(event.requestId);
-      peakReads = Math.max(peakReads, pendingReads.size);
-    }
+      writes++;
   });
-  mongo.on('commandSucceeded', (event) => pendingReads.delete(event.requestId));
-  mongo.on('commandFailed', (event) => pendingReads.delete(event.requestId));
+  let restarted: Awaited<ReturnType<typeof startTrainerSummaries>> | undefined;
   try {
-    await facts
-      .collection('rounds')
-      .createIndex({ ownerId: 1, completedAt: 1, id: 1 });
-    const profile = { ...createTrainerProfile(), name: 'Fixture' };
-    await facts
-      .collection('players')
-      .insertOne({ id: 'fixture', profile, _deleted: false });
     const league = {
       ...compactCompletion(completion('league')),
       ownerId: 'fixture',
-      _deleted: false,
     };
-    await facts.collection('rounds').insertOne(league);
-    store = await startTrainerSummaries(facts, cache);
-    assert.equal(await cache.countDocuments(), 0);
-    roundReads = 0;
-    const simultaneous = await Promise.all(
-      Array.from({ length: 8 }, () => store!.trainer('fixture')),
-    );
-    assert.equal(roundReads, 1);
-    assert(simultaneous.every((value) => value.stats.leagueCompleted));
-    const persisted = await cache.findOne({ _id: 'fixture' });
-    assert(persisted?.detail);
-    roundReads = 0;
-    markerWrites = 0;
-    assert.deepEqual(await store.trainer('fixture'), simultaneous[0]);
-    const cards = await store.players(['fixture']);
-    assert.equal(cards[0]?.leagueCompleted, true);
-    assert.equal(roundReads, 0);
-    assert.equal(markerWrites, 4); // One insert/delete freshness fence per warm read.
-    await facts.collection('rounds').insertMany(
-      ['second', 'third'].map((ownerId) => ({
-        ...compactCompletion(completion('training')),
-        ownerId,
-        _deleted: false,
-      })),
-    );
-    peakReads = 0;
-    await Promise.all(
-      ['second', 'third'].map((owner) => store!.trainer(owner)),
-    );
-    assert.equal(peakReads, 1);
-    assert.equal(
-      await facts.collection('trainer_summary_barriers').countDocuments(),
-      0,
-    );
-
-    // Direct Mongo writes model imports/another writer; RxDB events are not used.
-    await facts
-      .collection('players')
-      .updateOne({ id: 'fixture' }, { $set: { 'profile.name': 'Updated' } });
-    assert.equal((await store.trainer('fixture')).profile.name, 'Updated');
     const daily = {
       ...compactCompletion(
         completion('daily', { completedAt: '2026-09-11T11:00:00.000Z' }),
       ),
       ownerId: 'fixture',
-      _deleted: false,
     };
-    await facts.collection('rounds').insertOne(daily);
-    const training = {
-      ...compactCompletion(completion('training')),
-      ownerId: 'fixture',
-      _deleted: false,
-    };
-    await facts.collection('rounds').insertOne(training);
-    const current = await store.trainer('fixture');
-    assert.equal(current.stats.bestDailyStreak, 1);
-    assert.equal(current.stats.masteryRounds, 1);
-    roundReads = 0;
+    await f.db.rounds.bulkInsert([league, daily]);
+    const simultaneous = await Promise.all(
+      Array.from({ length: 8 }, () => f.store.trainer('fixture')),
+    );
+    assert.equal(histories, 1);
+    assert(simultaneous.every((value) => value.stats.leagueCompleted));
+    histories = 0;
+    writes = 0;
+    assert.deepEqual(await f.store.trainer('fixture'), simultaneous[0]);
+    assert.equal(
+      (await f.store.players(['fixture']))[0]?.leagueCompleted,
+      true,
+    );
+    assert.equal(histories, 0);
+    assert.equal(writes, 0);
+    assert.equal(
+      await f.facts.collection('trainer_summary_barriers').countDocuments(),
+      0,
+    );
     context.mock.timers.enable({
       apis: ['Date'],
       now: Date.UTC(2026, 8, 11, 19),
     });
-    assert.equal((await store.trainer('fixture')).record.dayCombo, 1);
+    assert.equal((await f.store.trainer('fixture')).record.dayCombo, 1);
     context.mock.timers.setTime(Date.UTC(2026, 8, 13, 19));
-    assert.equal((await store.trainer('fixture')).record.dayCombo, 0);
-    assert.equal(roundReads, 0);
+    assert.equal((await f.store.trainer('fixture')).record.dayCombo, 0);
+    assert.equal(histories, 0);
     context.mock.timers.reset();
-    const earlier = {
-      ...compactCompletion(
-        completion('daily', { completedAt: '2026-09-11T09:00:00.000Z' }),
-      ),
-      ownerId: 'fixture',
-      _deleted: false,
-    };
-    earlier.answers[0]!.selected = ['ivysaur'];
-    await facts.collection('rounds').insertOne(earlier);
-    const reordered = await store.trainer('fixture');
-    assert.equal(reordered.stats.bestDailyStreak, 1);
-    assert.equal(
-      reordered.stats.correctCategories.type,
-      (current.stats.correctCategories.type ?? 0) - 1,
-    );
-    await facts
-      .collection('rounds')
-      .updateOne({ id: training.id }, { $set: { _deleted: true } });
-    assert.equal((await store.trainer('fixture')).stats.masteryRounds, 0);
-    await facts.collection('rounds').deleteOne({ id: league.id });
-    assert.equal((await store.trainer('fixture')).stats.leagueCompleted, false);
-    await facts
-      .collection('rounds')
-      .updateOne({ id: training.id }, { $set: { _deleted: false } });
-    assert.equal((await store.trainer('fixture')).stats.masteryRounds, 1);
-
-    // An unrelated owner's write must not replay this owner's history twice.
-    await cache.deleteOne({ _id: 'fixture' });
-    {
-      const original = cache.updateOne.bind(cache);
-      let unrelated = false;
-      cache.updateOne = async (...args: Parameters<typeof cache.updateOne>) => {
-        if (!unrelated) {
-          unrelated = true;
-          await facts.collection('players').insertOne({
-            id: 'unrelated',
-            profile: createTrainerProfile(),
-            _deleted: false,
-          });
-        }
-        return original(...args);
-      };
-      roundReads = 0;
-      assert.equal((await store.trainer('fixture')).stats.masteryRounds, 1);
-      assert.equal(roundReads, 1);
-      cache.updateOne = original;
-    }
-
-    // Change facts after the history read but before publication; never persist old output.
-    await cache.deleteMany({});
-    const original = cache.updateOne.bind(cache);
-    let raced = false;
-    let duringPublication: ReturnType<typeof store.players> | undefined;
-    cache.updateOne = async (...args: Parameters<typeof cache.updateOne>) => {
-      const first = !raced;
-      if (first) {
-        raced = true;
-        await facts
-          .collection('rounds')
-          .updateOne({ id: training.id }, { $set: { _deleted: true } });
-        await facts.collection('rounds').insertOne(league);
-        await store!.settled();
-      }
-      const result = await original(...args);
-      if (first) duringPublication = store!.players(['fixture']);
-      return result;
-    };
-    assert.equal((await store.trainer('fixture')).stats.masteryRounds, 0);
-    assert.equal((await duringPublication)?.[0]?.leagueCompleted, true);
-    cache.updateOne = original;
-    assert.equal((await store.trainer('fixture')).stats.masteryRounds, 0);
-
-    await cache.updateOne(
+    await f.cache.updateOne(
       { _id: 'fixture' },
       { $set: { 'detail.stats.masteryRounds': 999 } },
     );
-    await store.close();
-    store = await startTrainerSummaries(facts, cache);
-    assert.equal(await cache.countDocuments(), 0);
-    assert.equal((await store.trainer('fixture')).stats.masteryRounds, 0);
-    loseHistory = true;
-    await assert.rejects(store.trainer('fixture'), { status: 503 });
-    assert.equal(await cache.countDocuments(), 0);
-    assert.equal(store.healthy(), true);
-    assert.equal((await store.trainer('fixture')).stats.masteryRounds, 0);
-    await store.trainer('second');
-    await facts
-      .collection('rounds')
-      .updateOne({ id: training.id }, { $set: { _deleted: false } });
-    disconnectOnce = true;
-    await assert.rejects(store.trainer('fixture'), { status: 503 });
-    assert.equal(store.healthy(), true);
-    assert.equal((await store.trainer('fixture')).stats.masteryRounds, 1);
-    assert.equal(await cache.countDocuments(), 1);
-    flood = true;
-    const blockedAt = performance.now();
-    await assert.rejects(store.trainer('fixture'), { status: 503 });
-    assert(performance.now() - blockedAt < 3_000);
-    flood = false;
-    assert.equal((await store.trainer('fixture')).stats.masteryRounds, 1);
-    await facts.dropDatabase();
-    await assert.rejects(store.trainer('fixture'));
-    assert.equal(store.healthy(), false);
+    await f.store.close();
+    // Raw maintenance is explicitly performed while the origin is stopped.
+    await f.facts.collection('rounds').deleteOne({ id: league.id });
+    restarted = await startTrainerSummaries(f.facts, f.cache, f.writes);
+    assert.equal(await f.cache.countDocuments(), 0);
+    assert.equal(
+      (await restarted.trainer('fixture')).stats.leagueCompleted,
+      false,
+    );
+    assert.equal((await restarted.trainer('fixture')).stats.masteryRounds, 0);
+    assert.equal(await f.facts.collection('rounds').countDocuments(), 1);
   } finally {
-    await store?.close();
-    await facts.dropDatabase();
-    await app.dropDatabase();
-    await mongo.close();
+    context.mock.timers.reset();
+    await restarted?.close();
+    await f.close();
   }
 });
 
@@ -468,7 +448,11 @@ await test('cold work has one waiting slot, and warm reads do not join that queu
         _deleted: false,
       })),
     );
-    store = await startTrainerSummaries(facts, cache);
+    store = await startTrainerSummaries(
+      facts,
+      cache,
+      createTrainerSummaryWrites(cache),
+    );
     await store.trainer('warm');
     const first = store.trainer('first');
     await started.promise;
@@ -552,7 +536,11 @@ await test('an upstream timeout and retry reuse the completed trainer rebuild', 
       ownerId: 'fixture',
       _deleted: false,
     });
-    store = await startTrainerSummaries(facts, cache);
+    store = await startTrainerSummaries(
+      facts,
+      cache,
+      createTrainerSummaryWrites(cache),
+    );
     server.listen(0, '127.0.0.1');
     await once(server, 'listening');
     const address = server.address();
@@ -630,7 +618,11 @@ await test('an unavailable Mongo connection fails promptly without losing facts'
       _deleted: false,
     });
     const original = await facts.collection('rounds').find({}).toArray();
-    store = await startTrainerSummaries(facts, cache);
+    store = await startTrainerSummaries(
+      facts,
+      cache,
+      createTrainerSummaryWrites(cache),
+    );
     await store.trainer('fixture');
     blocked = true;
     const start = performance.now();

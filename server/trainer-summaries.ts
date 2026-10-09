@@ -1,10 +1,6 @@
 import * as Sentry from '@sentry/node';
-import {
-  MongoOperationTimeoutError,
-  MongoServerError,
-  type Collection,
-  type Db,
-} from 'mongodb';
+import { MongoOperationTimeoutError, type Collection, type Db } from 'mongodb';
+import type { TrainerSummaryWrites } from './trainer-summary-writes.ts';
 import type { TrainerProfile } from '../src/domain/player/trainer-profile.ts';
 import { createTrainerProjector } from './trainer-projection.ts';
 import {
@@ -25,225 +21,30 @@ export interface CachedTrainer {
   };
 }
 
-class TrainerSourceChanged extends Error {}
-
 export async function startTrainerSummaries(
   facts: Db,
   cache: Collection<CachedTrainer>,
+  writes: TrainerSummaryWrites,
   projector = createTrainerProjector(),
 ) {
   let closed = false;
   const io = { timeoutMS: 1_000 };
-  const barriers = facts.collection<{ _id: string }>(
-    'trainer_summary_barriers',
-  );
-  const openChanges = () =>
-    facts.watch(
-      [
-        {
-          $match: {
-            $or: [
-              { 'ns.coll': { $in: ['players', 'rounds'] } },
-              {
-                'ns.coll': 'trainer_summary_barriers',
-                operationType: 'insert',
-              },
-              {
-                operationType: {
-                  $in: ['dropDatabase', 'invalidate', 'rename'],
-                },
-              },
-            ],
-          },
-        },
-        {
-          $project: {
-            operationType: 1,
-            ns: 1,
-            'fullDocument.id': 1,
-            'fullDocument.ownerId': 1,
-            'fullDocument._id': 1,
-            ownershipChanged: {
-              $or: [
-                {
-                  $ne: [
-                    { $type: '$updateDescription.updatedFields.ownerId' },
-                    'missing',
-                  ],
-                },
-                {
-                  $ne: [
-                    { $type: '$updateDescription.updatedFields.id' },
-                    'missing',
-                  ],
-                },
-                {
-                  $in: [
-                    'ownerId',
-                    { $ifNull: ['$updateDescription.removedFields', []] },
-                  ],
-                },
-                {
-                  $in: [
-                    'id',
-                    { $ifNull: ['$updateDescription.removedFields', []] },
-                  ],
-                },
-              ],
-            },
-          },
-        },
-      ],
-      {
-        ...io,
-        fullDocument: 'updateLookup',
-        maxAwaitTimeMS: 1,
-        batchSize: 100,
-      },
-    );
-  let changes = openChanges();
-  let serial = 0;
-  let publication = 0;
-  let failed = false;
-  let resetNeeded = false;
-  let draining: Promise<void> | undefined;
   const active = new Map<
     string,
-    { detail: boolean; promise: Promise<CachedTrainer>; invalidate(): void }
+    { detail: boolean; promise: Promise<CachedTrainer> }
   >();
-
-  const reset = async () => {
-    await changes.close();
-    changes = openChanges();
-    await changes.tryNext();
-    await barriers.deleteMany({}, io);
-    await cache.deleteMany({}, io);
-    for (const entry of active.values()) entry.invalidate();
-    serial++;
-    publication++;
-    resetNeeded = false;
-  };
-
-  const settled = () => {
+  const settled = async () => {
     if (closed)
-      return Promise.reject(
-        Object.assign(new Error('Trainer summaries are closed.'), {
-          status: 503,
-        }),
-      );
-    if (failed)
-      return Promise.reject(
-        new Error('Trainer summary change source is unavailable.'),
-      );
-    draining ??= (async () => {
-      if (resetNeeded) await reset();
-      const owners = new Set<string>();
-      let clearAll = false;
-      const marker = crypto.randomUUID();
-      const deadline = performance.now() + 1_000;
-      const checkDeadline = () => {
-        if (performance.now() > deadline)
-          throw new Error(
-            'Trainer summary change source did not reach the read barrier.',
-          );
-      };
-      await barriers.insertOne(
-        { _id: marker },
-        { ...io, writeConcern: { w: 'majority' } },
-      );
-      try {
-        while (true) {
-          checkDeadline();
-          const event = await changes.tryNext();
-          checkDeadline();
-          if (!event) continue;
-          if (
-            'ns' in event &&
-            'coll' in event.ns &&
-            event.ns.coll === 'trainer_summary_barriers'
-          ) {
-            if (
-              event.operationType === 'insert' &&
-              event.fullDocument._id === marker
-            )
-              break;
-            continue;
-          }
-          serial++;
-          if (
-            event.operationType !== 'insert' &&
-            event.operationType !== 'update' &&
-            event.operationType !== 'replace' &&
-            event.operationType !== 'delete'
-          )
-            throw new TrainerSourceChanged(
-              'Trainer summary change source was replaced.',
-            );
-          const document = 'fullDocument' in event ? event.fullDocument : null;
-          const owner: unknown =
-            event.ns.coll === 'players' ? document?.id : document?.ownerId;
-          if (
-            typeof owner === 'string' &&
-            event.operationType !== 'replace' &&
-            !('ownershipChanged' in event && event.ownershipChanged === true)
-          ) {
-            owners.add(owner);
-            active.get(owner)?.invalidate();
-          } else {
-            // Deletes, replacements and reassignment lack a reliable previous owner.
-            clearAll = true;
-            for (const entry of active.values()) entry.invalidate();
-          }
-          if (owners.size >= 1000) {
-            await cache.deleteMany({ _id: { $in: [...owners] } }, io);
-            owners.clear();
-          }
-        }
-        if (clearAll) await cache.deleteMany({}, io);
-        else if (owners.size)
-          await cache.deleteMany({ _id: { $in: [...owners] } }, io);
-      } finally {
-        await barriers.deleteOne({ _id: marker }, io);
-      }
-    })()
-      .catch(async (error: unknown) => {
-        if (error instanceof TrainerSourceChanged) {
-          failed = true;
-          throw error;
-        }
-        resetNeeded = true;
-        if (
-          error instanceof MongoServerError &&
-          error.codeName === 'ChangeStreamHistoryLost'
-        ) {
-          try {
-            await reset();
-          } catch {
-            // The next read must reset successfully before using cached results.
-          }
-        }
-        throw Object.assign(
-          new Error('Trainer summary freshness check failed.', {
-            cause: error,
-          }),
-          { status: 503 },
-        );
-      })
-      .finally(() => {
-        draining = undefined;
+      throw Object.assign(new Error('Trainer summaries are closed.'), {
+        status: 503,
       });
-    return draining;
+    await writes.settled();
   };
-
   try {
-    // Establish the stream first, so writes during startup cannot be missed.
-    await changes.tryNext();
-    await barriers.deleteMany({}, io);
-    // Every process start discards derived cache only. No rules are tagged or retained.
+    // Clear derived values under current code/rules before the origin can serve requests.
     await cache.deleteMany({}, io);
     await projector.ready();
   } catch (error) {
-    await changes.close();
     await projector.close();
     throw error;
   }
@@ -362,78 +163,47 @@ export async function startTrainerSummaries(
         ? pending.promise.then(() => get(owner, true))
         : pending.promise;
     }
-    let invalidated = false;
-    let published = false;
     const promise = (async () => {
-      if (failed)
-        throw new Error('Trainer summary change source is unavailable.');
       for (let attempt = 0; attempt < 3; attempt++) {
-        await settled();
-        invalidated = false;
+        const generations = await writes.snapshot([owner]);
         let value = await cache.findOne({ _id: owner }, io);
-        let rebuilt = false;
         if (attempt === 0)
           Sentry.getActiveSpan()?.setAttribute(
             'trainer.summary.cache_hit',
             Boolean(value && (!detail || value.detail)),
           );
+        if (!writes.current([owner], generations)) continue;
         if (!value || (detail && !value.detail)) {
           value = await rebuild(owner, detail);
-          rebuilt = true;
-          published = true;
-          await cache.updateOne(
-            { _id: owner },
-            { $set: value },
-            { ...io, upsert: true },
-          );
-          publication++;
+          if (!(await writes.publish(owner, generations[0]!, value))) continue;
         }
-        // A warm read is current at its first barrier. Only publication needs another fence.
-        if (rebuilt) await settled();
-        if (!invalidated) return value;
-        if (rebuilt) {
-          // Another reader may have invalidated this owner before our write completed.
-          await cache.deleteOne({ _id: owner }, io);
-          publication++;
-        }
+        if (writes.current([owner], generations)) return value;
       }
-      throw new Error('Trainer facts changed repeatedly during the read.');
+      throw Object.assign(
+        new Error('Trainer facts changed repeatedly during the read.'),
+        { status: 503, retryAfter: '1' },
+      );
     })()
-      .catch(async (error: unknown) => {
-        // A failed freshness check must not leave a publication available to another reader.
-        if (published) {
-          try {
-            await cache.deleteOne({ _id: owner }, io);
-            publication++;
-          } catch {
-            resetNeeded = true;
-          }
-        }
+      .catch((error: unknown) => {
         if (error instanceof MongoOperationTimeoutError)
           throw Object.assign(
             new Error('Trainer summary database read timed out.', {
               cause: error,
             }),
-            { status: 503 },
+            { status: 503, retryAfter: '1' },
           );
         throw error;
       })
       .finally(() => {
         active.delete(owner);
       });
-    active.set(owner, {
-      detail,
-      promise,
-      invalidate: () => {
-        invalidated = true;
-      },
-    });
+    active.set(owner, { detail, promise });
     return promise;
   };
 
   return {
     settled,
-    healthy: () => !failed && !closed,
+    healthy: () => writes.healthy() && !closed,
     async trainer(owner: string) {
       const value = await get(owner, true);
       if (!value.detail) throw new Error('Trainer summary is incomplete.');
@@ -455,10 +225,12 @@ export async function startTrainerSummaries(
       };
     },
     async players(ids: string[]) {
+      if (closed)
+        throw Object.assign(new Error('Trainer summaries are closed.'), {
+          status: 503,
+        });
       for (let attempt = 0; attempt < 3; attempt++) {
-        await settled();
-        const before = serial;
-        const beforePublication = publication;
+        const generations = await writes.snapshot(ids);
         const saved = await cache
           .find({ _id: { $in: ids } }, { ...io, projection: { detail: 0 } })
           .toArray();
@@ -471,8 +243,7 @@ export async function startTrainerSummaries(
           );
           for (const value of batch) values.set(value._id, value);
         }
-        if (missing.length) await settled();
-        if (before === serial && beforePublication === publication)
+        if (writes.current(ids, generations))
           return ids.map((id) => {
             const value = values.get(id)!;
             return {
@@ -482,7 +253,10 @@ export async function startTrainerSummaries(
             };
           });
       }
-      throw new Error('Trainer facts changed repeatedly during the read.');
+      throw Object.assign(
+        new Error('Trainer facts changed repeatedly during the read.'),
+        { status: 503, retryAfter: '1' },
+      );
     },
     async close() {
       closed = true;
@@ -491,7 +265,6 @@ export async function startTrainerSummaries(
       await Promise.allSettled(
         [...active.values()].map((entry) => entry.promise),
       );
-      await changes.close();
     },
   };
 }

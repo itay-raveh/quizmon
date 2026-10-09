@@ -17,6 +17,7 @@ import {
   startTrainerSummaries,
   type CachedTrainer,
 } from './trainer-summaries.ts';
+import { createTrainerSummaryWrites } from './trainer-summary-writes.ts';
 import { boardPage, startStandings, type Standing } from './standings.ts';
 
 const accountId = z.string().regex(/^[A-Za-z0-9_-]{1,128}$/);
@@ -66,21 +67,34 @@ export async function startSyncServer(config: {
       'tlsCertificateKeyFile',
       config.mongoTlsCertKeyFile,
     );
-  const db = await openPlayerDatabase(
-    config.databaseName ?? 'quizmon_progress',
-    getRxStorageMongoDB({ connection: connection.toString() }),
-    false,
-  );
-  let client: MongoClient | undefined;
+  // Fact acknowledgements must be majority durable before releasing cache invalidation.
+  connection.searchParams.set('w', 'majority');
+  const client = await new MongoClient(connection.toString()).connect();
+  const appStorage = client.db(config.appDatabaseName ?? 'quizmon_app');
+  const summaryCache =
+    appStorage.collection<CachedTrainer>('trainer_summaries');
+  const writes = createTrainerSummaryWrites(summaryCache);
+  let db;
+  try {
+    db = await openPlayerDatabase(
+      config.databaseName ?? 'quizmon_progress',
+      writes.wrapStorage(
+        getRxStorageMongoDB({ connection: connection.toString() }),
+      ),
+      false,
+    );
+  } catch (error) {
+    await client.close();
+    throw error;
+  }
   let standings: Awaited<ReturnType<typeof startStandings>> | undefined;
   let summaries: Awaited<ReturnType<typeof startTrainerSummaries>> | undefined;
   try {
-    client = await new MongoClient(connection.toString()).connect();
     const mongoClient = client;
-    const appStorage = client.db(config.appDatabaseName ?? 'quizmon_app');
     summaries = await startTrainerSummaries(
       client.db(`${db.name}-v${db.rounds.schema.version}`),
-      appStorage.collection<CachedTrainer>('trainer_summaries'),
+      summaryCache,
+      writes,
     );
     const trainers = summaries;
     standings = await startStandings(
