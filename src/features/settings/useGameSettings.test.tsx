@@ -2,6 +2,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { expect, it, vi } from 'vitest';
 import { emptyPlayerData } from '@/domain/player/player-save';
 import { defaultGameSettings } from '@/domain/settings/game-settings';
+import type { GameSettings } from '@/domain/settings/types';
 import { parsePlayerData } from '@/domain/player/schemas/player-data';
 import { readPlayerData } from '@/lib/storage/player-storage';
 import { useGameSettings } from './useGameSettings';
@@ -12,13 +13,21 @@ vi.mock('@/lib/storage/player-storage', () => ({
   updatePlayerData: vi.fn(),
 }));
 
-const InitialTrainingLevel = () => useGameSettings()[0].level;
+const readInitialSettings = () => {
+  let settings: GameSettings | undefined;
+  const SettingsProbe = () => {
+    [settings] = useGameSettings();
+    return null;
+  };
+  renderToStaticMarkup(<SettingsProbe />);
+  return settings;
+};
 
-it('starts a player without preferences at Level 3 without awarding progress', () => {
+it('uses defaults for missing preferences without awarding progress', () => {
   const fresh = emptyPlayerData();
   const original = structuredClone(fresh);
   vi.mocked(readPlayerData).mockReturnValue(fresh);
-  expect(renderToStaticMarkup(<InitialTrainingLevel />)).toBe('3');
+  expect(readInitialSettings()).toEqual(defaultGameSettings);
   expect(fresh).toEqual(original);
 });
 
@@ -34,6 +43,6 @@ it('keeps saved custom selections and progress instead of replacing them with de
   });
   const original = structuredClone(saved);
   vi.mocked(readPlayerData).mockReturnValue(saved);
-  expect(renderToStaticMarkup(<InitialTrainingLevel />)).toBe('1');
+  expect(readInitialSettings()).toEqual(saved.settings);
   expect(saved).toEqual(original);
 });
