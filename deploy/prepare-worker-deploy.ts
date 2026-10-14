@@ -1,54 +1,20 @@
 import { readFile, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
-import { parse, parseAllDocuments } from 'yaml';
 import { isRecord } from '../src/lib/validation.ts';
 import { accountAssetHeaders } from './asset-headers.ts';
 import {
   readReleaseConfig,
   renderSourceWorkerConfig,
 } from './release-config.ts';
+import { readProductionValues } from './production-values.ts';
 
 const infra = process.argv[2];
 if (!infra) throw new Error('Usage: prepare-worker-deploy.ts <infra-checkout>');
 
-const documents = parseAllDocuments(
-  await readFile(
-    join(infra, 'clusters/shire/apps/quizmon/release/app-chart.yaml'),
-    'utf8',
-  ),
-);
-const parseError = documents.flatMap((document) => document.errors)[0];
-if (parseError) throw parseError;
-const releases = documents.map((document): unknown => {
-  const value: unknown = document.toJSON();
-  return value;
-});
-const release = releases.find(
-  (resource) => isRecord(resource) && resource.kind === 'HelmRelease',
-);
-const inputs: unknown = parse(
-  await readFile(
-    join(infra, 'clusters/shire/apps/quizmon/release/inputs/runtime.yaml'),
-    'utf8',
-  ),
-);
-const releaseSpec = isRecord(release) ? release.spec : undefined;
-const releaseValues = isRecord(releaseSpec) ? releaseSpec.values : undefined;
-const data = isRecord(inputs) ? inputs.data : undefined;
-const valuesYaml = isRecord(data) ? data['values.yaml'] : undefined;
-const localValues: unknown = parse(
-  typeof valuesYaml === 'string' ? valuesYaml : '',
-);
-const publicConfig = isRecord(releaseValues)
-  ? releaseValues.runtimeConfig
-  : undefined;
-const privateConfig = isRecord(localValues)
-  ? localValues.runtimeConfig
-  : undefined;
-if (!isRecord(publicConfig) || !isRecord(privateConfig))
+const values = await readProductionValues(infra);
+if (!isRecord(values.runtimeConfig))
   throw new Error('Production runtime configuration is missing.');
 
-const config = readReleaseConfig({ ...publicConfig, ...privateConfig });
+const config = readReleaseConfig(values.runtimeConfig);
 const template: unknown = JSON.parse(
   await readFile('deploy/wrangler.json', 'utf8'),
 );

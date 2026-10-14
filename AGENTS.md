@@ -63,11 +63,11 @@ On every repository change, search existing tests for assertions that merely rep
 
 ## Deployment
 
-Pull requests and pushes to `main` run `.github/workflows/ci.yml`. After checks pass, a push to `main` calls `.github/workflows/release.yml` to build, test, and publish the release image. GitHub does not deploy the Worker.
+Pull requests and pushes to `main` run `.github/workflows/ci.yml`. After checks pass, runtime or chart changes on `main` call `.github/workflows/release.yml` to build and test the release image, validate production Helm values, deploy the Worker, and publish the image and OCI chart. See `charts/quizmon/README.md` for the artifact and rollback contract.
 
 After pushing, report the local checks and remote commit. Do not wait for CI or deployment runs unless the user explicitly asks for their results.
 
-`charts/quizmon/` runs the release image: verify inputs, migrate PostgreSQL under the release lock, then run RxServer and deploy and verify the Worker. Infrastructure owns the databases, networking, certificates, Secrets, and Flux configuration. Cloudflare deployment credentials stay in Kubernetes Secrets. Never commit secret values or secret files.
+`charts/quizmon/` runs the release image: verify inputs, migrate PostgreSQL under the release lock, then run RxServer. Worker deployment runs separately in release CI using the existing GitHub Secrets. Infrastructure owns the databases, networking, certificates, Kubernetes Secrets, and Flux configuration. Never commit secret values or secret files.
 
 ## Generated and durable files
 
