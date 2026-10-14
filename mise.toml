@@ -50,6 +50,7 @@ run = [
   "helm template rehearsal charts/quizmon --namespace quizmon-test -f tests/online/chart-values.yaml > .wrangler/chart-rendered.yaml",
   "kubeconform -strict -summary -kubernetes-version 1.34.0 .wrangler/chart-rendered.yaml",
   "npm run check:chart-wiring < .wrangler/chart-rendered.yaml",
+  "node --test tests/online/release-chart.test.ts",
 ]
 
 [tasks."quizmon:maintenance"]
