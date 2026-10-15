@@ -43,6 +43,18 @@ void test('generated catalog rejects malformed game and topic data before writin
   Reflect.set(item, 'generations', ['invalid']);
   assert.equal(catalogSchema.safeParse(catalog).success, false);
   item.generations = generations;
+
+  const evolution = catalog.topics!.evolutions[0]!;
+  const conditions = evolution.conditions;
+  for (const invalid of [
+    { kind: 'region', text: 'in hisui' },
+    { kind: 'time-of-day', text: 'during the day', time: 'invalid' },
+    { kind: 'invalid', text: 'unknown requirement' },
+  ]) {
+    Reflect.set(evolution, 'conditions', [invalid]);
+    assert.equal(catalogSchema.safeParse(catalog).success, false);
+  }
+  evolution.conditions = conditions;
 });
 
 void test('a Pokémon metadata refresh preserves existing topic partitions and their bytes', async () => {

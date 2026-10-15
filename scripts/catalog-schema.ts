@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { evolutionConditionKinds } from '../src/domain/quiz/topic-catalog.ts';
 import {
   generations,
   statNames,
@@ -65,7 +66,7 @@ const topics = z.object({
   ),
   regions: z.array(entity),
   locations: z.array(entity.extend({ region: text })),
-  games: z.record(text, z.object({ label: text, generation })),
+  games: z.record(text, z.object({ label: text, generation, regions: texts })),
   evolutions: z.array(
     z.object({
       before: text,
@@ -74,7 +75,24 @@ const topics = z.object({
       generation,
       trigger: text,
       item: text.optional(),
-      conditions: texts,
+      conditions: z.array(
+        z.intersection(
+          z.object({ text }),
+          z.union([
+            z.object({ kind: z.literal('region'), region: text }),
+            z.object({
+              kind: z.literal('time-of-day'),
+              time: z.enum(['day', 'night', 'dusk', 'full-moon']),
+            }),
+            z.object({
+              kind: z
+                .enum(evolutionConditionKinds)
+                .exclude(['region', 'time-of-day']),
+            }),
+          ]),
+        ),
+      ),
+      context: z.object({ region: text }).optional(),
     }),
   ),
   encounters: z.array(

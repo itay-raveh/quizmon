@@ -1,82 +1,270 @@
 {
   "key": "games",
   "values": {
-    "red": { "label": "Red", "generation": "I" },
-    "blue": { "label": "Blue", "generation": "I" },
-    "yellow": { "label": "Yellow", "generation": "I" },
-    "gold": { "label": "Gold", "generation": "II" },
-    "silver": { "label": "Silver", "generation": "II" },
-    "crystal": { "label": "Crystal", "generation": "II" },
-    "ruby": { "label": "Ruby", "generation": "III" },
-    "sapphire": { "label": "Sapphire", "generation": "III" },
-    "emerald": { "label": "Emerald", "generation": "III" },
-    "firered": { "label": "FireRed", "generation": "III" },
-    "leafgreen": { "label": "LeafGreen", "generation": "III" },
-    "diamond": { "label": "Diamond", "generation": "IV" },
-    "pearl": { "label": "Pearl", "generation": "IV" },
-    "platinum": { "label": "Platinum", "generation": "IV" },
-    "heartgold": { "label": "HeartGold", "generation": "IV" },
-    "soulsilver": { "label": "SoulSilver", "generation": "IV" },
-    "black": { "label": "Black", "generation": "V" },
-    "white": { "label": "White", "generation": "V" },
-    "colosseum": { "label": "Colosseum", "generation": "III" },
-    "xd": { "label": "XD", "generation": "III" },
-    "black-2": { "label": "Black 2", "generation": "V" },
-    "white-2": { "label": "White 2", "generation": "V" },
-    "x": { "label": "X", "generation": "VI" },
-    "y": { "label": "Y", "generation": "VI" },
-    "omega-ruby": { "label": "Omega Ruby", "generation": "VI" },
-    "alpha-sapphire": { "label": "Alpha Sapphire", "generation": "VI" },
-    "sun": { "label": "Sun", "generation": "VII" },
-    "moon": { "label": "Moon", "generation": "VII" },
-    "ultra-sun": { "label": "Ultra Sun", "generation": "VII" },
-    "ultra-moon": { "label": "Ultra Moon", "generation": "VII" },
-    "lets-go-pikachu": { "label": "Let’s Go, Pikachu!", "generation": "VII" },
-    "lets-go-eevee": { "label": "Let’s Go, Eevee!", "generation": "VII" },
-    "sword": { "label": "Sword", "generation": "VIII" },
-    "shield": { "label": "Shield", "generation": "VIII" },
+    "red": {
+      "label": "Red",
+      "generation": "I",
+      "regions": ["kanto"]
+    },
+    "blue": {
+      "label": "Blue",
+      "generation": "I",
+      "regions": ["kanto"]
+    },
+    "yellow": {
+      "label": "Yellow",
+      "generation": "I",
+      "regions": ["kanto"]
+    },
+    "gold": {
+      "label": "Gold",
+      "generation": "II",
+      "regions": ["kanto", "johto"]
+    },
+    "silver": {
+      "label": "Silver",
+      "generation": "II",
+      "regions": ["kanto", "johto"]
+    },
+    "crystal": {
+      "label": "Crystal",
+      "generation": "II",
+      "regions": ["kanto", "johto"]
+    },
+    "ruby": {
+      "label": "Ruby",
+      "generation": "III",
+      "regions": ["hoenn"]
+    },
+    "sapphire": {
+      "label": "Sapphire",
+      "generation": "III",
+      "regions": ["hoenn"]
+    },
+    "emerald": {
+      "label": "Emerald",
+      "generation": "III",
+      "regions": ["hoenn"]
+    },
+    "firered": {
+      "label": "FireRed",
+      "generation": "III",
+      "regions": ["kanto"]
+    },
+    "leafgreen": {
+      "label": "LeafGreen",
+      "generation": "III",
+      "regions": ["kanto"]
+    },
+    "diamond": {
+      "label": "Diamond",
+      "generation": "IV",
+      "regions": ["sinnoh"]
+    },
+    "pearl": {
+      "label": "Pearl",
+      "generation": "IV",
+      "regions": ["sinnoh"]
+    },
+    "platinum": {
+      "label": "Platinum",
+      "generation": "IV",
+      "regions": ["sinnoh"]
+    },
+    "heartgold": {
+      "label": "HeartGold",
+      "generation": "IV",
+      "regions": ["kanto", "johto"]
+    },
+    "soulsilver": {
+      "label": "SoulSilver",
+      "generation": "IV",
+      "regions": ["kanto", "johto"]
+    },
+    "black": {
+      "label": "Black",
+      "generation": "V",
+      "regions": ["unova"]
+    },
+    "white": {
+      "label": "White",
+      "generation": "V",
+      "regions": ["unova"]
+    },
+    "colosseum": {
+      "label": "Colosseum",
+      "generation": "III",
+      "regions": []
+    },
+    "xd": {
+      "label": "XD",
+      "generation": "III",
+      "regions": []
+    },
+    "black-2": {
+      "label": "Black 2",
+      "generation": "V",
+      "regions": ["unova"]
+    },
+    "white-2": {
+      "label": "White 2",
+      "generation": "V",
+      "regions": ["unova"]
+    },
+    "x": {
+      "label": "X",
+      "generation": "VI",
+      "regions": ["kalos"]
+    },
+    "y": {
+      "label": "Y",
+      "generation": "VI",
+      "regions": ["kalos"]
+    },
+    "omega-ruby": {
+      "label": "Omega Ruby",
+      "generation": "VI",
+      "regions": ["hoenn"]
+    },
+    "alpha-sapphire": {
+      "label": "Alpha Sapphire",
+      "generation": "VI",
+      "regions": ["hoenn"]
+    },
+    "sun": {
+      "label": "Sun",
+      "generation": "VII",
+      "regions": ["alola"]
+    },
+    "moon": {
+      "label": "Moon",
+      "generation": "VII",
+      "regions": ["alola"]
+    },
+    "ultra-sun": {
+      "label": "Ultra Sun",
+      "generation": "VII",
+      "regions": ["alola"]
+    },
+    "ultra-moon": {
+      "label": "Ultra Moon",
+      "generation": "VII",
+      "regions": ["alola"]
+    },
+    "lets-go-pikachu": {
+      "label": "Let’s Go, Pikachu!",
+      "generation": "VII",
+      "regions": ["kanto"]
+    },
+    "lets-go-eevee": {
+      "label": "Let’s Go, Eevee!",
+      "generation": "VII",
+      "regions": ["kanto"]
+    },
+    "sword": {
+      "label": "Sword",
+      "generation": "VIII",
+      "regions": ["galar"]
+    },
+    "shield": {
+      "label": "Shield",
+      "generation": "VIII",
+      "regions": ["galar"]
+    },
     "the-isle-of-armor-sword": {
       "label": "Sword: The Isle of Armor",
-      "generation": "VIII"
+      "generation": "VIII",
+      "regions": ["galar"]
     },
     "the-crown-tundra-sword": {
       "label": "Sword: The Crown Tundra",
-      "generation": "VIII"
+      "generation": "VIII",
+      "regions": ["galar"]
     },
-    "brilliant-diamond": { "label": "Brilliant Diamond", "generation": "VIII" },
-    "shining-pearl": { "label": "Shining Pearl", "generation": "VIII" },
-    "legends-arceus": { "label": "Legends: Arceus", "generation": "VIII" },
-    "scarlet": { "label": "Scarlet", "generation": "IX" },
-    "violet": { "label": "Violet", "generation": "IX" },
+    "brilliant-diamond": {
+      "label": "Brilliant Diamond",
+      "generation": "VIII",
+      "regions": ["sinnoh"]
+    },
+    "shining-pearl": {
+      "label": "Shining Pearl",
+      "generation": "VIII",
+      "regions": ["sinnoh"]
+    },
+    "legends-arceus": {
+      "label": "Legends: Arceus",
+      "generation": "VIII",
+      "regions": ["hisui"]
+    },
+    "scarlet": {
+      "label": "Scarlet",
+      "generation": "IX",
+      "regions": ["paldea"]
+    },
+    "violet": {
+      "label": "Violet",
+      "generation": "IX",
+      "regions": ["paldea"]
+    },
     "the-teal-mask-scarlet": {
       "label": "Scarlet: The Teal Mask",
-      "generation": "IX"
+      "generation": "IX",
+      "regions": ["paldea"]
     },
     "the-indigo-disk-scarlet": {
       "label": "Scarlet: The Indigo Disk",
-      "generation": "IX"
+      "generation": "IX",
+      "regions": ["paldea"]
     },
-    "red-japan": { "label": "Red", "generation": "I" },
-    "green-japan": { "label": "Green", "generation": "I" },
-    "blue-japan": { "label": "Blue", "generation": "I" },
-    "legends-za": { "label": "Legends: Z-A", "generation": "IX" },
-    "mega-dimension": { "label": "Mega Dimension", "generation": "IX" },
-    "champions": { "label": "Champions", "generation": "IX" },
+    "red-japan": {
+      "label": "Red",
+      "generation": "I",
+      "regions": ["kanto"]
+    },
+    "green-japan": {
+      "label": "Green",
+      "generation": "I",
+      "regions": ["kanto"]
+    },
+    "blue-japan": {
+      "label": "Blue",
+      "generation": "I",
+      "regions": ["kanto"]
+    },
+    "legends-za": {
+      "label": "Legends: Z-A",
+      "generation": "IX",
+      "regions": []
+    },
+    "mega-dimension": {
+      "label": "Mega Dimension",
+      "generation": "IX",
+      "regions": []
+    },
+    "champions": {
+      "label": "Champions",
+      "generation": "IX",
+      "regions": []
+    },
     "the-isle-of-armor-shield": {
       "label": "Shield: The Isle of Armor",
-      "generation": "VIII"
+      "generation": "VIII",
+      "regions": ["galar"]
     },
     "the-crown-tundra-shield": {
       "label": "Shield: The Crown Tundra",
-      "generation": "VIII"
+      "generation": "VIII",
+      "regions": ["galar"]
     },
     "the-teal-mask-violet": {
       "label": "Violet: The Teal Mask",
-      "generation": "IX"
+      "generation": "IX",
+      "regions": ["paldea"]
     },
     "the-indigo-disk-violet": {
       "label": "Violet: The Indigo Disk",
-      "generation": "IX"
+      "generation": "IX",
+      "regions": ["paldea"]
     }
   }
 }
