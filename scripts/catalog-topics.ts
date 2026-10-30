@@ -1,11 +1,10 @@
+import { evolutionMethodConditions } from './catalog-evolutions.ts';
 import { addPkmnDescriptions } from './pkmn-descriptions.ts';
 import { bagItemEffect } from './bag-item-effect.ts';
-import { clean, english, titleCase } from './catalog-text.ts';
+import { english, titleCase } from './catalog-text.ts';
 import { formatLocationLabel } from '../src/domain/pokemon/location-label.ts';
 import {
   flattenChain,
-  formatRequirements,
-  requirementsOf,
   type Ability,
   type Berry,
   type EvolutionChain,
@@ -66,7 +65,18 @@ export const buildTopicCatalog = async (
     versions.flatMap((version) => {
       const gen = versionGeneration.get(version.name);
       return gen
-        ? [[version.name, { label: label(version), generation: gen }]]
+        ? [
+            [
+              version.name,
+              {
+                label: label(version),
+                generation: gen,
+                regions: groupsByName
+                  .get(version.version_group.name)!
+                  .regions.map((region) => region.name),
+              },
+            ],
+          ]
         : [];
     }),
   );
@@ -221,16 +231,13 @@ export const buildTopicCatalog = async (
         const group = groupsByName.get(detail.version_group?.name);
         const gen = group && generation(group.generation.name);
         if (!group || !gen) continue;
-        const requirements = requirementsOf(detail).filter(
-          (requirement) =>
-            !['required-form', 'evolved-form', 'trigger'].includes(
-              requirement.kind,
-            ),
+        const method = evolutionMethodConditions(
+          detail,
+          catalog.pokemon[before]!,
+          catalog.pokemon[after]!,
+          group.regions.map((region) => region.name),
         );
-        const conditions = requirements.map((requirement) =>
-          clean(formatRequirements([requirement])),
-        );
-        if (!conditions.length) continue;
+        if (!method.conditions.length) continue;
         for (const version of group.versions)
           evolutions.push({
             before,
@@ -239,7 +246,7 @@ export const buildTopicCatalog = async (
             generation: gen,
             trigger: detail.trigger.name,
             ...(detail.item ? { item: detail.item.name } : {}),
-            conditions,
+            ...method,
           });
       }
     }

@@ -1,7 +1,10 @@
 import type { FamilyRules } from './family-rules.ts';
 import { formatPokemonName } from '../../pokemon/format.ts';
 import { generations } from '../../pokemon/types.ts';
-import type { EvolutionKnowledge } from '../topic-catalog.ts';
+import type {
+  EvolutionCondition,
+  EvolutionKnowledge,
+} from '../topic-catalog.ts';
 import { pokemonOptions } from './answers.ts';
 import { getOptionVisuals, makeQuestion } from './assembly.ts';
 import type { QuestionBuilder } from './context.ts';
@@ -11,28 +14,31 @@ import { pickFreshTarget, pickTarget } from './selection.ts';
 import { makeTopicQuestion, ordered, pokemonSubject } from './topic-support.ts';
 import { typeOptions } from './type-options.ts';
 
-const evolutionRequirements = (entry: EvolutionKnowledge): string[] =>
+const evolutionRequirements = (
+  entry: EvolutionKnowledge,
+): EvolutionCondition[] =>
   ['level-up', 'use-item', 'trade'].includes(entry.trigger)
     ? [
         ...(entry.trigger === 'trade' &&
-        !entry.conditions.some((condition) =>
-          condition.startsWith('traded for '),
+        !entry.conditions.some(
+          (condition) => condition.kind === 'trade-species',
         )
-          ? ['trade']
+          ? [{ kind: 'trade' as const, text: 'trade' }]
           : []),
         ...entry.conditions,
       ]
     : [];
 
 const evolutionConditionLabel = (
-  condition: string,
+  requirement: EvolutionCondition,
   variant: NonNullable<
     Parameters<
       QuestionBuilder<FamilyRules['evolutionConditions']>
     >[0]['variant']
   >,
 ): string | undefined => {
-  if (condition === 'trade')
+  const condition = requirement.text;
+  if (requirement.kind === 'trade')
     return variant.compactEvolutionLabels ? 'Trade' : 'Trade this Pokémon';
   const level = /^at level (\d+)$/.exec(condition);
   if (level)
@@ -69,17 +75,12 @@ const evolutionConditionLabel = (
   if (condition.startsWith('near ')) return `Level up ${condition}`;
   if (condition.startsWith('with Attack ')) return `Have ${condition.slice(5)}`;
   if (condition.startsWith('with ')) return `Have ${condition.slice(5)}`;
-  if (condition.startsWith('traded for '))
+  if (requirement.kind === 'trade-species')
     return `Trade for ${formatPokemonName(condition.slice(11))}`;
   if (condition.startsWith('under ') || condition.startsWith('while '))
     return `Evolve ${condition}`;
   return condition.charAt(0).toUpperCase() + condition.slice(1);
 };
-
-const evolutionConditionKind = (condition: string) =>
-  condition === 'trade'
-    ? 'trade'
-    : condition.replace(/\d+/g, '#').split(' ')[0];
 
 export const buildEvolution: QuestionBuilder<
   FamilyRules['evolutionConditions']
@@ -128,7 +129,7 @@ export const buildEvolution: QuestionBuilder<
     });
     const eligibleTrue =
       variant.response.selection === 'single'
-        ? allTrue.filter(({ condition }) => !/^at level \d+$/.test(condition))
+        ? allTrue.filter(({ condition }) => condition.kind !== 'min-level')
         : allTrue;
     if (eligibleTrue.length < variant.minimumEvolutionConditions) continue;
     const trueChoices = ordered(context, eligibleTrue).slice(
@@ -138,47 +139,77 @@ export const buildEvolution: QuestionBuilder<
     const trueLabels = new Set(allTrue.map(({ label }) => label));
     const wrongByLabel = new Map<
       string,
-      { condition: string; label: string }
+      { condition: EvolutionCondition; label: string }
     >();
+    let excludedContext = false;
     for (const entry of topics.evolutions) {
       if (entry.game !== target.game) continue;
       for (const condition of evolutionRequirements(entry)) {
-        if (requirements.includes(condition)) continue;
+        if (
+          requirements.some(
+            (requirement) => requirement.text === condition.text,
+          )
+        )
+          continue;
         if (
           variant.response.selection === 'single' &&
-          /^at level \d+$/.test(condition)
+          condition.kind === 'min-level'
         )
           continue;
         const label = evolutionConditionLabel(condition, variant);
+        if (!label || trueLabels.has(label)) continue;
+        if (
+          condition.kind === 'region' &&
+          game.regions.length === 1 &&
+          game.regions[0] === condition.region
+        ) {
+          excludedContext = true;
+          continue;
+        }
+        wrongByLabel.set(label, { condition, label });
+      }
+    }
+    if (excludedContext && wrongByLabel.size < 4 - trueChoices.length) {
+      for (const condition of requirements) {
+        if (
+          condition.kind !== 'time-of-day' ||
+          !['day', 'night'].includes(condition.time)
+        )
+          continue;
+        const time = condition.time === 'day' ? 'night' : 'day';
+        const opposite: EvolutionCondition = {
+          kind: 'time-of-day',
+          time,
+          text: `during the ${time}`,
+        };
+        const label = evolutionConditionLabel(opposite, variant);
         if (label && !trueLabels.has(label))
-          wrongByLabel.set(label, { condition, label });
+          wrongByLabel.set(label, { condition: opposite, label });
       }
     }
     const wrongPool = ordered(context, [...wrongByLabel.values()]);
     const selectedWrong: typeof wrongPool = [];
-    const numeric = trueChoices.find(({ condition }) =>
-      /^at level \d+$/.test(condition),
+    const numeric = trueChoices.find(
+      ({ condition }) => condition.kind === 'min-level',
     );
     if (numeric && variant.preferCloseConditionValues) {
-      const level = Number(numeric.condition.slice(9));
+      const level = Number(numeric.condition.text.slice(9));
       const closest = wrongPool
-        .filter(({ condition }) => /^at level \d+$/.test(condition))
+        .filter(({ condition }) => condition.kind === 'min-level')
         .sort(
           (a, b) =>
-            Math.abs(Number(a.condition.slice(9)) - level) -
-            Math.abs(Number(b.condition.slice(9)) - level),
+            Math.abs(Number(a.condition.text.slice(9)) - level) -
+            Math.abs(Number(b.condition.text.slice(9)) - level),
         )[0];
       if (closest) selectedWrong.push(closest);
     }
     const usedKinds = new Set(
-      [...trueChoices, ...selectedWrong].map(({ condition }) =>
-        evolutionConditionKind(condition),
-      ),
+      [...trueChoices, ...selectedWrong].map(({ condition }) => condition.kind),
     );
     for (const choice of wrongPool) {
       if (selectedWrong.length === 4 - trueChoices.length) break;
       if (selectedWrong.includes(choice)) continue;
-      const kind = evolutionConditionKind(choice.condition);
+      const kind = choice.condition.kind;
       if (usedKinds.has(kind)) continue;
       selectedWrong.push(choice);
       usedKinds.add(kind);

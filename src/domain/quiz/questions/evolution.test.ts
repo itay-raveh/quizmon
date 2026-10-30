@@ -111,3 +111,49 @@ it('does not call either alternative method mandatory', () => {
   } as PokemonCatalog;
   expect(build(level, 'alternate-methods', selected, source)).toBeUndefined();
 });
+
+it('excludes a game-specific evolution whose only requirement is its minimum level', () => {
+  const selected = pool.filter(({ name }) =>
+    ['cyndaquil', 'quilava'].includes(name),
+  );
+  for (const level of gameLevels)
+    expect(build(level, 'ordinary-level', selected)).toBeUndefined();
+});
+
+it('keeps regional-form requirements available', () => {
+  const level = gameLevels.find((level) => {
+    const variant = getQuestionVariant('evolutionConditions', level)?.variant;
+    return variant?.evolutionLocations && !variant.exactEvolutionValues;
+  })!;
+  const selected = pool.filter(({ name }) =>
+    ['pikachu', 'raichu-alola'].includes(name),
+  );
+  expect(
+    build(level, 'regional-evolution', selected)?.answer.correctOptions,
+  ).toEqual(['Evolve in Alola']);
+});
+
+it('replaces game-implied wrong regions with mutually exclusive conditions', () => {
+  const level = gameLevels.find((level) => {
+    const variant = getQuestionVariant('evolutionConditions', level)?.variant;
+    return variant?.evolutionLocations && !variant.exactEvolutionValues;
+  })!;
+  const selected = pool.filter(({ name }) =>
+    ['sneasel-hisui', 'sneasler'].includes(name),
+  );
+  for (const seed of ['day', 'night', 'held-item']) {
+    const question = build(level, seed, selected)!;
+    expect(question).toBeDefined();
+    expect(question.options).toHaveLength(4);
+    expect(question.options).not.toContain('Evolve in Hisui');
+    expect(question.options).toContain('Evolve during the night');
+    expect(
+      question.answer.correctOptions.every((option) =>
+        ['Hold Razor Claw', 'Evolve during the day'].includes(option),
+      ),
+    ).toBe(true);
+    expect(question.answer.correctOptions).not.toContain(
+      'Evolve during the night',
+    );
+  }
+});

@@ -25,6 +25,45 @@ interface MoveKnowledge extends TopicEntity {
   type: string;
   damageClass: string;
 }
+export const evolutionConditionKinds = [
+  'trade',
+  'item',
+  'held-item',
+  'min-level',
+  'min-happiness',
+  'min-beauty',
+  'min-affection',
+  'known-move',
+  'known-move-type',
+  'used-move',
+  'min-move-count',
+  'min-steps',
+  'min-damage-taken',
+  'location',
+  'region',
+  'time-of-day',
+  'gender',
+  'relative-physical-stats',
+  'party-species',
+  'party-type',
+  'trade-species',
+  'allowed-natures',
+  'condition',
+  'needs-overworld-rain',
+  'turn-upside-down',
+  'near-special-rock',
+  'needs-multiplayer',
+] as const;
+export type EvolutionCondition = { text: string } & (
+  | { kind: 'region'; region: string }
+  | { kind: 'time-of-day'; time: 'day' | 'night' | 'dusk' | 'full-moon' }
+  | {
+      kind: Exclude<
+        (typeof evolutionConditionKinds)[number],
+        'region' | 'time-of-day'
+      >;
+    }
+);
 export interface EvolutionKnowledge {
   before: string;
   after: string;
@@ -32,7 +71,8 @@ export interface EvolutionKnowledge {
   generation: Generation;
   trigger: string;
   item?: string;
-  conditions: string[];
+  conditions: EvolutionCondition[];
+  context?: { region: string };
 }
 interface EncounterKnowledge {
   complete: boolean;
@@ -65,7 +105,10 @@ export interface TopicCatalog {
   })[];
   regions: TopicEntity[];
   locations: (TopicEntity & { region: string })[];
-  games: Record<string, { label: string; generation: Generation }>;
+  games: Record<
+    string,
+    { label: string; generation: Generation; regions: string[] }
+  >;
   evolutions: EvolutionKnowledge[];
   encounters: EncounterKnowledge[];
 }
