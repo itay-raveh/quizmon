@@ -37,9 +37,11 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
+          ref: ${{ github.sha }}
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           repository: ${{ github.repository_owner }}/infra
+          ref: main
           path: .wrangler/infra
           persist-credentials: false
       - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4
@@ -91,6 +93,13 @@ jobs:
         run: |
           export QUIZMON_PREBUILT_WORKER="$PWD/.wrangler/release-worker"
           node tests/online/check-account-sync.ts
+      - name: Validate production release contract before publication
+        run: |
+          set -euo pipefail
+          image_id=$(cat .wrangler/release-image-id)
+          version="0.$GITHUB_RUN_NUMBER.$GITHUB_RUN_ATTEMPT"
+          node deploy/prepare-release-chart.ts .wrangler/infra "ghcr.io/itay-raveh/quizmon@$image_id" "$version" "$GITHUB_SHA" .wrangler/release-chart
+          printf 'Production values from infra commit: %s\n' "$(git -C .wrangler/infra rev-parse HEAD)" >> "$GITHUB_STEP_SUMMARY"
       - name: Publish checked RxServer image
         env:
           REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -98,6 +107,8 @@ jobs:
           DOCKER_CONFIG: ${{ runner.temp }}/quizmon-registry-auth
         run: |
           set -euo pipefail
+          current_sha=$(git ls-remote --exit-code "https://github.com/$GITHUB_REPOSITORY.git" refs/heads/main | cut -f1)
+          test "$current_sha" = "$GITHUB_SHA" || { echo '::error::Refusing to publish an outdated main revision.'; exit 1; }
           mkdir -p "$DOCKER_CONFIG"
           public_config="$RUNNER_TEMP/quizmon-registry-public"
           trap 'rm -rf "$DOCKER_CONFIG" "$public_config"' EXIT
@@ -117,12 +128,40 @@ jobs:
             exit 1
           fi
           printf '%s\n' "$digest_reference" >> "$GITHUB_STEP_SUMMARY"
+          node deploy/prepare-release-chart.ts .wrangler/infra "$digest_reference" "0.$GITHUB_RUN_NUMBER.$GITHUB_RUN_ATTEMPT" "$GITHUB_SHA" .wrangler/release-chart
+      - name: Verify Worker revision is still main
+        run: |
+          set -euo pipefail
+          current_sha=$(git ls-remote --exit-code "https://github.com/$GITHUB_REPOSITORY.git" refs/heads/main | cut -f1)
+          test "$current_sha" = "$GITHUB_SHA" || { echo '::error::Refusing to deploy an outdated Worker revision.'; exit 1; }
       - name: Deploy Worker
         uses: cloudflare/wrangler-action@953926a2e2182532811c01a25e53647d93bf07c0 # v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy .wrangler/release-worker/index.js --config .wrangler.production.json --no-bundle --keep-vars
+      - name: Publish checked OCI chart
+        env:
+          REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REGISTRY_USER: ${{ github.actor }}
+          HELM_REGISTRY_CONFIG: ${{ runner.temp }}/quizmon-helm-auth/config.json
+        run: |
+          set -euo pipefail
+          current_sha=$(git ls-remote --exit-code "https://github.com/$GITHUB_REPOSITORY.git" refs/heads/main | cut -f1)
+          test "$current_sha" = "$GITHUB_SHA" || { echo '::error::Refusing to publish a chart from an outdated main revision.'; exit 1; }
+          public_config="$RUNNER_TEMP/quizmon-helm-public/config.json"
+          trap 'rm -rf "$(dirname "$HELM_REGISTRY_CONFIG")" "$(dirname "$public_config")"' EXIT
+          printf '%s' "$REGISTRY_TOKEN" | helm registry login ghcr.io -u "$REGISTRY_USER" --password-stdin
+          version="0.$GITHUB_RUN_NUMBER.$GITHUB_RUN_ATTEMPT"
+          helm package .wrangler/release-chart/quizmon --destination .wrangler/release-chart
+          helm push ".wrangler/release-chart/quizmon-$version.tgz" oci://ghcr.io/itay-raveh/charts 2>&1 | tee .wrangler/chart-push.log
+          digest=$(sed -n 's/^Digest: //p' .wrangler/chart-push.log)
+          [[ "$digest" =~ ^sha256:[a-f0-9]{64}$ ]]
+          if ! HELM_REGISTRY_CONFIG="$public_config" helm pull "oci://ghcr.io/itay-raveh/charts/quizmon@$digest" --destination "$RUNNER_TEMP"; then
+            echo '::error::The release chart is not anonymously readable. The GHCR chart package must be public before Flux can consume it.'
+            exit 1
+          fi
+          printf 'Chart: ghcr.io/itay-raveh/charts/quizmon:%s\nRollback pin: %s\n' "$version" "$digest" >> "$GITHUB_STEP_SUMMARY"
       - name: Remove disposable database
         if: always()
         run: docker compose -f compose.yaml down --volumes

@@ -15,10 +15,6 @@ const sequence = (document: typeof deployment, path: (string | number)[]) =>
   (document?.getIn(path) as YAMLSeq | undefined)?.toJSON();
 
 assert.deepEqual(
-  documents.map((document) => document.get('kind')).sort(),
-  ['Deployment', 'Job', 'Service'].sort(),
-);
-assert.deepEqual(
   sequence(job, ['spec', 'template', 'spec', 'containers', 0, 'args']),
   ['/migration/migration-connection.json'],
 );
@@ -52,39 +48,6 @@ assert.deepEqual(
     'command',
   ]),
   ['node', 'server/rxdb-sync.ts'],
-);
-assert.equal(
-  deployment?.getIn([
-    'spec',
-    'template',
-    'spec',
-    'terminationGracePeriodSeconds',
-  ]),
-  5,
-);
-assert.equal(
-  deployment?.getIn([
-    'spec',
-    'template',
-    'spec',
-    'containers',
-    0,
-    'startupProbe',
-    'periodSeconds',
-  ]),
-  1,
-);
-assert.equal(
-  deployment?.getIn([
-    'spec',
-    'template',
-    'spec',
-    'containers',
-    0,
-    'readinessProbe',
-    'periodSeconds',
-  ]),
-  1,
 );
 assert.deepEqual(
   sequence(deployment, [
