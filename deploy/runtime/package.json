@@ -4,7 +4,7 @@
   "type": "module",
   "dependencies": {
     "@sentry/node": "11.2.0",
-    "drizzle-orm": "0.45.2",
+    "drizzle-orm": "0.45.4",
     "express": "5.2.1",
     "jose": "6.2.12",
     "mongodb": "6.21.0",
